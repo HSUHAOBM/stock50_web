@@ -69,35 +69,36 @@ def DB_get_stopdealdate():
 
 #設定爬取時間為下午1點45分
 def main(h=13,m=50,wd1=6,wd2=7):
-    while True:
-        print("現在時間為",datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-        logger.info(str(datetime.now().month)+"月"+str(datetime.now().day)+"日 "+str(datetime.now().hour)+":"+str(datetime.now().minute)+":"+str(datetime.now().second))
+    stopdeal_date=DB_get_stopdealdate()
 
-        trun_get=True
-        for i in stopdeal_date:
-            if(datetime.now().month == i[0].month):
-                if(datetime.now().day == i[0].day):
-                    print("國定假日，休市")
-                    logger.info("國定假日，休市")
-                    trun_get=False
-        if(trun_get):
-            now = datetime.now()
-            if now.isoweekday()!=wd1 and now.isoweekday()!=wd2:            
-                if now.hour == h and now.minute == m :
-                    print("今天有開市，並將開始執行爬蟲")
-                    logger.info("今天有開市，並將開始執行爬蟲")
-                    doSth()
-                else:
-                    print("今天有開市，但未收盤或已執行。")
-                    logger.info("今天有開市，但未收盤或已執行。")
-            else: 
-                print("休市")
-                logger.info("休市")
+    print("現在時間為",datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    logger.info(str(datetime.now().month)+"月"+str(datetime.now().day)+"日 "+str(datetime.now().hour)+":"+str(datetime.now().minute)+":"+str(datetime.now().second))
+
+    trun_get=True
+    for i in stopdeal_date:
+        if(datetime.now().month == i[0].month):
+            if(datetime.now().day == i[0].day):
+                print("國定假日，休市")
+                logger.info("國定假日，休市")
+                trun_get=False
+    if(trun_get):
+        now = datetime.now()
+        if now.isoweekday()!=wd1 and now.isoweekday()!=wd2:            
+            if now.hour == h and now.minute == m :
+                print("今天有開市，並將開始執行爬蟲")
+                logger.info("今天有開市，並將開始執行爬蟲")
+                doSth()
+            else:
+                print("今天有開市，但未收盤或已執行。")
+                logger.info("今天有開市，但未收盤或已執行。")
+        else: 
+            print("休市")
+            logger.info("休市")
 
 
-        time.sleep(60)
-        print("-持續監控中-")
-        logger.info("-持續監控中-")
+    # time.sleep(60)
+    print("-持續監控中-")
+    logger.info("-持續監控中-")
 
 def doSth():
     print("取得最新的股市資料")
@@ -110,5 +111,4 @@ def doSth():
     DB_Use_message.message_predict_check() #留言資料的檢測
 
 
-stopdeal_date=DB_get_stopdealdate()
 main()
