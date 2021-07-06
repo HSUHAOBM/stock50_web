@@ -1,0 +1,131 @@
+.member {
+    width: 100%;
+    margin: 0px auto;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(236, 236, 236);
+    font-family: Comic Sans MS;
+    padding-bottom: 50px;
+}
+
+.member_title {
+    margin: auto;
+    font-size: 36px;
+    font-weight: bold;
+    padding-top: 20px;
+}
+
+.member_body {
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+    align-content: center;
+}
+
+.member_left {
+    width: 45%
+}
+
+.member_left_title {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.member_left_text {
+    font-size: 20px;
+    color: rgb(26, 26, 26);
+    letter-spacing: 3px;
+}
+
+.member_left_text a {
+    font-weight: 900;
+    text-decoration: none;
+    color: rgb(26, 26, 26);
+}
+
+.member_register {
+    width: 40%;
+    padding-top: 45px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.member_register form {
+    background: #e5e5e5;
+    border-radius: 60px;
+    padding: 30px;
+}
+
+.member_register_inputbox {
+    margin: 16px 5px 15px 5px;
+}
+
+.member_register_inputbox label {
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.member_register_input {
+    width: 300px;
+    height: 30px;
+    border: 1px solid #CCCCCC;
+    box-sizing: border-box;
+    border-radius: 5px;
+    font-family: Noto Sans TC;
+}
+
+.member_register form button {
+    margin: 0 auto;
+    width: 80%;
+    line-height: 35px;
+    height: 35px;
+    /* text-align: center; */
+    justify-content: center;
+    display: flex;
+    background: #313131;
+    color: rgb(255, 255, 255);
+    font-size: 18px;
+    border-radius: 25px;
+    font-weight: bold;
+    letter-spacing: 3px;
+}
+
+.member_sign_in {
+    margin-top: 12px;
+}
+
+@media screen and (min-width: 500px) and (max-width: 1200px) {}
+
+.member_body {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+}
+
+.member_left {
+    width: 90%
+}
+
+.member_register {
+    width: 90%
+}
+
+@media screen and (max-width: 500px) {
+    .member_body {
+        display: flex;
+        justify-content: space-around;
+        flex-direction: column;
+        align-content: center;
+        align-items: center;
+    }
+    .member_left {
+        width: 90%
+    }
+    .member_register {
+        width: 90%
+    }
+}

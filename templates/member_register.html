@@ -1,0 +1,79 @@
+ {% extends 'base.html' %} {% block content %}
+<link href="/css/member_register.css" rel="stylesheet" type="text/css" media="all" />
+<div class="member">
+    <a class="member_title">免費加入</a>
+    <div class="member_body">
+
+        <div class="member_left">
+            <p class="member_left_title">會員須知</p>
+            <p class="member_left_text">遵守討論區社群規範，為維護社群討論區品質，保障討論區內使用者權益，站方制定相關「討論區社群規範」， 平台的股市討論區，將透過「會員檢舉機制」、「站方管理巡查」等機制綜合判斷，針對違反下列規範之帳號、文字、假訊息及其他任何形式的內容進行移除動作，並視違規嚴重程度予以相對應的懲處，包含刪除留言、禁止相關服務、最重至帳號停權。相關細則請至討論區社群規範細則閱讀。
+            </p>
+            <p class="member_left_text"></p>(註：可依違規嚴重程度斟酌調整懲處內容)</p>
+            <p class="member_left_text">本網站所供的所有數據、資料以及相關的服務皆為輔助會員判斷股市之工具僅供參考，請勿以此作為真實買賣交易之依據。投資人若依此以為買賣之依據，皆須自負盈虧之責任。本站不負任何法律責任。</p>
+            <p class="member_left_text">資料來源<a href="http://www.tse.com.tw/ " target="_blank " rel="noreferrer noopener ">台灣證券交易所</a>、<a href="http://www.tpex.org.tw/ " target="_blank " rel="noreferrer noopener ">櫃檯買賣中心</a>。資料僅供參考，使用者依本資料交易發生交易損失需自行負責，本站對資訊正確、更新延誤或傳輸中斷不負任何責任。</p>
+        </div>
+        <div class="member_register ">
+            <form action="/users " method="post ">
+                <div class="member_register_form">
+                    <div class="member_register_inputbox"> <label>輸入Email作為您的帳號</label>
+                        <div><input class="member_register_input" required=" required " maxlength="40 " aria-required="true " placeholder="輸入Email作為您的帳號 " type="email " value=" " pattern="^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})*$ " /></div>
+                    </div>
+                    <div class="member_register_inputbox"><label>密碼：6至12個字元</label>
+                        <div><input class="member_register_input" required="required " minlength="6 " maxlength="128 " aria-required="true " placeholder="密碼：6至12個字元" type="password " pattern="[0-9a-zA-Z]{6,12} " /></div>
+                    </div>
+                    <div class="member_register_inputbox"><label>請再輸入一次密碼</label>
+                        <div><input class="member_register_input" required="required " minlength="6 " maxlength="128 " aria-required="true " placeholder="請再輸入一次密碼 " type="password " pattern="[0-9a-zA-Z]{6,12} " /></div>
+                    </div>
+                    <div class="member_register_inputbox"><label>使用者暱稱</label>
+                        <div><input class="member_register_input" required="required " minlength="6 " maxlength="128 " aria-required="true " placeholder="使用者暱稱 " type="text " pattern="{1,12} " /></div>
+                    </div>
+                    <button type="submit " class="member_register_submitbtn ">註冊新會員</button>
+                </div>
+
+                <div class="member_sign_in ">
+                    <button class="member_register_submitbtn ">會員登入</button>
+
+                </div>
+                <script src="https://apis.google.com/js/platform.js" async defer></script>
+                <meta name="google-signin-client_id" content="836212664164-9qe1rvnjdo7bjaes585a0fc18haaod1j.apps.googleusercontent.com">
+
+                <div class="third-party-plugin-area">
+                    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+                    <a href="#" onclick="signOut();">Sign out</a>
+
+                    <span id="GOOGLE_STATUS_1"></span>
+                    <script>
+                        // 登入之後
+                        function onSignIn(googleUser) {
+                            var profile = googleUser.getBasicProfile(),
+                                target = document.getElementById("GOOGLE_STATUS_1"),
+                                html = "";
+
+                            html += "ID: " + profile.getId() + "<br/>";
+                            html += "會員暱稱： " + profile.getName() + "<br/>";
+                            html += "會員頭像：" + profile.getImageUrl() + "<br/>";
+                            html += "會員 email：" + profile.getEmail() + "<br/>";
+                            target.innerHTML = html;
+
+                            console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+                            console.log('Name: ' + profile.getName());
+                            console.log('Image URL: ' + profile.getImageUrl());
+                            console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+                        }
+
+                        function signOut() {
+                            var auth2 = gapi.auth2.getAuthInstance();
+                            auth2.signOut().then(function() {
+                                console.log('User signed out.');
+                            });
+                        }
+                    </script>
+                    <!-- <a class="fb-login is-large" rel="nofollow" data-method="post" href="/users/auth/facebook">臉書快速註冊</a> -->
+                    <!-- <a class="g-login is-large" rel="nofollow" data-method="post" href="/users/auth/google_oauth2">Google快速註冊</a> -->
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

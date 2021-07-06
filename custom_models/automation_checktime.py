@@ -5,13 +5,16 @@ import configparser
 import os
 import time
 
+
 import DB_Use_message,DB_Get_stock50_everydaydata
 
+modelPath = os.path.dirname(os.path.realpath(__file__))
+# print(modelPath)
 import logging
 logger = logging.getLogger("simple_example")
 logger.setLevel(logging.DEBUG)
 # 建立一个filehandler来把日志记录在文件里，级别为debug以上
-fh = logging.FileHandler("spam.log", encoding='utf-8')
+fh = logging.FileHandler(modelPath+"/spam.log", encoding='utf-8')
 fh.setLevel(logging.DEBUG)
 # 建立一个streamhandler来把日志打在CMD窗口上，级别为error以上
 ch = logging.StreamHandler()
@@ -25,10 +28,12 @@ logger.addHandler(ch)
 logger.addHandler(fh)
 # 开始打日志
 # logger.debug("debug message")
-logger.info("info message")
+# logger.info("info message")
 # logger.warn("warn message")
 # logger.error("error message")
 # logger.critical("critical message")
+logger.info("日誌紀錄寫入中")
+
 
 
 

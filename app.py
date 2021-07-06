@@ -21,10 +21,12 @@ def index():
 # 會員
 @app.route("/member")
 def web_member():
-    return render_template("member.html")
+    return render_template("test.html")
+# 會員註冊
+@app.route("/member_register")
+def web_member_register():
+    return render_template("member_register.html")
 
-
-     
 
 @app.errorhandler(400)
 def page_400(error):
