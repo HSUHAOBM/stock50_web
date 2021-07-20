@@ -46,7 +46,8 @@ member_modify_data_form.addEventListener('submit', function(event) {
     }).then(function(result) {
         console.log(result);
         if (result.ok) {
-            window.location.reload();
+            location.href = '/member?name=' + member_modify_data_form_.get("member_modify_name")
+
         }
         if (result.error) {
             document.querySelector('.member_modify_data_return_text').textContent = result.message;
