@@ -108,8 +108,14 @@ def main(h=13,m=50,wd1=6,wd2=7):
 def doSth():
     print("取得最新的股市資料")
     logger.info("取得最新的股市資料")
+    
     DB_Get_stock50_everydaydata.stock50_getdata() #取得最新的股市資料
     
+    time.sleep(5)
+
+    return_stock50_getstock50_check_error=DB_Get_stock50_everydaydata.stock50_getstock50_check_error()#檢查有無異常的資料
+    logger.info(return_stock50_getstock50_check_error)
+
     print("留言資料的檢測")
     logger.info("留言資料的檢測")
 

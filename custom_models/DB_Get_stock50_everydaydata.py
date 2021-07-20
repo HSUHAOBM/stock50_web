@@ -1,4 +1,3 @@
-from dns.rdatatype import NULL
 import requests
 import json
 from datetime import datetime
@@ -18,14 +17,6 @@ DBdatabase=config.get('use_db', 'DBdatabase')
 DBuser=config.get('use_db', 'DBuser')
 DBpassword=config.get('use_db', 'DBpassword')
 
-from dns.rdatatype import NULL
-import requests
-import json
-from datetime import datetime
-import time
-import mysql.connector
-import configparser
-import os
 
 
 #取得台灣50
@@ -89,8 +80,10 @@ def stock50_getstock50_toDB(stock_id,stock_name,date,stock_total,open_price,high
 
 #執行
 def stock50_getdata():
-    i=0
+    i=0    
+
     stock_name,stock_id=loadstock50dataname()
+
     for index in stock_id:
         date,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal=loadstockdata(index)
 
@@ -102,3 +95,52 @@ def stock50_getdata():
                 differ=str(differ)
             stock50_getstock50_toDB(stock_id[i],stock_name[i],date,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal)
         i=i+1
+
+
+#檢查是否有沒抓到資料
+def stock50_getstock50_check_error():
+    try:
+        connection = mysql.connector.connect(
+        host=DBhost,         
+        database=DBdatabase, 
+        user=DBuser,      
+        password=DBpassword) 
+        
+      
+        cursor = connection.cursor()
+        cursor.execute("select * from stock50_data where open_price is null")
+        records = cursor.fetchall()
+        if (records):
+            for i in range(len(records)):
+                getstock50_data=loadstockdata(records[i][1])
+                stock50_getstock50_error_modify(getstock50_data,records[i][1])
+            return "錯誤修改完成。"
+        else:
+            return "今日無錯誤。"
+    finally:
+        if (connection.is_connected()):
+            cursor.close()
+            connection.close()
+            print("資料庫連線已關閉")
+
+#修正程式
+def stock50_getstock50_error_modify(getstock50_data,stock_id):
+    try:
+        connection = mysql.connector.connect(
+        host=DBhost,         
+        database=DBdatabase, 
+        user=DBuser,      
+        password=DBpassword) 
+        
+        stock_total,open_price,high_price,low_price,end_price,differ,totaldeal=getstock50_data[1],getstock50_data[2],getstock50_data[3],getstock50_data[4],getstock50_data[5],getstock50_data[6],getstock50_data[7]
+        
+        cursor = connection.cursor()
+        cursor.execute("UPDATE stock50_data SET stock_total='%s',open_price='%s',high_price='%s',low_price='%s',end_price='%s',differ='%s',totaldeal='%s' WHERE stock_id= '%s' ;" % (stock_total,open_price,high_price,low_price,end_price,differ,totaldeal,stock_id))
+        connection.commit()  
+
+
+    finally:
+        if (connection.is_connected()):
+            cursor.close()
+            connection.close()
+            print("資料庫連線已關閉")

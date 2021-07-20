@@ -13,67 +13,108 @@
             <p class="member_left_text">資料來源<a href="http://www.tse.com.tw/ " target="_blank " rel="noreferrer noopener ">台灣證券交易所</a>、<a href="http://www.tpex.org.tw/ " target="_blank " rel="noreferrer noopener ">櫃檯買賣中心</a>。資料僅供參考，使用者依本資料交易發生交易損失需自行負責，本站對資訊正確、更新延誤或傳輸中斷不負任何責任。</p>
         </div>
         <div class="member_register ">
-            <form action="/users " method="post ">
-                <div class="member_register_form">
-                    <div class="member_register_inputbox"> <label>輸入Email作為您的帳號</label>
-                        <div><input class="member_register_input" required=" required " maxlength="40 " aria-required="true " placeholder="輸入Email作為您的帳號 " type="email " value=" " pattern="^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})*$ " /></div>
+            <div class="member_register_form"> <a class="member_title register">使用信箱快速註冊</a>
+                <form action="" method="post" id="member_form">
+                    <div class="member_register_form">
+                        <div class="member_register_inputbox"> <label>輸入Email作為您的帳號</label>
+                            <div><input class="member_register_input email" required=" required " maxlength="48" aria-required="true" placeholder="輸入Email作為您的帳號 " type="email" value=" " pattern="^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})*$" /></div>
+                        </div>
+                        <div class="member_register_inputbox"><label>密碼：6至12個字元</label>
+                            <div><input class="member_register_input password1" required="required " minlength="6" maxlength="128" aria-required="true" placeholder="密碼：6至12個字元" type="password" pattern="[0-9a-zA-Z]{6,12}" /></div>
+                        </div>
+                        <div class="member_register_inputbox"><label>請再輸入一次密碼</label>
+                            <div><input class="member_register_input password2" required="required " minlength="6" maxlength="128" aria-required="true" placeholder="請再輸入一次密碼 " type="password" pattern="[0-9a-zA-Z]{6,12}" /></div>
+                        </div>
+                        <div class="member_register_inputbox"><label>使用者暱稱</label>
+                            <div><input class="member_register_input username" required="required " minlength="1" maxlength="12" aria-required="true" placeholder="使用者暱稱 " type="text" /></div>
+                        </div>
+                        <button type="submit " class="member_register_submitbtn ">註冊新會員</button>
                     </div>
-                    <div class="member_register_inputbox"><label>密碼：6至12個字元</label>
-                        <div><input class="member_register_input" required="required " minlength="6 " maxlength="128 " aria-required="true " placeholder="密碼：6至12個字元" type="password " pattern="[0-9a-zA-Z]{6,12} " /></div>
-                    </div>
-                    <div class="member_register_inputbox"><label>請再輸入一次密碼</label>
-                        <div><input class="member_register_input" required="required " minlength="6 " maxlength="128 " aria-required="true " placeholder="請再輸入一次密碼 " type="password " pattern="[0-9a-zA-Z]{6,12} " /></div>
-                    </div>
-                    <div class="member_register_inputbox"><label>使用者暱稱</label>
-                        <div><input class="member_register_input" required="required " minlength="6 " maxlength="128 " aria-required="true " placeholder="使用者暱稱 " type="text " pattern="{1,12} " /></div>
-                    </div>
-                    <button type="submit " class="member_register_submitbtn ">註冊新會員</button>
-                </div>
+                </form>
 
                 <div class="member_sign_in ">
-                    <button class="member_register_submitbtn ">會員登入</button>
-
+                    <a href='/member_sigin'> <button class="member_register_submitbtn">已經是會員</button></a>
                 </div>
-                <script src="https://apis.google.com/js/platform.js" async defer></script>
-                <meta name="google-signin-client_id" content="836212664164-9qe1rvnjdo7bjaes585a0fc18haaod1j.apps.googleusercontent.com">
+                <a class="errortext"></a>
 
-                <div class="third-party-plugin-area">
-                    <div class="g-signin2" data-onsuccess="onSignIn"></div>
-                    <a href="#" onclick="signOut();">Sign out</a>
+            </div>
+            <meta name="google-signin-client_id" content="836212664164-9qe1rvnjdo7bjaes585a0fc18haaod1j.apps.googleusercontent.com">
+            <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
 
-                    <span id="GOOGLE_STATUS_1"></span>
-                    <script>
-                        // 登入之後
-                        function onSignIn(googleUser) {
-                            var profile = googleUser.getBasicProfile(),
-                                target = document.getElementById("GOOGLE_STATUS_1"),
-                                html = "";
+            <div class="member_register thirdarea">
+                <a class="member_title register">快速註冊</a>
+                <div id="my-signin2"></div>
+                <!-- <a href="#" onclick="signOut();">Sign out</a> -->
 
-                            html += "ID: " + profile.getId() + "<br/>";
-                            html += "會員暱稱： " + profile.getName() + "<br/>";
-                            html += "會員頭像：" + profile.getImageUrl() + "<br/>";
-                            html += "會員 email：" + profile.getEmail() + "<br/>";
-                            target.innerHTML = html;
+                <script>
+                    function onSuccess(googleUser) {
+                        var profile = googleUser.getBasicProfile();
+                        var id_token = googleUser.getAuthResponse().id_token;
+                        google_id = profile.getId();
+                        google_email = profile.getEmail();
+                        google_name = profile.getName();
+                        google_image_url = profile.getImageUrl();
 
-                            console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-                            console.log('Name: ' + profile.getName());
-                            console.log('Image URL: ' + profile.getImageUrl());
-                            console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+                        console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+                        console.log('Name: ' + profile.getName());
+                        console.log('Image URL: ' + profile.getImageUrl());
+                        console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+                        // console.log("id_token", id_token)
+                        console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+                        use_google_sigin(google_id, google_email, google_name, google_image_url);
+
+                    }
+
+                    function onFailure(error) {
+                        console.log(error);
+                    }
+
+                    function renderButton() {
+                        gapi.signin2.render('my-signin2', {
+                            'scope': 'profile email',
+                            'width': 300,
+                            'height': 50,
+                            'longtitle': true,
+                            'theme': 'dark',
+                            'onsuccess': onSuccess,
+                            'onfailure': onFailure
+                        });
+                    } //google註冊並登入
+                    function use_google_sigin(google_id, google_email, google_name, google_image_url) {
+                        console.log(google_id, google_email, google_name, google_image_url)
+                        data = {
+                            "member_status": "google",
+                            "member_name": google_name,
+                            "member_email": google_email,
+                            "member_password": google_id,
+                            "member_src": google_image_url
                         }
+                        fetch("/api/member", {
+                                method: "POST",
+                                body: JSON.stringify(data),
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                }
+                            }).then(res => {
+                                return res.json();
+                            })
+                            .then(result => {
+                                console.log(result);
 
-                        function signOut() {
-                            var auth2 = gapi.auth2.getAuthInstance();
-                            auth2.signOut().then(function() {
-                                console.log('User signed out.');
+                                if (result.ok) {
+                                    location.href = '/member?name=' + result.member_name
+
+                                }
                             });
-                        }
-                    </script>
-                    <!-- <a class="fb-login is-large" rel="nofollow" data-method="post" href="/users/auth/facebook">臉書快速註冊</a> -->
-                    <!-- <a class="g-login is-large" rel="nofollow" data-method="post" href="/users/auth/google_oauth2">Google快速註冊</a> -->
-                </div>
-            </form>
+                    }
+                </script>
+
+                <!-- <a href="#" onclick="signOut();">Sign out</a> -->
+
+            </div>
         </div>
     </div>
 </div>
+<script src="/js/member.js"></script>
 
 {% endblock %}
