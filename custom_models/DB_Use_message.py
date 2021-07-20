@@ -191,7 +191,8 @@ def message_predict_load(member_name,user_name,data_keyword,data_number,data_sta
             records = cursor.fetchall()
 
         if(user_name!=None):
-            cursor.execute("select * from message_predict where message_user_name ='%s'order by time DESC;"%(user_name))
+            #檢查有無會員
+            cursor.execute("select * from member_basedata where name ='%s';"%(user_name))
             records = cursor.fetchone()
             
             if(records):
@@ -199,11 +200,14 @@ def message_predict_load(member_name,user_name,data_keyword,data_number,data_sta
                 cursor.execute("select * from message_predict where message_user_name ='%s'order by time DESC limit %d , %d;"%(user_name,(int(data_number))*5,5))
                 records = cursor.fetchall()
             else:
+                print("無此會員")
+
                 return {"error":True,"message":"無資料"}
                 
 
         if(data_keyword!=None):
-            cursor.execute("select * from message_predict where stock_id ='%s'order by time DESC ;"%(data_keyword))
+            #檢查有無股票資料
+            cursor.execute("select * from stock50_data where stock_id ='%s' limit 1 ;"%(data_keyword))
             records = cursor.fetchone() 
             
             if(records):
@@ -211,6 +215,7 @@ def message_predict_load(member_name,user_name,data_keyword,data_number,data_sta
                 cursor.execute("select * from message_predict where stock_id ='%s'order by time DESC limit %d , %d;"%(data_keyword,(int(data_number))*5,5))
                 records = cursor.fetchall()   
             else:
+                print("股市代號輸入錯誤")
                 return {"error":True,"message":"無資料"}
 
         print(len(records))
