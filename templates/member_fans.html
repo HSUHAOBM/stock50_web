@@ -1,0 +1,47 @@
+{% extends 'base.html' %} {% block content %}
+<link href="/css/member_web/member_index.css" rel="stylesheet" type="text/css" media="all" />
+<div class="member_">
+    <div class="member_main">
+
+        <div class="member_main_member">
+            <div class="member_main_member_img"><img src="" alt="">
+                <div class="member_main_member_img_change">
+                    <label for="image_uploads">更換大頭貼</label>
+                    <input type="file" id="image_uploads" name="image_uploads" accept=".jpg, .jpeg, .png" multiple>
+                </div>
+            </div>
+            <div class="member_main_member_data">
+                <div class="member_main_member_data_ name"></div>
+                <div class="member_main_member_data_ interests">
+                    <div>興趣：</div>
+                    <div class="member_main_member_data_ interests text"></div>
+                </div>
+                <div class="member_main_member_data_ introduction">
+                    <div>簡介：</div>
+                    <div class="member_main_member_data_ introduction text"></div>
+                </div>
+                <div class="follow_btn"> <button name="btn">追蹤</button></div>
+
+
+            </div>
+
+        </div>
+        <div class="member_main_head">
+            <div onclick="location.href='/member'" class="member_main_head_btn1">預測討論</div>
+            <div onclick="location.href='/member_data'" class="member_main_head_btn2">個人資料</div>
+            <div onclick="location.href='/member_rank'" class="member_main_head_btn3">個人排行</div>
+            <div onclick="location.href='/member_fans'" class="member_main_head_btn4">追蹤資訊</div>
+            <div>待</div>
+            <!-- 私人訊息 -->
+        </div>
+
+        <div class=" member_main_member_databydb">
+
+        </div>
+    </div>
+</div>
+</div>
+<script src="/js/member_base.js"></script>
+<script src="/js/member_index.js"></script>
+</div>
+</div>{% endblock %}

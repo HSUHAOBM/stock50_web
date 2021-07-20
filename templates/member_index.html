@@ -1,0 +1,91 @@
+{% extends 'base.html' %} {% block content %}
+<link href="/css/member_web/member_index.css" rel="stylesheet" type="text/css" media="all" />
+
+<div class="member_">
+    <div class="member_main">
+
+        <div class="member_main_member">
+            <div class="member_main_member_img"><img src="" alt="">
+                <div class="member_main_member_img_change">
+                    <label for="image_uploads">更換大頭貼</label>
+                    <input type="file" id="image_uploads" name="image_uploads" accept=".jpg, .jpeg, .png" multiple>
+                </div>
+            </div>
+            <div class="member_main_member_data">
+                <div class="member_main_member_data_ name"></div>
+                <div class="member_main_member_data_ interests">
+                    <div>興趣：</div>
+                    <div class="member_main_member_data_ interests text"></div>
+                </div>
+                <div class="member_main_member_data_ introduction">
+                    <div>簡介：</div>
+                    <div class="member_main_member_data_ introduction text"></div>
+                </div>
+                <div class="follow_btn"> <button name="btn">追蹤</button></div>
+
+
+            </div>
+
+        </div>
+        <div class="member_main_head">
+            <div onclick="location.href='/member'" class="member_main_head_btn1">預測討論</div>
+            <div onclick="location.href='/member_data'" class="member_main_head_btn2">個人資料</div>
+            <div onclick="location.href='/member_rank'" class="member_main_head_btn3">個人排行</div>
+            <div onclick="location.href='/member_fans'" class="member_main_head_btn4">追蹤資訊</div>
+            <div>待</div>
+            <!-- 私人訊息 -->
+        </div>
+        <div class=" member_main_member_databydb predict">
+            <!-- <div class="predict_message_box">
+                <div class="predict_message_box_image"><img src="img/1.jpg" alt=""></div>
+                <div class="predict_message">
+                    <div class="message_box_loaddata">
+                        <div class="message_box_title">
+                            <a class="message_box_title_name">Hao</a>
+                        </div>
+                        <div class="message_box_predict">
+                            預測 4919 新唐 下次開盤 漲
+                        </div>
+                        <div class="message_box_text">營收增加營收增加營收增加營收增加營收增加營收增加營收增加營收增加營收增加營收增加 營收增加營收增加營收增加營收增加 營收增加營收增加營收增加營收增加 營收增加營收增加營收增加
+                        </div>
+                    </div>
+                    <div class="message_box_text_btn">
+                        <div class="message_box_date">2021-07-09 17:00:50</div>
+                        <div class="message_box_btn">
+                            <div class="message_box_btn_like"><img src="img/likeB.png">讚</div>
+                            <div class="message_box_btn_message"><img src="img/chat.png">回應</div>
+                        </div>
+                    </div>
+                    <div class="message_box_other_message">
+                        <div class="message_box_other_message_load">
+                            <div class="message_box_other_message_load_left"><img src="img/1.jpg" alt=""></div>
+                            <div class="message_box_other_message_load_right"> <span class="message_box_other_message_load_right_name">Hao</span>
+                                <span class="message_box_other_message_load_right_text">真的嗎?</span>
+                                <span class="message_box_other_message_load_right_time">2021/7/10 14:47</span>
+                            </div>
+                        </div>
+                        <div class="message_box_other_message_load">
+                            <div class="message_box_other_message_load_left"><img src="img/1.jpg" alt=""></div>
+                            <div class="message_box_other_message_load_right"> <span class="message_box_other_message_load_right_name">Hao</span>
+                                <span class="message_box_other_message_load_right_text">真的嗎?</span>
+                                <span class="message_box_other_message_load_right_time">2021/7/10 14:47</span>
+                            </div>
+                        </div>
+                        <div class="message_box_other_message_write">
+                            <textarea placeholder="Write a comment..."></textarea><img src="img/sent.png"></div>
+                    </div>
+
+                </div>
+            </div> -->
+
+        </div>
+    </div>
+</div>
+</div>
+<script src="/js/member_base.js"></script>
+<script src="/js/member_index.js"></script>
+
+
+
+</div>
+</div>{% endblock %}
