@@ -185,8 +185,6 @@ def message_predict_load(member_name,user_name,data_keyword,data_number,data_sta
         cursor = connection.cursor(buffered=True)
         if(user_name==None and data_keyword==None  and data_status==None):
             # cursor.execute("Select * from taipei_trip limit %d , %d;"%((int(WebPage))*12,12)) 
-
-
             cursor.execute("select * from message_predict order by time DESC limit %d , %d;"%((int(data_number))*5,5))
             records = cursor.fetchall()
 

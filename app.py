@@ -285,7 +285,7 @@ def message_predict_reply_add():
 
 #/api/message_predict_load?user_name=?&data_keyword=?&data_number=?&data_status=?
 #預測留言讀取api
-@app.route("/api/message_predict_load")
+@app.route("/api/message_predict_load", methods=["POST","GET"])
 def message_predict_load():
     user_name = request.args.get("user_name", None)
     data_keyword = request.args.get("data_keyword", None)
