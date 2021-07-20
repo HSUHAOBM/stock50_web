@@ -291,8 +291,9 @@ def message_predict_load():
     data_keyword = request.args.get("data_keyword", None)
     data_number = request.args.get("data_number", 0)
     data_status = request.args.get("data_status", None)
-    # print("user_name:",user_name,"data_keyword:",data_keyword)
+    print("user_name:",user_name,"data_keyword:",data_keyword,"data_number",data_number,"data_status",data_status)
     member_name = session.get('member_name')
+    print("member_name",member_name)
     data=DB_Use_message.message_predict_load(member_name,user_name,data_keyword,data_number,data_status)
     return Response(json.dumps({"ok": True,"data": data}, sort_keys=False), mimetype='application/json')
 

@@ -183,6 +183,8 @@ def message_predict_load(member_name,user_name,data_keyword,data_number,data_sta
         user=DBuser,      
         password=DBpassword) 
         cursor = connection.cursor(buffered=True)
+        print("資料檢測處理")
+
         if(user_name==None and data_keyword==None  and data_status==None):
             # cursor.execute("Select * from taipei_trip limit %d , %d;"%((int(WebPage))*12,12)) 
             cursor.execute("select * from message_predict order by time DESC limit %d , %d;"%((int(data_number))*5,5))
@@ -216,7 +218,7 @@ def message_predict_load(member_name,user_name,data_keyword,data_number,data_sta
                 print("股市代號輸入錯誤")
                 return {"error":True,"message":"無資料"}
 
-        print(len(records))
+        print("資料數量",len(records))
         if(len(records)==0):
             return False
         else:
@@ -257,10 +259,11 @@ def message_predict_load(member_name,user_name,data_keyword,data_number,data_sta
 def message_predict_reply_load(mid):
     try:
         connection = mysql.connector.connect(
-        host="localhost",         
-        database="stock50_web", 
-        user="root",      
-        password="root") 
+        host=DBhost,         
+        database=DBdatabase, 
+        user=DBuser,      
+        password=DBpassword) 
+
         message_predict_reply_load_list=[]
         
         cursor = connection.cursor()
