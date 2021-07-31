@@ -454,7 +454,7 @@ def message_predict_like_check(mid,like_message_user_name):
         password=DBpassword) 
         
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM message_predict_good WHERE mid= '%s' and like_message_user_name='%s';" % (mid,like_message_user_name))
+        cursor.execute("SELECT mid FROM message_predict_good WHERE mid= '%s' and like_message_user_name='%s' limit 1;" % (mid,like_message_user_name))
         records = cursor.fetchone()
             
         if (records):
@@ -478,7 +478,7 @@ def message_predict_like_number(mid):
         password=DBpassword) 
         
         cursor = connection.cursor()
-        cursor.execute("SELECT count(*) FROM message_predict_good WHERE mid= '%s' ;" % (mid))
+        cursor.execute("SELECT count(*) FROM message_predict_good WHERE mid= '%s' limit 1 ;" % (mid))
         records = cursor.fetchone()
             
         return records[0]
@@ -499,7 +499,7 @@ def message_predict_reply_number(mid):
         password=DBpassword) 
         
         cursor = connection.cursor()
-        cursor.execute("SELECT count(*) FROM message_predict_reply WHERE mid= '%s' ;" % (mid))
+        cursor.execute("SELECT count(*) FROM message_predict_reply WHERE mid= '%s' limit 1;" % (mid))
         records = cursor.fetchone()
             
         return records[0]
@@ -557,7 +557,7 @@ def message_select_mid_reply(mid):
             # print("留言編號:","mid_"+str(int(records[0].split("_")[-1])+1))
             return mid+"_"+str(int(records[0].split("_")[-1])+1)
         else:
-            print("預測留言資料庫是空的，開始建立新編號")
+            # print("預測留言資料庫是空的，開始建立新編號")
             return mid+"_1"
     finally:
         if (connection.is_connected()):
