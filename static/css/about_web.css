@@ -1,0 +1,46 @@
+    .web_title {
+        background-color: #eae7e5;
+        padding: 0.1% 1%;
+        border-bottom: 3px #c0c0c0 solid;
+        text-align: center;
+        display: block;
+        margin-top: 10px;
+        margin-bottom: 5px;
+        text-shadow: 1px 1px 0px #888888;
+        font-size: 3em;
+        font-weight: bold;
+    }
+    
+    .about_web {
+        font-family: Arial, source-han-sans-traditional, sans-serif;
+        background-color: rgb(236, 236, 236);
+    }
+    
+    .web_top {
+        background-color: #f3f3f3;
+        padding-top: 5px;
+        padding-bottom: 10px;
+        width: 1200px;
+        margin: 0 auto;
+        font-size: 18px;
+        font-weight: 400;
+        line-height: 1.8;
+        text-align: justify;
+    }
+    
+    .member_r_text>p {
+        margin-bottom: 10px;
+        margin-top: 1px;
+    }
+    
+    @media screen and (min-width: 500px) and (max-width: 1200px) {
+        .web_top {
+            width: 95%;
+        }
+    }
+    
+    @media screen and (max-width: 500px) {
+        .web_top {
+            width: 95%;
+        }
+    }
