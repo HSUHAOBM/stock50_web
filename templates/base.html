@@ -9,13 +9,13 @@
     <link rel="icon" href="{{ url_for('static', filename='img/stock.png') }}">
     <meta name="google-signin-client_id" content="836212664164-9qe1rvnjdo7bjaes585a0fc18haaod1j.apps.googleusercontent.com">
 
-    <title>指數社群會</title>
+    <title>股Day-台灣50-預測-討論</title>
 </head>
 
 <body>
     <div class="warp">
         <div class="head">
-            <a class="head_left" href='/'> <img src="img/home.png" />網站名稱</a>
+            <a class="head_left" href='/'> <img src="img/home.png" />股HOME</a>
             <div class="head_center"></div>
             <div class="head_right logout">
                 <div>
@@ -35,44 +35,110 @@
         </div>
         <div class="head_welcome ">
             <div class="head_welcomebox ">
-                <div class="head_welcomebox_left ">
-                    <a>網站名稱</a>
-                    <a>slogan slogan</a>
+                <div class="head_welcomebox_left" onclick=" location.href = '/'">
+                    <div class="head_welcomebox_left_title"> <a class="head_welcomebox_left_title_1">股Day-</a>
+                        <a class="head_welcomebox_left_title_2">台灣50</a></div>
+
+                    <div>Stock-Prediction、discussion</div>
+
                 </div>
+                <form id="searchForm" class="srhBar">
+                    <input name="input" class="search_input" maxlength="15" type="text" autocomplete="off" placeholder=" 找股票、會員 " size="40" onblur="clear_search_box() " onKeyUp="sent_serch(this.value)" onkeydown="clear_input();">
+                    <div class="search_box">
+                        <img id="base_load_gif" src="gif/ajax-loader.gif">
+
+                        <table cellpadding="0" cellspacing="0">
+                            <td>
+                                <div class="search_box_data stock">
+                                    <div class="seach_no_data">無資料....</div>
+                                    <table cellpadding="0 " cellspacing="0 " height="23 " class="search_data_stock_title ">
+                                        <tbody>
+                                            <tr>
+                                                <td><b>股票</b></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <table cellpadding="0 " cellspacing="0 " class=" search_data_stock_data ">
+                                        <tbody class="search_data_stock_data_load">
+                                            <tr>
+                                                <td width="52">
+                                                    <!-- <div style="padding-left:5px; ">
+                                                        <a href=""><img src="/follow/images/head_big.png "></a>
+                                                    </div> -->
+                                                    <!-- <div class="serch_stock_result_name">
+                                                        <a href="">2230-台積電</a>
+                                                    </div>
+                                                    <div class="serch_stock_result_name">
+                                                        <a href="">2230-台積電</a>
+                                                    </div> -->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <table cellpadding="0 " cellspacing="0 " height="23 " class="search_data_member_title ">
+                                        <tbody>
+                                            <tr>
+                                                <td><b>會員</b></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <table cellpadding="0 " cellspacing="0 " class=" search_data_member_data ">
+                                        <tbody class="search_data_member_data_load">
+                                            <tr>
+                                                <td width="52">
+                                                    <!-- <div style="padding-left:5px; ">
+                                                        <a href=""></a>
+                                                    </div> -->
+                                                    <!-- <div class="serch_stock_result_name">
+                                                        <img src="img/unknown.png ">
+                                                        <a href="">2230-台積電</a>
+                                                    </div> -->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </td>
+                        </table>
+                    </div>
+                </form>
                 <div class="head_welcomebox_right ">
-                    <div onclick="location.href='/' " class="head_welcomebox_right btn1">
+                    <!-- <div onclick="location.href='/' " class="head_welcomebox_right btn1 ">
                         <img class=" head_welcomebox_right_img " src="img/homepage.png " alt=" ">
                         <a>首頁</a>
-                    </div>
-                    <div onclick="location.href='/' " class="head_welcomebox_right btn2">
-                        <img class="head_welcomebox_right_img " src="img/information.png " alt=" ">
-                        <a>關於本站</a>
-                    </div>
-                    <div onclick="location.href='/forum' " class="head_welcomebox_right btn3">
+                    </div> -->
+
+                    <div onclick="location.href='/forum' " class="head_welcomebox_right btn3 ">
                         <img class="head_welcomebox_right_img " src="img/businessmen.png " alt=" ">
-                        <a>討論</a>
+                        <a>預測股市</a>
                     </div>
-                    <div onclick="location.href='/ ' " class="head_welcomebox_right btn4">
-                        <img class="head_welcomebox_right_img " src="img/facebook-app-symbol.png " alt=" ">
-                        <a>紛絲團</a>
-                    </div>
-                    <div onclick="location.href='/ ' " class="head_welcomebox_right btn5">
+
+                    <!-- <div onclick="location.href='/ ' " class="head_welcomebox_right btn5 ">
                         <img class="head_welcomebox_right_img " src="img/learning.png " alt=" ">
                         <a>買賣模擬</a>
-                    </div>
-                    <div onclick="location.href='/ ' " class="head_welcomebox_right btn6">
+                    </div> -->
+                    <div onclick="location.href=' /rank ' " class="head_welcomebox_right btn6 ">
                         <img class="head_welcomebox_right_img " src="img/1900338.png " alt=" ">
                         <a>排行榜</a>
                     </div>
-                    <div onclick="location.href='/member ' " class="head_welcomebox_right btn7">
+                    <div onclick="location.href='/member ' " class="head_welcomebox_right btn7 ">
                         <img class="head_welcomebox_right_img " src="img/speech.png " alt=" ">
                         <a>會員</a>
+                    </div>
+                    <!-- <div onclick="location.href='/ ' " class="head_welcomebox_right btn4 ">
+                        <img class="head_welcomebox_right_img " src="img/facebook-app-symbol.png " alt=" ">
+                        <a>紛絲團</a>
+                    </div> -->
+                    <div onclick="location.href='/about_us' " class="head_welcomebox_right btn2 ">
+                        <img class="head_welcomebox_right_img " src="img/information.png " alt=" ">
+                        <a>關於本站</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        {% block content %} 默认内容 {% endblock %}
+        {% block content %} {% endblock %}
 
         <div class="footer ">
             <div class="footer_left ">
@@ -87,12 +153,13 @@
                 <nav class="footer_link ">
                     <header class="footer_title ">站內服務</header>
                     <ul class="footer_ls ">
-                        <li class="footer_item "><a href="/ " title=" ">會員</a></li>
-                        <li class="footer_item "><a href="/ " title=" ">關於本站</a></li>
-                        <li class="footer_item "><a href="/ " title=" ">討論區</a></li>
-                        <li class="footer_item "><a href="/ " title=" ">粉絲團</a></li>
-                        <li class="footer_item "><a href="/ " title=" ">模擬買賣</a></li>
-                        <li class="footer_item "><a href="/ " title=" ">排行榜</a></li>
+                        <li class="footer_item "><a href="/forum " title=" ">股市預測</a></li>
+                        <li class="footer_item "><a href="/rank " title=" ">排行榜</a></li>
+
+                        <!-- <li class="footer_item "><a href="/ " title=" ">粉絲團</a></li> -->
+
+                        <li class="footer_item "><a href="/about_us " title=" ">關於本站</a></li>
+
                     </ul>
                 </nav>
                 <nav class="footer_link ">
@@ -110,6 +177,8 @@
                     <ul class="footer_ls ">
                         <li class="footer_item "><a href="http://www.twse.com.tw/zh/ " target="_blank " title="台灣證券交易所 " rel="noreferrer noopener ">台灣證券交易所</a></li>
                         <li class="footer_item "><a href="http://www.otc.org.tw/web/?l=zh-tw " target="_blank " title="中華民國證券櫃檯買賣中心 " rel="noreferrer noopener ">中華民國證券櫃檯買賣中心</a></li>
+                        <li class="footer_item "><a href="https://www.yuantaetfs.com/#/Orders/1066 " target="_blank " title="中華民國證券櫃檯買賣中心 " rel="noreferrer noopener ">元大台灣卓越50基金</a></li>
+
                     </ul>
                 </nav>
             </div>
@@ -118,8 +187,9 @@
 
     </div>
 
-    <script src="/js/membercheck.js "></script>
+    <script src="/js/member_check.js "></script>
     <script src="https://apis.google.com/js/platform.js?onload=onLoad " async defer></script>
+    <script src="/js/serch_data.js "></script>
 
 </body>
 

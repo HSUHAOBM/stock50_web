@@ -7,16 +7,18 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
     let div_predict_message_box = document.createElement("div");
     div_predict_message_box.className = "predict_message_box";
 
-    // if (div_member_main_member_databydb.firstChild == null) {
+    // if (main_left_center.firstChild == null) {
 
-    //     div_member_main_member_databydb.appendChild(div_predict_message_box)
+    //     main_left_center.appendChild(div_predict_message_box)
     // } else {
 
-    //     div_member_main_member_databydb.insertBefore(div_predict_message_box, div_member_main_member_databydb.childNodes[0]);
+    //     main_left_center.insertBefore(div_predict_message_box, main_left_center.childNodes[0]);
     //     //父.insertBefore(加入，被加入)
     // }
+
     div_member_main_member_databydb.appendChild(div_predict_message_box)
-        //<div class="predict_message_box_result"><img src=" img/fail.png " alt=" "></div>
+
+    //<div class="predict_message_box_result"><img src=" img/fail.png " alt=" "></div>
     let div_predict_message_box_result = document.createElement("div");
     div_predict_message_box_result.className = "predict_message_box_result";
     div_predict_message_box.appendChild(div_predict_message_box_result)
@@ -58,11 +60,10 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
 
     let div_message_box_title = document.createElement("div");
     div_message_box_title.className = "message_box_title";
-
     div_message_box_loaddata.appendChild(div_message_box_title);
 
     let a_message_box_title_name = document.createElement("a");
-    a_message_box_title_name.className = "message_box_title_name";
+    a_message_box_title_name.className = "message_box_title_name " + message_mid
     a_message_box_title_name.setAttribute("href", "/member?name=" + predict_message_member_name)
     a_message_box_title_name.textContent = predict_message_member_name
     div_message_box_title.appendChild(a_message_box_title_name)
@@ -87,6 +88,10 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
     let a_message_box_predict_3 = document.createElement("a")
     a_message_box_predict_3.textContent = "的下次開盤走勢為" + predict_trend;
     div_message_box_predict.appendChild(a_message_box_predict_3);
+
+
+
+
     let div_message_box_text = document.createElement("div")
     div_message_box_text.className = "message_box_text"
     div_message_box_text.textContent = predict_message;
@@ -117,6 +122,8 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
     if (login_member_name_good_have) {
         div_message_box_btn_like.onclick = function() {
             let message_mid = this.getAttribute('alt');
+            // let message_member = document.querySelector('.message_box_title_name.' + message_mid).textContent
+            // console.log(message_member)
             predict_message_btn_enter_unlike(message_mid)
 
         }
@@ -134,7 +141,9 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
 
         div_message_box_btn_like.onclick = function() {
             let message_mid = this.getAttribute('alt');
-            predict_message_btn_enter_like(message_mid)
+            let message_member = document.querySelector('.message_box_title_name.' + message_mid).textContent
+                // console.log(message_member)
+            predict_message_btn_enter_like(message_mid, message_member)
 
         }
         div_message_box_btn.appendChild(div_message_box_btn_like)
@@ -231,7 +240,12 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
     let textarea_message_box_other_message_write = document.createElement("textarea")
     textarea_message_box_other_message_write.placeholder = "分享一下你的想法... "
     textarea_message_box_other_message_write.className = "textarea_message_box_other_message_write " + message_mid
+    textarea_message_box_other_message_write.setAttribute("alt", message_mid)
+    textarea_message_box_other_message_write.setAttribute("onKeyDown", "check_input_(this.value,this.getAttribute('alt'))")
+    textarea_message_box_other_message_write.setAttribute("onKeyUp", "check_input_(this.value,this.getAttribute('alt'))")
+
     div_message_box_other_message_write.appendChild(textarea_message_box_other_message_write)
+
 
     let img_message_box_other_message_write = document.createElement("img")
     img_message_box_other_message_write.src = "img/sent.png "
@@ -247,7 +261,7 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
 
     let a_message_box_text_btn_error_text = document.createElement("a")
     a_message_box_text_btn_error_text.className = "message_box_text_btn_error_text " + message_mid
-    a_message_box_text_btn_error_text.textContent = ".2222222222"
+    a_message_box_text_btn_error_text.textContent = "."
     div_message_box_other_message.appendChild(a_message_box_text_btn_error_text)
 
 
@@ -259,13 +273,28 @@ function member_predict_load_message() {
     fetch("/api/message_predict_load?user_name=" + web_name + "&data_number=" + String(forum_page)).then(function(response) {
         return response.json();
     }).then(function(result) {
-        console.log(result)
+        // console.log(result)
+        check_onload = false
 
-        if (result.data.error) {
-            location.href = '/'
+        if (result.data.member_no_data) {
+            document.querySelector('.data_not_have').style.display = "flex";
+            document.querySelector('.base_load_gif_member_index').style.display = "none";
+
+            if (web_name == login_member_name) {
+                document.querySelector('.data_not_have_text_other').style.display = "flex";
+            }
 
         }
-        if (result.ok) {
+        if (result.data.error) {
+            location.href = '/'
+        }
+        if (result.data.nodata) {
+            check_onload = false;
+            document.querySelector('.base_load_gif_member_index').style.display = "none";
+
+        }
+        //have
+        if (result.data[0].predict_load) {
             for (let i = 0; i < result.data.length; i++) {
                 predict_stock = result.data[i].stock_id + "－" + result.data[i].stock_name
                 if (result.data[i].predict == "1") {
@@ -297,25 +326,30 @@ function member_predict_load_message() {
                 message_check_status = result.data[i].message_check_status
                     // console.log(predict_stock + predict_trend)
                 member_predict_add_message(predict_stock, predict_trend, predict_message, predict_message_member_name, predict_message_member_img_src, time, time_about, message_mid, message_check_status, login_member_name_good_have, message_good_number, message_reply_number, message_reply_data)
+                document.querySelector('.data_not_have').style.display = "none";
 
             }
             check_onload = true;
+            document.querySelector('.base_load_gif_member_index').style.display = "none";
+
+
         }
 
 
     })
 }
 
-
+/*-----------------------------*/
 // 新增讚
-function predict_message_btn_enter_like(message_mid_like) {
+function predict_message_btn_enter_like(message_mid_like, message_member) {
     if (check_function_end) {
         check_function_end = false
         let message_mid_like_data = {
             "status": "like",
             "login_member_name": login_member_name,
             "login_member_email": login_member_email,
-            "message_mid_like": message_mid_like
+            "message_mid_like": message_mid_like,
+            "message_member": message_member
         }
         fetch("/api/message_predict_like", {
                 method: 'POST',
@@ -328,7 +362,7 @@ function predict_message_btn_enter_like(message_mid_like) {
                 return res.json();
             })
             .then(result => {
-                console.log(result);
+                // console.log(result);
                 if (result.ok) {
 
 
@@ -348,7 +382,6 @@ function predict_message_btn_enter_like(message_mid_like) {
             });
     }
 }
-
 // 解除讚
 function predict_message_btn_enter_unlike(message_mid_like) {
     if (check_function_end) {
@@ -370,14 +403,16 @@ function predict_message_btn_enter_unlike(message_mid_like) {
                 return res.json();
             })
             .then(result => {
-                console.log(result);
+                // console.log(result);
                 if (result.ok) {
 
                     document.querySelector('#' + message_mid_like + ">img").src = "img/likeB.png"
 
                     document.querySelector('#' + message_mid_like).onclick = function() {
                         let message_mid = this.getAttribute('alt');
-                        predict_message_btn_enter_like(message_mid)
+                        let message_member = document.querySelector('.message_box_title_name.' + message_mid).textContent
+                            // console.log(message_member)
+                        predict_message_btn_enter_like(message_mid, message_member)
 
                     }
                     let good_int = parseInt(document.querySelector('#' + message_mid_like + ">a").textContent.split('讚 (')[1].split(')')[0]) - 1
@@ -390,7 +425,7 @@ function predict_message_btn_enter_unlike(message_mid_like) {
             });
     }
 }
-
+/*-----------------------------*/
 //回應區顯示&隱藏
 function message_box_other_message_load_diplay_flex(message_mid) {
     document.querySelector('.message_box_other_message.' + message_mid).style.display = "flex";
@@ -427,43 +462,49 @@ function box_other_write_message_reply(message_mid) {
 
 
 
+        if (message_reply_text.length <= 50) {
+
+            fetch("/api/message_predict_reply_add", {
+                    method: 'POST',
+                    // body: encodeURI(JSON.stringify(data)),
+                    body: JSON.stringify(box_other_write_message_reply_data),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => {
+                    return res.json();
+                })
+                .then(result => {
+                    if (result.ok) {
 
 
-        fetch("/api/message_predict_reply_add", {
-                method: 'POST',
-                // body: encodeURI(JSON.stringify(data)),
-                body: JSON.stringify(box_other_write_message_reply_data),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(res => {
-                return res.json();
-            })
-            .then(result => {
-                if (result.ok) {
+                        box_other_write_message_reply_add(result.mid, result.mid_reply, login_member_img_src, login_member_name, message_reply_text, result.time, "剛剛");
+                        document.querySelector('.textarea_message_box_other_message_write.' + message_mid).value = "";
 
+                        "a_div_message_box_btn_message_" + message_reply_number
 
-                    box_other_write_message_reply_add(result.mid, result.mid_reply, login_member_img_src, login_member_name, message_reply_text, result.time, "剛剛");
-                    document.querySelector('.textarea_message_box_other_message_write.' + message_mid).value = "";
+                        let reply_int = parseInt(document.querySelector('#a_div_message_box_btn_message_' + message_mid).textContent.split('回應 (')[1].split(')')[0]) + 1
+                        let reply_str = reply_int.toString()
+                        document.querySelector('#a_div_message_box_btn_message_' + message_mid).textContent = '回應 (' + reply_str + ')'
+                        document.querySelector('.message_box_text_btn_error_text.' + message_mid).style.display = "none"
 
-                    "a_div_message_box_btn_message_" + message_reply_number
+                        check_function_end = true
 
-                    let reply_int = parseInt(document.querySelector('#a_div_message_box_btn_message_' + message_mid).textContent.split('回應 (')[1].split(')')[0]) + 1
-                    let reply_str = reply_int.toString()
-                    document.querySelector('#a_div_message_box_btn_message_' + message_mid).textContent = '回應 (' + reply_str + ')'
-                    check_function_end = true
+                    }
+                    if (result.error) {
+                        document.querySelector('.message_box_text_btn_error_text.' + message_mid).style.display = "flex";
+                        document.querySelector('.message_box_text_btn_error_text.' + message_mid).textContent = result.message;
+                        check_function_end = true
+                    }
+                })
+        } else {
+            document.querySelector('.message_box_text_btn_error_text.' + message_mid).textContent = "字數不得超過50字";
+            check_function_end = true
 
-                }
-                if (result.error) {
-                    document.querySelector('.message_box_text_btn_error_text.' + message_mid).style.display = "flex";
-                    document.querySelector('.message_box_text_btn_error_text.' + message_mid).textContent = result.message;
-                    check_function_end = true
-                }
-            })
+        }
     }
 }
-
 // 增加回覆區物件
 function box_other_write_message_reply_add(message_mid, reply_message_mid, reply_member_img_src, reply_member_name, reply_message_text, reply_time, reply_time_about) {
 
@@ -529,7 +570,33 @@ window.addEventListener('scroll', function() {
         check_onload = false;
         forum_page += 1;
         // document.getElementById("loadgif").style.display = "flex";
+        document.querySelector('.base_load_gif_member_index').style.display = "flex";
 
         member_predict_load_message()
     }
 })
+
+
+/*----------留言板字數監控---------*/
+
+
+function check_input_(value, alt) {
+    // console.log(value, alt)
+    let maxLen = 50;
+
+
+    if (value.length > maxLen) {
+        document.querySelector('.textarea_message_box_other_message_write.' + alt).value = value.substring(0, maxLen);
+        // console.log(value)
+    }
+    // otherwise, update 'characters left' counter 
+    else if (value.length == 0) {
+        document.querySelector('.message_box_text_btn_error_text.' + alt).style.display = "none"
+    } else {
+        document.querySelector('.message_box_text_btn_error_text.' + alt).textContent = maxLen - value.length;
+        document.querySelector('.message_box_text_btn_error_text.' + alt).style.display = "flex"
+    }
+}
+
+
+/*-----------------------------*/

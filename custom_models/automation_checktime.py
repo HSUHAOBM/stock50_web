@@ -6,7 +6,7 @@ import os
 import time
 
 
-import DB_Use_message,DB_Get_stock50_everydaydata
+import DB_Use_message,DB_Get_stock50_everydaydata,DB_Use_rank,DB_Use_rank_stock_info
 
 modelPath = os.path.dirname(os.path.realpath(__file__))
 # print(modelPath)
@@ -115,11 +115,18 @@ def doSth():
 
     return_stock50_getstock50_check_error=DB_Get_stock50_everydaydata.stock50_getstock50_check_error()#檢查有無異常的資料
     logger.info(return_stock50_getstock50_check_error)
+    time.sleep(1)
 
     print("留言資料的檢測")
     logger.info("留言資料的檢測")
-
     DB_Use_message.message_predict_check() #留言資料的檢測
 
+    print("排行榜的資料更新")
+    logger.info("排行榜的資料更新")
+    time.sleep(1)
+
+    DB_Use_rank.message_predict_rank_update() #會員排行榜的資料更新
+    DB_Use_rank_stock_info.message_predict_rank_update_stock_info_main()#各股排行榜資料更新
+    logger.info("---處理完成---"+str(datetime.now().month)+"月"+str(datetime.now().day)+"日 "+str(datetime.now().hour)+":"+str(datetime.now().minute)+":"+str(datetime.now().second))
 
 main()

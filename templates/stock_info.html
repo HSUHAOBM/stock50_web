@@ -2,9 +2,113 @@
 <link href="/css/stock_info.css" rel="stylesheet" type="text/css" media="all" />
 
 <div class="stock_info_main">
-    <div class="member_main_member"></div>
-    <div class="member_main_member_databydb predict"></div>
+    <div class="stock_info_main_box">
+        <div class="stock_name"></div>
+        <div class="stock_info"></div>
+        <div class="stock_info_title">最新資訊</div>
+
+        <div class="stock_data">
+            <table class="stock_data_table">
+                <thead>
+                    <tr role="row ">
+                        <th class="stock_data_table_title" rowspan="1 " colspan="1 ">日期</th>
+                        <th class="stock_data_table_title" rowspan="1 " colspan="1 ">成交股數</th>
+                        <th class="stock_data_table_title" rowspan="1 " colspan="1 ">開盤價</th>
+                        <th class="stock_data_table_title" rowspan="1 " colspan="1 ">最高價</th>
+                        <th class="stock_data_table_title" rowspan="1 " colspan="1 ">最低價</th>
+                        <th class="stock_data_table_title" rowspan="1 " colspan="1 ">收盤價</th>
+                        <th class="stock_data_table_title" rowspan="1 " colspan="1 ">漲跌價差</th>
+                        <th class="stock_data_table_title" rowspan="1 " colspan="1 ">成交筆數</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr role="row ">
+                        <td class="stock_data_info date">--</td>
+                        <td class="stock_data_info total">--</td>
+                        <td class="stock_data_info open_price">--</td>
+                        <td class="stock_data_info high_price">--</td>
+                        <td class="stock_data_info low_price">--</td>
+                        <td class="stock_data_info end_price">--</td>
+                        <td class="stock_data_info differ">--</td>
+                        <td class="stock_data_info totaldeal">--</td>
+                    </tr>
+                </tbody>
+            </table>
+            <a class="stock_info_update_time"></a>
+        </div>
+        <div class="rwd_stock_info_box">
+            <table>
+                <tr>
+                    <td class="stock_data_table_title">日期</td>
+                    <td class="stock_data_info date_">2</td>
+                </tr>
+                <tr>
+                    <td class="stock_data_table_title">成交股數</td>
+                    <td class="stock_data_info total_">2</td>
+                </tr>
+
+                <tr>
+                    <td class="stock_data_table_title">開盤價</td>
+                    <td class="stock_data_info open_price_">2</td>
+                </tr>
+
+                <tr>
+                    <td class="stock_data_table_title">最高價</td>
+                    <td class="stock_data_info high_price_">2</td>
+                </tr>
+
+                <tr>
+                    <td class="stock_data_table_title">最低價</td>
+                    <td class="stock_data_info low_price_">2</td>
+                </tr>
+
+                <tr>
+                    <td class="stock_data_table_title">收盤價</td>
+                    <td class="stock_data_info end_price_">2</td>
+                </tr>
+                <tr>
+                    <td class="stock_data_table_title">漲跌價差</td>
+                    <td class="stock_data_info differ_">2</td>
+                </tr>
+                <tr>
+                    <td class="stock_data_table_title">成交筆數</td>
+                    <td class="stock_data_info totaldeal_">2</td>
+                </tr>
+            </table>
+            <a class="stock_info_update_time_"></a>
+        </div>
+        <div class="stock_info_title ">相關新聞</div>
+        <div class="base_load_gif_stock_info load_news">
+            <img src="gif/ajax-loader.gif">
+        </div>
+        <div class="stock_new_box">
+
+        </div>
+        <div class="stock_info_title ">最佳預測人</div>
+        <div class="base_load_gif_stock_info load_rank">
+            <img src="gif/ajax-loader.gif">
+        </div>
+        <div class="member_rank_box rate ">
+        </div>
+
+        <div class="stock_info_title ">預測留言</div>
+
+        <div class="stock_data_not_have">
+            <img src="img/nodata.png" alt="">
+            <div class="stock_data_not_have_text">
+                <p>目前還沒有人預測!料</p>
+                <p class="stock_data_not_have_text_other">
+                    <a>趕快到</a>
+                    <a class="stock_data_not_have_text_link" href="/forum">預測股市</a>
+                    <a>，發布預測吧！</a></p>
+            </div>
+        </div>
+        <div class="member_main_member_databydb predict "></div>
+        <div class="base_load_gif_stock_info load_message">
+            <img src="gif/ajax-loader2.gif">
+        </div>
+    </div>
 </div>
-<script src="/js/stock_info.js"></script>
+<script src="/js/stock_info.js "></script>
 
 {% endblock %}

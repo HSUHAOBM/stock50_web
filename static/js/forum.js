@@ -8,6 +8,9 @@ function stock_select_change() {
     let stock_select_textContent = document.querySelector('.stock_select_list');
     let index = stock_select_textContent.selectedIndex
     let stock_select_out_text = stock_select_textContent.options[index].text
+
+    document.querySelector('.member_out_stock.name').href = "stock_info?stock_id=" + stock_select_out_text.split("－")[0]
+
     document.querySelector('.member_out_stock.name').textContent = stock_select_out_text;
     document.querySelector('.member_out_text').style.display = "flex";
     document.querySelector('.textInput').placeholder = "分享你對 " + stock_select_out_text + " 的想法 ...";
@@ -15,12 +18,60 @@ function stock_select_change() {
 }
 
 function trend_radio_change(text) {
-    document.querySelector('.member_out_stock.trend').textContent = " " + text;
+    let out_text = ""
+    if (text == 1) {
+        out_text = "漲"
+    } else if (text == 2) {
+        out_text = "跌"
+    } else if (text == 3) {
+        out_text = "持平"
+    }
+    document.querySelector('.member_out_stock.trend').textContent = " " + out_text;
     document.querySelector('.member_out_text').style.display = "flex";
+    document.querySelector('.div_message_btn_img.img1').style.opacity = "0.4"
+    document.querySelector('.div_message_btn_img.img2').style.opacity = "0.4"
+    document.querySelector('.div_message_btn_img.img3').style.opacity = "0.4"
 
+    document.querySelector('.div_message_btn_img.img' + text).style.opacity = "1"
+    document.querySelector('.div_message_btn.bt1').style.backgroundColor = " white"
+    document.querySelector('.div_message_btn.bt2').style.backgroundColor = " white"
+    document.querySelector('.div_message_btn.bt3').style.backgroundColor = " white"
+
+    document.querySelector('.div_message_btn.bt' + text).style.backgroundColor = " rgb(247 247 247)"
+
+}
+/*----------留言板字數監控---------*/
+
+function check_input(value) {
+    let maxLen = 200;
+    if (value.length > maxLen) {
+        document.querySelector('.textInput').value = value.substring(0, maxLen);
+        // console.log(value)
+    }
+    // otherwise, update 'characters left' counter 
+    else document.querySelector('.member_out_btn_error_text').textContent = maxLen - value.length;
+}
+
+function check_input_(value, alt) {
+    // console.log(value, alt)
+    let maxLen = 50;
+
+
+    if (value.length > maxLen) {
+        document.querySelector('.textarea_message_box_other_message_write.' + alt).value = value.substring(0, maxLen);
+        // console.log(value)
+    }
+    // otherwise, update 'characters left' counter 
+    else if (value.length == 0) {
+        document.querySelector('.message_box_text_btn_error_text.' + alt).style.display = "none"
+    } else {
+        document.querySelector('.message_box_text_btn_error_text.' + alt).textContent = maxLen - value.length;
+        document.querySelector('.message_box_text_btn_error_text.' + alt).style.display = "flex"
+    }
 }
 
 
+/*-----------------------------*/
 // 送出預測
 let member_predict_data_form = document.getElementById('member_predict_data');
 member_predict_data_form.addEventListener('submit', function(event) {
@@ -29,9 +80,7 @@ member_predict_data_form.addEventListener('submit', function(event) {
         var member_predict_data_form_ = new FormData(member_predict_data_form);
         let member_predict_form_data = {};
         event.preventDefault();
-        // predict_message = replaceTextarea1(member_predict_data_form_.get("member_predict_message"))
         predict_message = member_predict_data_form_.get("member_predict_message")
-            // console.log(predict_message.replace(/\n|\r\n/g, "<br>"))
         member_predict_form_data = {
                 "predict_stock": member_predict_data_form_.get("member_predict_stock"),
                 "predict_trend": member_predict_data_form_.get("member_predict_trend"),
@@ -41,28 +90,34 @@ member_predict_data_form.addEventListener('submit', function(event) {
                 "login_member_img_src": login_member_img_src
             }
             // console.log(member_predict_form_data);
+        if (predict_message.length <= 200) {
+            fetch("/api/message_predict_add", {
+                method: "POST",
+                body: JSON.stringify(member_predict_form_data),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(function(res) {
+                return res.json();
+            }).then(function(result) {
+                if (result.ok) {
+                    console.log(result);
+                    // member_predict_add_message(member_predict_data_form_.get("member_predict_stock"), member_predict_data_form_.get("member_predict_trend"), predict_message, login_member_name, login_member_img_src, result.time, result.mid)
 
-        fetch("/api/message_predict_add", {
-            method: "POST",
-            body: JSON.stringify(member_predict_form_data),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(function(res) {
-            return res.json();
-        }).then(function(result) {
-            if (result.ok) {
-                console.log(result);
-                // member_predict_add_message(member_predict_data_form_.get("member_predict_stock"), member_predict_data_form_.get("member_predict_trend"), predict_message, login_member_name, login_member_img_src, result.time, result.mid)
+                    window.location.reload();
+                }
+                if (result.error) {
 
-                window.location.reload();
-            }
-            if (result.error) {
+                    document.querySelector('.member_out_btn_error_text').textContent = result.message;
+                    check_function_end = true;
+                }
+            })
+        } else {
+            document.querySelector('.member_out_btn_error_text').textContent = "字數不得超過200字";
+            check_function_end = true;
 
-                document.querySelector('.member_out_btn_error_text').textContent = result.message;
-                check_function_end = true;
-            }
-        })
+        }
+
 
     }
 })
@@ -131,7 +186,7 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
     div_message_box_loaddata.appendChild(div_message_box_title);
 
     let a_message_box_title_name = document.createElement("a");
-    a_message_box_title_name.className = "message_box_title_name"
+    a_message_box_title_name.className = "message_box_title_name " + message_mid
     a_message_box_title_name.setAttribute("href", "/member?name=" + predict_message_member_name)
     a_message_box_title_name.textContent = predict_message_member_name
     div_message_box_title.appendChild(a_message_box_title_name)
@@ -190,6 +245,8 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
     if (login_member_name_good_have) {
         div_message_box_btn_like.onclick = function() {
             let message_mid = this.getAttribute('alt');
+            // let message_member = document.querySelector('.message_box_title_name.' + message_mid).textContent
+            // console.log(message_member)
             predict_message_btn_enter_unlike(message_mid)
 
         }
@@ -207,7 +264,9 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
 
         div_message_box_btn_like.onclick = function() {
             let message_mid = this.getAttribute('alt');
-            predict_message_btn_enter_like(message_mid)
+            let message_member = document.querySelector('.message_box_title_name.' + message_mid).textContent
+                // console.log(message_member)
+            predict_message_btn_enter_like(message_mid, message_member)
 
         }
         div_message_box_btn.appendChild(div_message_box_btn_like)
@@ -259,44 +318,6 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
             box_other_write_message_reply_add(message_reply_data_.message_mid, message_reply_data_.message_reply_mid, message_reply_data_.message_reply_user_imgsrc, message_reply_data_.message_reply_user_name, message_reply_data_.message_reply_text, message_reply_data_.message_reply_time, message_reply_data_.message_reply_time_about)
         }
     }
-
-    /*-- -- -- -- - */
-
-    // let div_message_box_other_message_load = document.createElement("div")
-    // div_message_box_other_message_load.className = "message_box_other_message_load " + message_mid
-    // div_message_box_other_message.appendChild(div_message_box_other_message_load)
-
-    // let div_message_box_other_message_load_left = document.createElement("div")
-    // div_message_box_other_message_load_left.className = "message_box_other_message_load_left"
-    // div_message_box_other_message_load.appendChild(div_message_box_other_message_load_left)
-
-    // let img_div_message_box_other_message_load_left = document.createElement("img")
-    // img_div_message_box_other_message_load_left.src = "img/1.jpg "
-    // div_message_box_other_message_load_left.appendChild(img_div_message_box_other_message_load_left)
-
-
-    // let div_message_box_other_message_load_right = document.createElement("div")
-    // div_message_box_other_message_load_right.className = "message_box_other_message_load_right"
-    // div_message_box_other_message_load.appendChild(div_message_box_other_message_load_right)
-
-    // let span_message_box_other_message_load_right_name = document.createElement("span")
-    // span_message_box_other_message_load_right_name.className = "message_box_other_message_load_right_name"
-    // span_message_box_other_message_load_right_name.textContent = "HAO"
-    // div_message_box_other_message_load_right.appendChild(span_message_box_other_message_load_right_name)
-
-    // let span_message_box_other_message_load_right_text = document.createElement("span")
-    // span_message_box_other_message_load_right_text.className = "message_box_other_message_load_right_text"
-    // span_message_box_other_message_load_right_text.textContent = "真的嗎?"
-    // div_message_box_other_message_load_right.appendChild(span_message_box_other_message_load_right_text)
-
-    // let span_message_box_other_message_load_right_time = document.createElement("span")
-    // span_message_box_other_message_load_right_time.className = "message_box_other_message_load_right_time"
-    // span_message_box_other_message_load_right_time.textContent = "2021/7/10 14:47"
-    // div_message_box_other_message_load_right.appendChild(span_message_box_other_message_load_right_time)
-
-    /*-- -- -- -- - */
-
-
     let div_message_box_other_message_write = document.createElement("div")
     div_message_box_other_message_write.className = "message_box_other_message_write"
     div_message_box_other_message.appendChild(div_message_box_other_message_write)
@@ -304,7 +325,12 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
     let textarea_message_box_other_message_write = document.createElement("textarea")
     textarea_message_box_other_message_write.placeholder = "分享一下你的想法... "
     textarea_message_box_other_message_write.className = "textarea_message_box_other_message_write " + message_mid
+    textarea_message_box_other_message_write.setAttribute("alt", message_mid)
+    textarea_message_box_other_message_write.setAttribute("onKeyDown", "check_input_(this.value,this.getAttribute('alt'))")
+    textarea_message_box_other_message_write.setAttribute("onKeyUp", "check_input_(this.value,this.getAttribute('alt'))")
+
     div_message_box_other_message_write.appendChild(textarea_message_box_other_message_write)
+
 
     let img_message_box_other_message_write = document.createElement("img")
     img_message_box_other_message_write.src = "img/sent.png "
@@ -312,79 +338,87 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
 
     img_message_box_other_message_write.onclick = function() {
         let message_mid = this.getAttribute('alt');
-        // console.log(document.querySelector('.textarea_message_box_other_message_write.' + message_mid).value)
-        // console.log(message_mid)
         box_other_write_message_reply(message_mid)
     }
     div_message_box_other_message_write.appendChild(img_message_box_other_message_write)
 
     let a_message_box_text_btn_error_text = document.createElement("a")
     a_message_box_text_btn_error_text.className = "message_box_text_btn_error_text " + message_mid
-    a_message_box_text_btn_error_text.textContent = ".2222222222"
+    a_message_box_text_btn_error_text.textContent = "."
     div_message_box_other_message.appendChild(a_message_box_text_btn_error_text)
 
 
 }
 
 
-
-
+/*-----------------------------*/
 // 讀取全部的預測留言
 function member_predict_load_message() {
     fetch("/api/message_predict_load?data_number=" + String(forum_page)).then(function(response) {
         return response.json();
     }).then(function(result) {
-
-
-        for (let i = 0; i < result.data.length; i++) {
-            predict_stock = result.data[i].stock_id + "－" + result.data[i].stock_name
-            if (result.data[i].predict == "1") {
-                predict_trend = "漲"
-            }
-            if (result.data[i].predict == "-1") {
-                predict_trend = "跌"
-            }
-            if (result.data[i].predict == "0") {
-                predict_trend = "持平"
-            }
-            predict_message = result.data[i].message_user_text
-            predict_message_member_name = result.data[i].message_user_name
-            predict_message_member_img_src = result.data[i].message_user_imgsrc
-
-            // 讚
-            login_member_name_good_have = result.data[i].login_member_name_good_have
-            message_good_number = result.data[i].message_good_number
-
-            //回覆
-            message_reply_number = result.data[i].reply_message_number
-            message_reply_data = result.data[i].reply_message_data
-
-            time = result.data[i].message_time
-            time_about = result.data[i].message_time_about
-
-
-            message_mid = result.data[i].mid
-            message_check_status = result.data[i].message_check_status
-                // console.log(predict_stock + predict_trend)
-            member_predict_add_message(predict_stock, predict_trend, predict_message, predict_message_member_name, predict_message_member_img_src, time, time_about, message_mid, message_check_status, login_member_name_good_have, message_good_number, message_reply_number, message_reply_data)
+        // console.log(result)
+        if (result.data.nodata) {
+            document.querySelector('.base_load_gif_forum').style.display = "none";
+            check_onload = false;
 
         }
+        if (result.data[0].predict_load) {
 
-        check_onload = true;
+            for (let i = 0; i < result.data.length; i++) {
+                predict_stock = result.data[i].stock_id + "－" + result.data[i].stock_name
+                if (result.data[i].predict == "1") {
+                    predict_trend = "漲"
+                }
+                if (result.data[i].predict == "-1") {
+                    predict_trend = "跌"
+                }
+                if (result.data[i].predict == "0") {
+                    predict_trend = "持平"
+                }
+                predict_message = result.data[i].message_user_text
+                predict_message_member_name = result.data[i].message_user_name
+                predict_message_member_img_src = result.data[i].message_user_imgsrc
+
+                // 讚
+                login_member_name_good_have = result.data[i].login_member_name_good_have
+                message_good_number = result.data[i].message_good_number
+
+                //回覆
+                message_reply_number = result.data[i].reply_message_number
+                message_reply_data = result.data[i].reply_message_data
+
+                time = result.data[i].message_time
+                time_about = result.data[i].message_time_about
+
+
+                message_mid = result.data[i].mid
+                message_check_status = result.data[i].message_check_status
+                    // console.log(predict_stock + predict_trend)
+                member_predict_add_message(predict_stock, predict_trend, predict_message, predict_message_member_name, predict_message_member_img_src, time, time_about, message_mid, message_check_status, login_member_name_good_have, message_good_number, message_reply_number, message_reply_data)
+
+            }
+            document.querySelector('.base_load_gif_forum').style.display = "none";
+            check_onload = true;
+        }
     })
+
+
 }
 
 member_predict_load_message()
 
+/*-----------------------------*/
 // 新增讚
-function predict_message_btn_enter_like(message_mid_like) {
+function predict_message_btn_enter_like(message_mid_like, message_member) {
     if (check_function_end) {
         check_function_end = false
         let message_mid_like_data = {
             "status": "like",
             "login_member_name": login_member_name,
             "login_member_email": login_member_email,
-            "message_mid_like": message_mid_like
+            "message_mid_like": message_mid_like,
+            "message_member": message_member
         }
         fetch("/api/message_predict_like", {
                 method: 'POST',
@@ -397,7 +431,7 @@ function predict_message_btn_enter_like(message_mid_like) {
                 return res.json();
             })
             .then(result => {
-                console.log(result);
+                // console.log(result);
                 if (result.ok) {
 
 
@@ -417,7 +451,6 @@ function predict_message_btn_enter_like(message_mid_like) {
             });
     }
 }
-
 // 解除讚
 function predict_message_btn_enter_unlike(message_mid_like) {
     if (check_function_end) {
@@ -439,14 +472,16 @@ function predict_message_btn_enter_unlike(message_mid_like) {
                 return res.json();
             })
             .then(result => {
-                console.log(result);
+                // console.log(result);
                 if (result.ok) {
 
                     document.querySelector('#' + message_mid_like + ">img").src = "img/likeB.png"
 
                     document.querySelector('#' + message_mid_like).onclick = function() {
                         let message_mid = this.getAttribute('alt');
-                        predict_message_btn_enter_like(message_mid)
+                        let message_member = document.querySelector('.message_box_title_name.' + message_mid).textContent
+                            // console.log(message_member)
+                        predict_message_btn_enter_like(message_mid, message_member)
 
                     }
                     let good_int = parseInt(document.querySelector('#' + message_mid_like + ">a").textContent.split('讚 (')[1].split(')')[0]) - 1
@@ -459,6 +494,7 @@ function predict_message_btn_enter_unlike(message_mid_like) {
             });
     }
 }
+/*-----------------------------*/
 
 //回應區顯示&隱藏
 function message_box_other_message_load_diplay_flex(message_mid) {
@@ -478,8 +514,7 @@ function message_box_other_message_load_diplay_none(message_mid) {
     document.querySelector('.img_div_message_box_btn_message.' + message_mid).src = "img/chat.png"
 }
 
-
-
+/*-----------------------------*/
 // 傳送留言的回覆
 function box_other_write_message_reply(message_mid) {
     if (check_function_end) {
@@ -496,40 +531,47 @@ function box_other_write_message_reply(message_mid) {
 
 
 
+        if (message_reply_text.length <= 50) {
+
+            fetch("/api/message_predict_reply_add", {
+                    method: 'POST',
+                    // body: encodeURI(JSON.stringify(data)),
+                    body: JSON.stringify(box_other_write_message_reply_data),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => {
+                    return res.json();
+                })
+                .then(result => {
+                    if (result.ok) {
 
 
-        fetch("/api/message_predict_reply_add", {
-                method: 'POST',
-                // body: encodeURI(JSON.stringify(data)),
-                body: JSON.stringify(box_other_write_message_reply_data),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(res => {
-                return res.json();
-            })
-            .then(result => {
-                if (result.ok) {
+                        box_other_write_message_reply_add(result.mid, result.mid_reply, login_member_img_src, login_member_name, message_reply_text, result.time, "剛剛");
+                        document.querySelector('.textarea_message_box_other_message_write.' + message_mid).value = "";
 
+                        "a_div_message_box_btn_message_" + message_reply_number
 
-                    box_other_write_message_reply_add(result.mid, result.mid_reply, login_member_img_src, login_member_name, message_reply_text, result.time, "剛剛");
-                    document.querySelector('.textarea_message_box_other_message_write.' + message_mid).value = "";
+                        let reply_int = parseInt(document.querySelector('#a_div_message_box_btn_message_' + message_mid).textContent.split('回應 (')[1].split(')')[0]) + 1
+                        let reply_str = reply_int.toString()
+                        document.querySelector('#a_div_message_box_btn_message_' + message_mid).textContent = '回應 (' + reply_str + ')'
+                        document.querySelector('.message_box_text_btn_error_text.' + message_mid).style.display = "none"
 
-                    "a_div_message_box_btn_message_" + message_reply_number
+                        check_function_end = true
 
-                    let reply_int = parseInt(document.querySelector('#a_div_message_box_btn_message_' + message_mid).textContent.split('回應 (')[1].split(')')[0]) + 1
-                    let reply_str = reply_int.toString()
-                    document.querySelector('#a_div_message_box_btn_message_' + message_mid).textContent = '回應 (' + reply_str + ')'
-                    check_function_end = true
+                    }
+                    if (result.error) {
+                        document.querySelector('.message_box_text_btn_error_text.' + message_mid).style.display = "flex";
+                        document.querySelector('.message_box_text_btn_error_text.' + message_mid).textContent = result.message;
+                        check_function_end = true
+                    }
+                })
+        } else {
+            document.querySelector('.message_box_text_btn_error_text.' + message_mid).textContent = "字數不得超過50字";
+            check_function_end = true
 
-                }
-                if (result.error) {
-                    document.querySelector('.message_box_text_btn_error_text.' + message_mid).style.display = "flex";
-                    document.querySelector('.message_box_text_btn_error_text.' + message_mid).textContent = result.message;
-                    check_function_end = true
-                }
-            })
+        }
     }
 }
 
@@ -591,6 +633,7 @@ function box_other_write_message_reply_add(message_mid, reply_message_mid, reply
 }
 
 
+/*-----------------------------*/
 
 
 //功能-畫面捲動監聽
@@ -602,5 +645,128 @@ window.addEventListener('scroll', function() {
         // document.getElementById("loadgif").style.display = "flex";
 
         member_predict_load_message()
+        document.querySelector('.base_load_gif_forum').style.display = "flex";
+
     }
 })
+
+
+/*-------------rnak----------------*/
+
+
+let main_right_ranking = document.querySelector('.main_right_ranking')
+
+
+function member_predict_add_rank(no, member_name, predict_win, predict_fail, predict_total, predict_win_rate, member_src) {
+    let div_main_right_ranking_stock_box = document.createElement("div");
+    div_main_right_ranking_stock_box.className = "main_right_ranking_stock box";
+    main_right_ranking.appendChild(div_main_right_ranking_stock_box)
+
+    let div_main_right_ranking_stock_no = document.createElement("div");
+    div_main_right_ranking_stock_no.className = "main_right_ranking_stock_no";
+    div_main_right_ranking_stock_no.textContent = no;
+    div_main_right_ranking_stock_box.appendChild(div_main_right_ranking_stock_no)
+
+    let div_main_right_ranking_stock_data = document.createElement("div");
+    div_main_right_ranking_stock_data.className = "main_right_ranking_stock_data";
+    div_main_right_ranking_stock_box.appendChild(div_main_right_ranking_stock_data)
+
+    let div_main_right_rank_box = document.createElement("div");
+    div_main_right_rank_box.className = "div_main_right_rank_box";
+    div_main_right_rank_box.addEventListener('click', function() {
+        location.href = '/member?name=' + member_name
+    });
+    div_main_right_ranking_stock_data.appendChild(div_main_right_rank_box)
+
+    let img_main_right_ranking_stock_member_img = document.createElement("img");
+    img_main_right_ranking_stock_member_img.src = member_src;
+    div_main_right_rank_box.appendChild(img_main_right_ranking_stock_member_img);
+
+    let div_main_right_ranking_stock_member_name = document.createElement("a");
+    div_main_right_ranking_stock_member_name.className = "main_right_ranking_stock_member_name";
+    // div_main_right_ranking_stock_member_name.setAttribute("href", "/member?name=" + member_name)
+
+    div_main_right_ranking_stock_member_name.textContent = member_name;
+    div_main_right_rank_box.appendChild(div_main_right_ranking_stock_member_name);
+
+    let span_main_right_ranking_stock_rate = document.createElement("span");
+    span_main_right_ranking_stock_rate.className = "main_right_ranking_stock rate"
+    div_main_right_ranking_stock_data.appendChild(span_main_right_ranking_stock_rate)
+
+    let a_ranking_stocktitle_1 = document.createElement("a");
+    a_ranking_stocktitle_1.className = "ranking_stocktitle";
+    a_ranking_stocktitle_1.textContent = "勝率：";
+    span_main_right_ranking_stock_rate.appendChild(a_ranking_stocktitle_1)
+    let a_ranking_stocktitle_text_1 = document.createElement("a");
+    a_ranking_stocktitle_text_1.className = "ranking_stocktitle_text";
+    a_ranking_stocktitle_text_1.textContent = predict_win_rate + " %";
+    span_main_right_ranking_stock_rate.appendChild(a_ranking_stocktitle_text_1)
+
+
+    let span_main_right_ranking_stock_success = document.createElement("span");
+    span_main_right_ranking_stock_success.className = "main_right_ranking_stock success"
+    div_main_right_ranking_stock_data.appendChild(span_main_right_ranking_stock_success)
+
+    let a_ranking_stocktitle_2 = document.createElement("a");
+    a_ranking_stocktitle_2.className = "ranking_stocktitle";
+    a_ranking_stocktitle_2.textContent = "成功：";
+    span_main_right_ranking_stock_success.appendChild(a_ranking_stocktitle_2)
+    let a_ranking_stocktitle_text_2 = document.createElement("a");
+    a_ranking_stocktitle_text_2.className = "ranking_stocktitle_text";
+    a_ranking_stocktitle_text_2.textContent = predict_win + " 次";
+    span_main_right_ranking_stock_success.appendChild(a_ranking_stocktitle_text_2)
+
+
+    let span_main_right_ranking_stock_fail = document.createElement("span");
+    span_main_right_ranking_stock_fail.className = "main_right_ranking_stock fail"
+    div_main_right_ranking_stock_data.appendChild(span_main_right_ranking_stock_fail)
+
+    let a_ranking_stocktitle_3 = document.createElement("a");
+    a_ranking_stocktitle_3.className = "ranking_stocktitle";
+    a_ranking_stocktitle_3.textContent = "失敗：";
+    span_main_right_ranking_stock_fail.appendChild(a_ranking_stocktitle_3)
+    let a_ranking_stocktitle_text_3 = document.createElement("a");
+    a_ranking_stocktitle_text_3.className = "ranking_stocktitle_text";
+    a_ranking_stocktitle_text_3.textContent = predict_fail + " 次";
+    span_main_right_ranking_stock_fail.appendChild(a_ranking_stocktitle_text_3)
+
+
+    let span_main_right_ranking_stock_tatal = document.createElement("span");
+    span_main_right_ranking_stock_tatal.className = "main_right_ranking_stock tatal"
+    div_main_right_ranking_stock_data.appendChild(span_main_right_ranking_stock_tatal)
+
+    let a_ranking_stocktitle_4 = document.createElement("a");
+    a_ranking_stocktitle_4.className = "ranking_stocktitle";
+    a_ranking_stocktitle_4.textContent = "預測：";
+    span_main_right_ranking_stock_tatal.appendChild(a_ranking_stocktitle_4)
+    let a_ranking_stocktitle_text_4 = document.createElement("a");
+    a_ranking_stocktitle_text_4.className = "ranking_stocktitle_text";
+    a_ranking_stocktitle_text_4.textContent = predict_total + " 次";
+    span_main_right_ranking_stock_tatal.appendChild(a_ranking_stocktitle_text_4)
+
+}
+
+function member_predict_rank_api_load() {
+    fetch("/api/message_predict_rank?data_status=rate").then(function(response) {
+        return response.json();
+    }).then(function(result) {
+        if (result.ok) {
+            for (let i = 0; i < result.data.length; i++) {
+                member_name = result.data[i].member_name;
+                predict_win = result.data[i].predict_win
+                predict_fail = result.data[i].predict_fail
+                predict_total = result.data[i].predict_total
+                predict_win_rate = result.data[i].predict_win_rate
+                member_src = result.data[i].member_src
+                    // console.log(i, member_name, predict_win, predict_fail, predict_total, predict_win_rate)
+                member_predict_add_rank(i + 1, member_name, predict_win, predict_fail, predict_total, predict_win_rate, member_src)
+            }
+        }
+        document.querySelector('.base_load_gif_forum_rank').style.display = "none";
+
+
+
+    })
+
+}
+member_predict_rank_api_load()

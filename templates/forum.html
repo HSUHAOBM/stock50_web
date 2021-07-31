@@ -67,28 +67,28 @@
                 <option value="5880－合庫金 ">5880－合庫金</option>
                         </optgroup></select>
                         <div class="div_message_btnbox ">
-                            <div class="div_message_btn ">
-                                <div class="div_message_btnbox_left"><input type="radio" name="member_predict_trend" alt="漲 " value="漲" required onclick="trend_radio_change(this.alt) "></div>
-                                <div class="div_message_btnbox_right"> <img class="div_message_btn_img " src="img/up.png " alt=" "> </div>
+                            <div class="div_message_btn bt1 ">
+                                <div class="div_message_btnbox_left"><input type="radio" name="member_predict_trend" alt="1" value="漲" class="" required onclick="trend_radio_change(this.alt) "></div>
+                                <div class="div_message_btnbox_right"> <img class="div_message_btn_img img1" src="img/up.png " alt=" "> </div>
                             </div>
-                            <div class="div_message_btn ">
-                                <div class="div_message_btnbox_left"><input type="radio" name="member_predict_trend" alt="跌" value="跌" required onclick="trend_radio_change(this.alt) "></div>
-                                <div class="div_message_btnbox_right"> <img class="div_message_btn_img " src="img/down.png " alt=" "> </div>
+                            <div class="div_message_btn bt2">
+                                <div class="div_message_btnbox_left"><input type="radio" name="member_predict_trend" alt="2" value="跌" required onclick="trend_radio_change(this.alt) "></div>
+                                <div class="div_message_btnbox_right"> <img class="div_message_btn_img img2" src="img/down.png " alt=" "> </div>
                             </div>
-                            <div class="div_message_btn ">
-                                <div class="div_message_btnbox_left"><input type="radio" name="member_predict_trend" alt="持平" value="持平" required onclick="trend_radio_change(this.alt) "></div>
-                                <div class="div_message_btnbox_right"> <img class="div_message_btn_img " src="img/f.png " alt=" "> </div>
+                            <div class="div_message_btn bt3">
+                                <div class="div_message_btnbox_left"><input type="radio" name="member_predict_trend" alt="3" value="持平" required onclick="trend_radio_change(this.alt) "></div>
+                                <div class="div_message_btnbox_right"> <img class="div_message_btn_img img3" src="img/f.png " alt=" "> </div>
                             </div>
                         </div>
                     </div>
                     <div class="member_textarea ">
                         <div class="member_out_text ">
                             <a>預測： </a>
-                            <a class="member_out_stock name " href=" ">2303－聯電</a>
+                            <a href="/stock_info?stock_id=2303" class="member_out_stock name ">2303－聯電</a>
                             <a> 下次開盤走勢為 </a>
                             <a class="member_out_stock trend ">　　</a>
                         </div>
-                        <textarea required type="text" placeholder="分享你對 2303－聯電 的想法 ... " class="textInput" rows="6 " cols="50 " name="member_predict_message"></textarea>
+                        <textarea required type="text" onKeyDown="check_input(this.value)" onKeyUp="check_input(this.value)" placeholder="分享你對 2303－聯電 的想法 ... " class="textInput" rows="6 " cols="50 " name="member_predict_message"></textarea>
 
                         <div class="member_out_btn ">
                             <div class="member_out_btn_error_text "></div>
@@ -142,64 +142,59 @@
                 </div> -->
 
             </div>
+            <div class="base_load_gif_forum">
+                <img src="gif/ajax-loader2.gif">
+            </div>
         </div>
 
         <div class="main_right ">
-            <div class="main_right_memberdata ">
-                <img src="" alt=" ">
-                <span class="main_right_memberdata name "></span>
-                <span class="main_right_memberdata like ">讚：</span>
-                <span class="main_right_memberdata message ">發文：</span>
-                <span class="main_right_memberdata success ">成功：</span>
-                <span class="main_right_memberdata fail ">失敗：</span>
-                <span class="main_right_memberdata rate ">勝率：</span>
-                <span class="main_right_memberdata track ">追蹤：</span>
-                <span class="main_right_memberdata fans ">被追蹤：</span>
-
-
-
+            <div class="main_right_memberdata box ">
+                <div class="main_right_ranking_title top">個人成績</div>
+                <div class="base_load_gif_forum_memberdata">
+                    <img src="gif/ajax-loader.gif">
+                </div>
+                <div class="main_right_memberdata_div">
+                    <img alt=" ">
+                    <span class="main_right_memberdata name "></span>
+                    <span class="main_right_memberdata rate ">勝率：</span>
+                    <span class="main_right_memberdata success ">成功：</span>
+                    <span class="main_right_memberdata fail ">失敗：</span>
+                    <span class="main_right_memberdata message ">發文：</span>
+                    <span class="main_right_memberdata like ">讚：</span>
+                </div>
+                <!-- <span class="main_right_memberdata track ">追蹤：</span>
+                <span class="main_right_memberdata fans ">被追蹤：</span> -->
             </div>
             <div class="main_right_ranking ">
-                <div class="main_right_ranking_stock ">1
-                    <div class="main_right_ranking_stock title ">
-                        4919 新唐
-                    </div>
-                    <span class="main_right_ranking_stock success ">成功：</span>
-                    <span class="main_right_ranking_stock fail ">失敗：</span>
-                    <span class="main_right_ranking_stock tatal ">總數：</span>
-                    <span class="main_right_ranking_stock rate ">勝率：</span>
-
+                <div class="main_right_ranking_title">勝率排行</div>
+                <div class="base_load_gif_forum_rank">
+                    <img src="gif/ajax-loader.gif">
                 </div>
-                <div class="main_right_ranking_stock ">2
-                    <div class="main_right_ranking_stock title ">
-                        4919 新唐
-                    </div>
-                    <span class="main_right_ranking_stock success ">成功：</span>
-                    <span class="main_right_ranking_stock fail ">失敗：</span>
-                    <span class="main_right_ranking_stock tatal ">總數：</span>
-                    <span class="main_right_ranking_stock rate ">勝率：</span>
+                <!-- <div class="main_right_ranking_stock box">
+                    <div class="main_right_ranking_stock_no">1</div>
+                    <div class="main_right_ranking_stock_data">
+                        <img src="img/peo.png" alt=" ">
+                        <div class="main_right_ranking_stock member_name ">
+                            使用者
+                        </div>
+                        <span class="main_right_ranking_stock rate ">
+                            <a class="ranking_stocktitle">勝率：</a> <a>60%</a> </span>
+                        <span class="main_right_ranking_stock success ">
+                            <a class="ranking_stocktitle">成功：</a> <a>30次</a> </span>
 
-                </div>
-                <div class="main_right_ranking_stock ">3
-                    <div class="main_right_ranking_stock title ">
-                        4919 新唐
-                    </div>
-                    <span class="main_right_ranking_stock success ">成功：</span>
-                    <span class="main_right_ranking_stock fail ">失敗：</span>
-                    <span class="main_right_ranking_stock tatal ">總數：</span>
-                    <span class="main_right_ranking_stock rate ">勝率：</span>
+                        </span>
+                        <span class="main_right_ranking_stock fail ">
+                            <a class="ranking_stocktitle">失敗：</a> <a>20次</a> </span>
 
-                </div>
-                <div class="main_right_ranking_stock ">4
-                    <div class="main_right_ranking_stock title ">
-                        4919 新唐
-                    </div>
-                    <span class="main_right_ranking_stock success ">成功：</span>
-                    <span class="main_right_ranking_stock fail ">失敗：</span>
-                    <span class="main_right_ranking_stock tatal ">總數：</span>
-                    <span class="main_right_ranking_stock rate ">勝率：</span>
+                        </span>
+                        <span class="main_right_ranking_stock tatal ">
+                            <a class="ranking_stocktitle">總數：</a> <a>50次</a> </span>
 
-                </div>
+                        </span>
+                    </div>
+                </div> -->
+
+
             </div>
             <div class="main_right_end "></div>
 
