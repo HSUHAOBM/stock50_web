@@ -432,6 +432,6 @@ def page_500(error):
 # @app.route("/test")
 # def test():
 #     return render_template("testt.html")
-# app.run(host="0.0.0.0", port=5000)
-app.run(port=5000, debug=True)
+app.run(host="0.0.0.0", port=5000)
+# app.run(port=5000, debug=True)
 
