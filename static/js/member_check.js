@@ -131,6 +131,12 @@ function signOut() {
 
 function onLoad() {
     gapi.load('auth2', function() {
-        gapi.auth2.init();
+        gapi.auth2.init({
+            prompt: 'consent'
+        });
     });
 }
+// options = new gapi.auth2.SigninOptionsBuilder();
+// options.setAppPackageName('com.example.app');
+// options.setFetchBasicProfile(True);
+// options.setPrompt('consent');
