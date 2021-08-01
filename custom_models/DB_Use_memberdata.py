@@ -151,7 +151,7 @@ def member_registered_thirdarea (email,password,name,img_src):
             cursor = connection.cursor()
             cursor.execute(sql, member_data)
             connection.commit()
-            return {"ok": True, "message": "登入","member_email":email,"member_name":name}
+            return {"ok": True, "message": "登入","member_email":email,"member_name":name,"member_src":img_src}
     finally:
         if (connection.is_connected()):
             cursor.close()
@@ -172,7 +172,7 @@ def load_member_data (name,member_name):
         cursor.execute("SELECT * FROM member_basedata WHERE name= '%s'  ;" % (name))
         records = cursor.fetchone()
         if(records):
-            print(records[9])
+            # print(records[9])
             if(records[9]):
                 birthday=records[9].strftime('%Y-%m-%d')
             else:

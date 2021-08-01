@@ -2,7 +2,7 @@ from flask import *
 from requests.api import get
 
 from flask_cors import CORS
-from custom_models import DB_Use_memberdata,up_data_to_s3,DB_Use_message,DB_Use_load_rank_data,DB_Use_load_stock_data,Get_stock_news,DB_search_data
+from custom_models import DB_Use_memberdata,up_data_to_s3,DB_Use_message,DB_Use_load_rank_data,DB_Use_load_stock_data,Get_stock_news,DB_search_data,google_account_verify
 app = Flask(
     __name__,
     static_folder="static",
@@ -16,7 +16,7 @@ app.config['SECRET_KEY'] = 'laowangaigebi'
 # 首頁
 @app.route("/")
 def index():
-    return render_template("base.html")
+    return render_template("index.html")
 
 #/member?name=?
 # 會員中心
@@ -95,7 +95,6 @@ def web_member_sigin():
 @app.route("/stock_info")
 def stock_info_web():
     stock_id_key = request.args.get("stock_id", None)
-    print(stock_id_key)
 
 
     member_email = session.get('member_email')
@@ -126,64 +125,62 @@ def member():
     member_email = session.get('member_email')
     member_name = session.get('member_name')
     if member_email and member_name:
-        print("登入中")
         if request.method == "GET":
-            print("檢查登入狀況")
             return {"data": {
                 "name": member_name,
                 "email": member_email}}
         #登出
         if request.method == "DELETE":
-            print("登出")
             session.clear()            
             return {"ok": True}
     else:
         member_data = request.get_json()
-        if member_data != None:
-            member_email = member_data["member_email"]
-            member_password= member_data["member_password"]
-            
-            
+        if member_data != None:  
             #使用地三方登入
             if(member_data.get('member_status') !=None):
-                print("#使用地三方登入")
-                member_name= member_data["member_name"]
-                member_src= member_data["member_src"]
+                # member_name= member_data["member_name"]
+                # member_src= member_data["member_src"]
+                id_token= member_data["id_token"]                
 
-                # print(member_data["member_status"])
-                thirdarea_return=DB_Use_memberdata.member_registered_thirdarea(member_email,member_password,member_name,member_src)
-                # print(thirdarea_return['ok'])
+                gmail_member_name,gmail_member_email,gmail_member_password,gmail_member_src=google_account_verify.google_verify_oauth2_token(id_token)
+
+                thirdarea_return=DB_Use_memberdata.member_registered_thirdarea(gmail_member_email,gmail_member_password,gmail_member_name,gmail_member_src)
                 if(thirdarea_return['ok']):
                     session['member_email'] = thirdarea_return.get('member_email')
                     session['member_name'] = thirdarea_return.get('member_name')
+                    session['member_src'] = thirdarea_return.get("member_src")
                     # print("session", session)
                     return {"ok":True,"member_name":thirdarea_return.get('member_name')}
-
-            #註冊
-            if(member_data.get('member_name') != None and request.method == "POST" and member_data.get('member_status') ==None):
-                # print("註冊")
-                member_name= member_data["member_name"]
-                # 檢查輸入是否為空白
-                if not member_email.strip() or not member_password.strip() or not member_name.strip():
-                    return {"error": True, "message": "檢查輸入是否為空白!"}
-                elif (len(member_name)>10 or len(member_password)<6 or len(member_password)>12):
-                    return {"error": True, "message": "輸入字元數不符合規定"}
-                else:
-                    # print(member_data,member_email,member_password,member_name)
-                    returnstate=DB_Use_memberdata.member_registered(member_email,member_password,member_name)
-                    return returnstate
-            #登入
-            if(member_data.get('member_name') == None and request.method == "PATCH" and member_data.get('member_status') ==None):
+            else:
+                member_email = member_data["member_email"]
+                member_password= member_data["member_password"]
+                #註冊
+                if(member_data.get('member_name') != None and request.method == "POST" and member_data.get('member_status') ==None):
+                    # print("註冊")
+                    member_name= member_data["member_name"]
                     # 檢查輸入是否為空白
-                if not member_email.strip() or not member_password.strip():
-                    return {"error": True, "message": "檢查輸入是否為空白!"}
-                else:
-                    returnstate = DB_Use_memberdata.member_signin(member_email, member_password,request.remote_addr)
-                    if(returnstate.get('ok')):
-                        session['member_email'] = member_email
-                        session['member_name'] = returnstate.get('member_name')
-                        print("session", session)
-                    return returnstate
+                    if not member_email.strip() or not member_password.strip() or not member_name.strip():
+                        return {"error": True, "message": "檢查輸入是否為空白!"}
+                    elif (len(member_name)>10 or len(member_password)<6 or len(member_password)>12):
+                        return {"error": True, "message": "輸入字元數不符合規定"}
+                    else:
+                        # print(member_data,member_email,member_password,member_name)
+                        returnstate=DB_Use_memberdata.member_registered(member_email,member_password,member_name)
+                        return returnstate
+                #登入
+                if(member_data.get('member_name') == None and request.method == "PATCH" and member_data.get('member_status') ==None):
+                        # 檢查輸入是否為空白
+                    if not member_email.strip() or not member_password.strip():
+                        return {"error": True, "message": "檢查輸入是否為空白!"}
+                    else:
+                        returnstate = DB_Use_memberdata.member_signin(member_email, member_password,request.remote_addr)
+                        if(returnstate.get('ok')):
+                            session['member_email'] = member_email
+                            session['member_name'] = returnstate.get('member_name')
+                            session['member_src']=DB_Use_load_rank_data.load_member_src(returnstate.get('member_name'))
+                            
+                            # print("session", session)
+                        return returnstate
         else:
             return {"data": None}
 
@@ -194,12 +191,9 @@ def member():
 def member_get_data():    
     member_email = session.get('member_email')
     member_name = session.get('member_name')
-
     user_name = request.args.get("user_name", member_name)
 
     if member_email and member_name:
-        # print("登入中")
-
         if request.method == "GET":#會員詳細資料讀取
             member_load_data_return=DB_Use_memberdata.load_member_data(user_name,member_name)
             # print(member_load_data_return)
@@ -208,9 +202,6 @@ def member_get_data():
         if request.method == "POST":#會員詳細資料修改
             modify_member_web_data = request.get_json()
 
-            # print(len(modify_member_web_data["name"]))
-            # print(len(modify_member_web_data["introduction"]))
-            # print(len(modify_member_web_data["interests"]))
             if not modify_member_web_data["name"].strip() or not modify_member_web_data["introduction"].strip() or not modify_member_web_data["interests"].strip():
                 return {"error": True, "message": "檢查輸入是否為空白!"}
 
@@ -218,10 +209,8 @@ def member_get_data():
                 return {"error": True, "message": "興趣、自介，請在24字以內"}
             else:
                 member_modify_data_return=DB_Use_memberdata.modify_member_data (member_email,member_name,modify_member_web_data["name"],modify_member_web_data["gender"],modify_member_web_data["address"],modify_member_web_data["birthday"],modify_member_web_data["introduction"],modify_member_web_data["interests"])   
-                # print("member_modify_data_return",member_modify_data_return)
                 if ("modify_name" in member_modify_data_return):
                     session['member_name']=modify_member_web_data["name"]
-                    # print ("session_____________",session)
                 return member_modify_data_return
     else:
         return {"data": None}
@@ -240,6 +229,7 @@ def member_modify_imgsrc():
             # print("file",file)   
             # print("上傳的檔案名稱",file.filename)
             # print("圖片連結網址",s3_img_src)
+            session['member_src']=s3_img_src
             member_modify_imgsrc_retrun=DB_Use_memberdata.modify_member_picturesrc(member_email,member_name,s3_img_src)
             return member_modify_imgsrc_retrun
     else:
@@ -250,18 +240,17 @@ def member_modify_imgsrc():
 def message_predict_add():
     member_email = session.get('member_email')
     member_name = session.get('member_name')
+    member_src=session.get('member_src')
     if member_email and member_name:
-        print("登入中")  
+        # print("登入中")  
         if request.method == "POST":#留言新增
             add_member_predict_message_data = request.get_json()
-            # print("TEST",add_member_predict_message_data["predict_message"])
 
             if not add_member_predict_message_data["predict_message"].strip():
                 return {"error": True, "message": "檢查輸入是否為空白!"}
             elif len(add_member_predict_message_data["predict_message"])>200:
                 return {"error": True, "message": "留言字數超過 200"}
             else:
-                # print("TEST",add_member_predict_message_data["predict_message"])
 
                 stock_id=add_member_predict_message_data["predict_stock"].split("－")[0]
                 stock_name=add_member_predict_message_data["predict_stock"].split("－")[1]
@@ -273,7 +262,7 @@ def message_predict_add():
                 if(add_member_predict_message_data["predict_trend"]=="持平"):
                     predict_trend="0"
 
-                message_predict_add_return=DB_Use_message.message_predict_add(add_member_predict_message_data["login_member_email"],add_member_predict_message_data["login_member_name"],add_member_predict_message_data["login_member_img_src"],stock_id,stock_name,predict_trend,add_member_predict_message_data["predict_message"])
+                message_predict_add_return=DB_Use_message.message_predict_add(member_email,member_name,member_src,stock_id,stock_name,predict_trend,add_member_predict_message_data["predict_message"])
 
 
                 return message_predict_add_return
@@ -285,9 +274,10 @@ def message_predict_add():
 @app.route("/api/message_predict_reply_add", methods=["POST", "GET"])
 def message_predict_reply_add():
     member_email = session.get('member_email')
-    member_name = session.get('member_name')
+    member_name = session.get('member_name')    
+    member_src=session.get('member_src')
+
     if member_email and member_name:
-        print("登入中")  
         if request.method == "POST":#留言新增
             message_predict_reply_add_data = request.get_json()
             # print(message_predict_reply_add_data)
@@ -296,7 +286,7 @@ def message_predict_reply_add():
             elif len(message_predict_reply_add_data["message_reply_text"])>50:
                 return {"error": True, "message": "留言字數超過 50"}
             else:
-                message_predict_reply_add_return=DB_Use_message.message_predict_add_reply(message_predict_reply_add_data["message_mid"],message_predict_reply_add_data["login_member_email"],message_predict_reply_add_data["login_member_name"],message_predict_reply_add_data["login_member_img_src"],message_predict_reply_add_data["message_reply_text"])
+                message_predict_reply_add_return=DB_Use_message.message_predict_add_reply(message_predict_reply_add_data["message_mid"],member_email,member_name,member_src,message_predict_reply_add_data["message_reply_text"])
 
 
                 return message_predict_reply_add_return
@@ -329,16 +319,13 @@ def message_predict_like():
 
     if member_email and member_name:
         message_predict_like_data = request.get_json()
-        # print(message_predict_like_data['status'],message_predict_like_data['login_member_name'],message_predict_like_data['login_member_email'],message_predict_like_data['message_mid_like'])
         if(message_predict_like_data['status']=="like"):
-            message_predict_like_return=DB_Use_message.message_predict_like(message_predict_like_data['message_member'],message_predict_like_data['message_mid_like'],message_predict_like_data['login_member_name'])
+            message_predict_like_return=DB_Use_message.message_predict_like(message_predict_like_data['message_member'],message_predict_like_data['message_mid_like'],member_name)
             return message_predict_like_return
         if(message_predict_like_data['status']=="unlike"):
-            message_predict_like_return=DB_Use_message.message_predict_unlike(message_predict_like_data['message_mid_like'],message_predict_like_data['login_member_name'])
+            message_predict_like_return=DB_Use_message.message_predict_unlike(message_predict_like_data['message_mid_like'],member_name)
             return message_predict_like_return
-        # if(message_predict_like_data['status']=="check"):
-        #     message_predict_like_return=DB_Use_message.message_predict_unlike(message_predict_like_data['message_mid_like'],message_predict_like_data['login_member_name'])
-        #     return message_predict_like_return
+
     else:
         return {"error": True}
     
@@ -374,7 +361,9 @@ def message_predict_rank_load():
 @app.route("/api/private_message_sent", methods=["POST", "GET"])
 def private_message_sent():
     member_email = session.get('member_email')
-    member_name = session.get('member_name')
+    member_name = session.get('member_name')  
+    member_src=session.get('member_src')
+
     if member_email and member_name:
         print("登入中")  
         if request.method == "POST":#新增
@@ -384,10 +373,9 @@ def private_message_sent():
             elif len(private_message_data["message_sent_text"])>100:
                 return {"error": True, "message": "字數超過 100"}
             else:
-                private_message_add_return=DB_Use_message.private_message_add(private_message_data['login_user_name'],private_message_data['login_user_src'],private_message_data['message_sent_text'],private_message_data['message_sent'])
+                private_message_add_return=DB_Use_message.private_message_add(member_name,member_src,private_message_data['message_sent_text'],private_message_data['message_sent'])
                 return private_message_add_return
         if request.method == "GET":
-            print(member_name)
             private_message_load_return=DB_Use_message.private_message_load(member_name)
             return Response(json.dumps({"ok": True,"data": private_message_load_return}, sort_keys=False), mimetype='application/json')
 
@@ -401,7 +389,6 @@ def search_data():
     member_email = session.get('member_email')
     member_name = session.get('member_name')
     if member_email and member_name:
-        print("登入中")  
         if request.method == "POST":#留言新增
             search_data = request.get_json()
             search_data_keyword=search_data['keyword']

@@ -716,6 +716,7 @@ font-size: 1.4em;
         display: flex;
     }
     .member_main_head>div {
+        width: 100%;
         font-size: 1.1em;
         border: 1px solid #e4e4e4;
         padding: 2% 0%;

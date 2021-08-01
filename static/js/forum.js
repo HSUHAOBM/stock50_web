@@ -2,6 +2,7 @@ let check_function_end = true;
 let forum_page = 0;
 let check_onload = true;
 
+document.querySelector('.main_left_center').innerText = ""
 
 // 預測留言根據選擇變化
 function stock_select_change() {
@@ -354,13 +355,17 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
 /*-----------------------------*/
 // 讀取全部的預測留言
 function member_predict_load_message() {
+    check_onload = false;
+
+    if (forum_page == 0) {
+        document.querySelector('.main_left_center').innerText = ""
+    }
     fetch("/api/message_predict_load?data_number=" + String(forum_page)).then(function(response) {
         return response.json();
     }).then(function(result) {
-        // console.log(result)
+        console.log(result)
         if (result.data.nodata) {
             document.querySelector('.base_load_gif_forum').style.display = "none";
-            check_onload = false;
 
         }
         if (result.data[0].predict_load) {

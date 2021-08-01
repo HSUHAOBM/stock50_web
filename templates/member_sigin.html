@@ -45,18 +45,20 @@
                     function onSuccess(googleUser) {
                         var profile = googleUser.getBasicProfile();
                         var id_token = googleUser.getAuthResponse().id_token;
-                        google_id = profile.getId();
-                        google_email = profile.getEmail();
-                        google_name = profile.getName();
-                        google_image_url = profile.getImageUrl();
-
+                        // google_id = profile.getId();
+                        // google_email = profile.getEmail();
+                        // google_name = profile.getName();
+                        // google_image_url = profile.getImageUrl();
+                        // console.log(id_token)
                         // console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
                         // console.log('Name: ' + profile.getName());
                         // console.log('Image URL: ' + profile.getImageUrl());
                         // console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
                         // console.log("id_token", id_token)
                         // console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
-                        use_google_sigin(google_id, google_email, google_name, google_image_url);
+                        // use_google_sigin(google_id, google_email, google_name, google_image_url);
+                        use_google_sigin(id_token);
+
 
                     }
 
@@ -75,14 +77,14 @@
                             'onfailure': onFailure
                         });
                     } //google註冊並登入
-                    function use_google_sigin(google_id, google_email, google_name, google_image_url) {
-                        console.log(google_id, google_email, google_name, google_image_url)
+                    function use_google_sigin(id_token) {
                         data = {
                             "member_status": "google",
-                            "member_name": google_name,
-                            "member_email": google_email,
-                            "member_password": google_id,
-                            "member_src": google_image_url
+                            "id_token": id_token
+                                // "member_name": google_name,
+                                // "member_email": google_email,
+                                // "member_password": google_id,
+                                // "member_src": google_image_url
                         }
                         fetch("/api/member", {
                                 method: "POST",

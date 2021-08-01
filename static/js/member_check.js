@@ -1,7 +1,6 @@
 let login_member_email = "";
 let login_member_name = "";
 let login_member_img_src = "";
-let login_data_get = false
 checklogstate();
 
 
@@ -20,22 +19,11 @@ function checklogstate() {
         // console.log(result.data.email, result.data.name);
         login_member_email = result.data.email;
         login_member_name = result.data.name;
-        login_data_get = true
 
         // console.log(login_member_email, login_member_name)
         if (result.data != null) {
             logoin();
-            document.querySelector('.member_name').textContent = "你好，" + login_member_name + "。"
-            if (document.querySelector('.member_main_member_databydb.predict')) {
-                member_predict_load_message()
 
-            }
-            if (document.querySelector('.member_main_member_databydb.rank')) {
-
-                member_predict_load_rank("rate")
-                member_predict_load_rank("win")
-                member_predict_load_rank("fail")
-            }
         }
 
     })
@@ -58,7 +46,7 @@ function logout() {
     }).then(function(res) {
         return res.json();
     }).then(function(result) {
-        console.log(result);
+        // console.log(result);
         if (result.ok) {
             location.href = '/'
 
@@ -83,6 +71,17 @@ function load_member_data() {
         // console.log(result)
         if (result) {
             login_member_img_src = result.picturesrc;
+            document.querySelector('.member_name').textContent = "你好，" + login_member_name + "。"
+            if (document.querySelector('.member_main_member_databydb.predict')) {
+                member_predict_load_message()
+
+            }
+            if (document.querySelector('.member_main_member_databydb.rank')) {
+
+                member_predict_load_rank("rate")
+                member_predict_load_rank("win")
+                member_predict_load_rank("fail")
+            }
             // 首頁上方
             if (document.querySelector('.head_welcomebox_right')) {
                 document.querySelector('.head_welcomebox_right.btn7').addEventListener('click', function() {
@@ -132,10 +131,19 @@ function signOut() {
 function onLoad() {
     gapi.load('auth2', function() {
         gapi.auth2.init({
-            prompt: 'consent'
+            prompt: 'select_account'
         });
     });
+    gapi.auth2.getAuthInstance().signIn(options).then(function(resp) {
+            var auth_code = resp.code;
+        },
+        function(resp) {
+            var auth_code = resp.code;
+        });
 }
+
+
+
 // options = new gapi.auth2.SigninOptionsBuilder();
 // options.setAppPackageName('com.example.app');
 // options.setFetchBasicProfile(True);

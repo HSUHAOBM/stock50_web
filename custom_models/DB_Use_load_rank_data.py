@@ -101,7 +101,7 @@ def message_predict_rank_load(user_name,stock_id,data_number,data_status):
                     })
                 return message_predict_load_rank_list        
             else:
-                print("無資料")
+                # print("無資料")
                 return {"member_no_data":True,"message":"此會員無預測資料"}
         else:
             return {"error":True,"message":"錯誤"}
