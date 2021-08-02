@@ -91,7 +91,6 @@ function load_member_data() {
             }
 
 
-            init()
 
             // 預測版
             if (document.querySelector('.main_right_memberdata')) {
@@ -123,13 +122,10 @@ function load_member_data() {
 
 
             if (result.level == 1) {
-                // console.log("管理員")
                 login_member_level = true;
-                // if (document.querySelector('.administrator_delete_predict_message')) {
-                //     document.querySelector('.administrator_delete_predict_message').style.display = "flex"
-                // }
-
             }
+            init()
+
         }
     })
 }

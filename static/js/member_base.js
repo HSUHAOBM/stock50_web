@@ -258,7 +258,5 @@ member_private_message_form.addEventListener('submit', function(event) {
 
 
 
-function init() {
-    member_predict_load_message()
-}
+
 load_member_data()
