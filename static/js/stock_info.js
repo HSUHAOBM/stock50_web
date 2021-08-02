@@ -44,7 +44,6 @@ function stock_data_load() {
         }
     })
 }
-stock_data_load()
 
 //stock_new
 
@@ -143,7 +142,7 @@ function member_predict_load_message_stock_info(data_status) {
     })
 }
 
-member_predict_load_message_stock_info()
+
 
 function load_rank_rate_add_stock_info(no, member_src, member_name, predict_win_rate, predict_win, predict_fail, predict_total, lod_rank_data_have) {
     if (lod_rank_data_have) {
@@ -293,14 +292,41 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
     }
     if (message_check_status == "1") {
         imgdiv_predict_message_box_result.src = "img/success.png"
-        imgdiv_predict_message_box_result.style.opacity = "0.25";
+        imgdiv_predict_message_box_result.style.opacity = "0.55";
     }
     if (message_check_status == "-1") {
         imgdiv_predict_message_box_result.src = "img/fail.png"
-        imgdiv_predict_message_box_result.style.opacity = "0.25";
+        imgdiv_predict_message_box_result.style.opacity = "0.55";
 
     }
     div_predict_message_box_result.appendChild(imgdiv_predict_message_box_result)
+
+
+    //刪除按鈕              
+
+    let div_delete_predict_message = document.createElement("div");
+    div_delete_predict_message.className = "administrator_delete_predict_message";
+    div_delete_predict_message.setAttribute("alt", message_mid);
+    div_delete_predict_message.setAttribute("member", predict_message_member_name);
+    if (login_member_level) {
+        div_delete_predict_message.style.display = "flex"
+    }
+    div_delete_predict_message.onclick = function() {
+        let message_mid = this.getAttribute('alt');
+        let member_name = this.getAttribute('member');
+
+
+        administrator_delete_predict(message_mid, member_name)
+
+    }
+    div_predict_message_box.appendChild(div_delete_predict_message)
+
+
+    let img_delete_predict_message = document.createElement("img");
+    img_delete_predict_message.src = " img/delete.png";
+    div_delete_predict_message.appendChild(img_delete_predict_message)
+
+    /*---------*/
 
 
     let div_predict_message_box_image = document.createElement("div");
@@ -870,4 +896,34 @@ function check_input_(value, alt) {
 
 
 /*-----------------------------*/
+function administrator_delete_predict(mid, member_name) {
+    let delete_predict = {
+        "message_id": mid,
+        "member_name": member_name
+    }
+    fetch("/api/message_predict_add", {
+            method: 'DELETE',
+            body: JSON.stringify(delete_predict),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => {
+            return res.json();
+        })
+        .then(result => {
+            console.log(result);
+            if (result.ok) {
+                window.location.href = window.location.href
+
+            }
+        });
+}
 /*-----------------------------*/
+
+
+function init() {
+    member_predict_load_message_stock_info()
+    stock_data_load()
+    member_predict_load_message()
+}

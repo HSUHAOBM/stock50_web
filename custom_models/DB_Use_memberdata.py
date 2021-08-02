@@ -75,7 +75,7 @@ def member_signin(email,password,logip):
             
         #檢查是否註冊過
         cursor = connection.cursor()
-        cursor.execute("SELECT name,password FROM member_basedata WHERE email= '%s';" % (email))
+        cursor.execute("SELECT name,password,level FROM member_basedata WHERE email= '%s';" % (email))
         records = cursor.fetchone()
         if (records):
             # print("帳號正確。。。開始檢查密碼")
@@ -86,7 +86,9 @@ def member_signin(email,password,logip):
                 cursor.execute("UPDATE member_basedata SET logingtime = CURRENT_TIMESTAMP , ip='%s' where email='%s';"%(logip,email))
                 connection.commit()
                 # member_signin_update_data(email,logip)
-                return {"ok": True,"member_name":records[0]}
+
+
+                return {"ok": True,"member_name":records[0],"level":records[2]}
             else:
                 # print("密碼錯誤")
                 return {"error": True, "message": "帳號或密碼錯誤"}
@@ -117,14 +119,16 @@ def member_registered_thirdarea (email,password,name,img_src):
         # print(email)
         #檢查是否註冊過
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM member_basedata WHERE name= '%s' and email='%s';" % (name,email))
+        cursor.execute("SELECT * FROM member_basedata WHERE  email='%s';" % (email))
         records = cursor.fetchone()
 
             
         if (records):
 
+            # print("權限",records[7])
+
             # print("登入")
-            return {"ok": True, "message": "登入","member_email":email,"member_name":name}
+            return {"ok": True, "message": "登入","member_email":records[1],"member_name":records[3],"member_src":records[6],"level":records[7]}
             
         else:
             #註冊進資料庫
@@ -141,17 +145,23 @@ def member_registered_thirdarea (email,password,name,img_src):
             # print("開始新增")
             #指令
             password=password+member_password_key
-            print("password字串",password)
+            # print("password字串",password)
 
             password = hashlib.sha256(password.encode('utf-8')).hexdigest()   
-            print("password加密",password)
+            # print("password加密",password)
 
             sql = "INSERT INTO member_basedata (email,password,name,picturesrc) VALUES (%s,%s,%s,%s);"
             member_data = (email,password,name,img_src)
             cursor = connection.cursor()
             cursor.execute(sql, member_data)
             connection.commit()
-            return {"ok": True, "message": "登入","member_email":email,"member_name":name,"member_src":img_src}
+
+            cursor = connection.cursor()
+            cursor.execute("select level from member_basedata where name='%s' limit 1;"%(name))
+            records = cursor.fetchone()
+            print("權限",records[0])
+
+            return {"ok": True, "message": "登入","member_email":email,"member_name":name,"member_src":img_src,"level":records[0]}
     finally:
         if (connection.is_connected()):
             cursor.close()

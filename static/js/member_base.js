@@ -11,7 +11,7 @@ function load_member_data() {
         return res.json();
     }).then(function(result) {
         login_member_img_src = result.picturesrc;
-        console.log(result);
+        // console.log(result);
 
         if (result.error) {
             location.href = '/'
@@ -104,7 +104,6 @@ function load_member_data() {
 
     })
 }
-load_member_data()
 
 
 const member_img_modify = document.querySelector('#image_uploads');
@@ -256,3 +255,10 @@ member_private_message_form.addEventListener('submit', function(event) {
     })
 
 })
+
+
+
+function init() {
+    member_predict_load_message()
+}
+load_member_data()

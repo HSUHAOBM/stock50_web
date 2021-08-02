@@ -124,7 +124,6 @@ def load_member_src(member_name):
         cursor = connection.cursor()
         cursor.execute("select picturesrc from member_basedata where name='%s';"%(member_name))
         records = cursor.fetchone()
-        # print(records)
         return records[0]
     finally:
         if (connection.is_connected()):

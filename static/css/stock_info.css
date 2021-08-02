@@ -460,6 +460,19 @@
 
 /* -------------right_memberdata--------------- */
 
+.administrator_delete_predict_message {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    opacity: 0.5;
+    cursor: pointer;
+    display: none;
+}
+
+.administrator_delete_predict_message img {
+    width: 30px;
+}
+
 .main_right {
     width: 20%;
     font-family: Comic Sans MS;

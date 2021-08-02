@@ -2,7 +2,7 @@ function member_private_message_load_add(private_member_name, private_member_img
     let member_private_message = document.querySelector('.member_private_message')
 
     let div_member_private_message_load = document.createElement("div");
-    div_member_private_message_load.className = "member_private_message_load " + private_member_name;
+    div_member_private_message_load.className = "member_private_message_load private" + private_member_name;
     member_private_message.appendChild(div_member_private_message_load)
 
     let div_member_private_img = document.createElement("div");
@@ -14,7 +14,7 @@ function member_private_message_load_add(private_member_name, private_member_img
     div_member_private_img.appendChild(img_member_private_img)
 
     let div_member_private_message_box = document.createElement("div");
-    div_member_private_message_box.className = "member_private_message_box " + private_member_name;
+    div_member_private_message_box.className = "member_private_message_box message_box" + private_member_name;
     div_member_private_message_load.appendChild(div_member_private_message_box)
 
     let div_private_message_name = document.createElement("div");
@@ -43,7 +43,7 @@ function member_private_message_load_add(private_member_name, private_member_img
 member_private_message_load()
 
 function member_private_message_load_add_(private_member_name, private_member_text, private_member_time, private_member_about_time) {
-    let div_member_private_message_box = document.querySelector('.member_private_message_box.' + private_member_name)
+    let div_member_private_message_box = document.querySelector('.member_private_message_box.message_box' + private_member_name)
         // class="member_private_message_box h01"
 
     let div_message_date = document.createElement("div");
@@ -75,7 +75,7 @@ function member_private_message_load() {
                 private_member_text = result.data[i].message_text;
                 private_member_time = result.data[i].time;
                 private_member_about_time = result.data[i].time_about;
-                if (document.querySelector('.member_private_message_load.' + private_member_name)) {
+                if (document.querySelector('.member_private_message_load.private' + private_member_name)) {
                     member_private_message_load_add_(private_member_name, private_member_text, private_member_time, private_member_about_time)
                 } else {
                     member_private_message_load_add(private_member_name, private_member_img, private_member_text, private_member_time, private_member_about_time)

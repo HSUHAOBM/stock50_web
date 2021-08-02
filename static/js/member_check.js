@@ -1,6 +1,7 @@
 let login_member_email = "";
 let login_member_name = "";
 let login_member_img_src = "";
+let login_member_level = false
 checklogstate();
 
 
@@ -72,23 +73,27 @@ function load_member_data() {
         if (result) {
             login_member_img_src = result.picturesrc;
             document.querySelector('.member_name').textContent = "你好，" + login_member_name + "。"
-            if (document.querySelector('.member_main_member_databydb.predict')) {
-                member_predict_load_message()
 
-            }
-            if (document.querySelector('.member_main_member_databydb.rank')) {
 
-                member_predict_load_rank("rate")
-                member_predict_load_rank("win")
-                member_predict_load_rank("fail")
+
+            //首頁
+            if (document.querySelector('.strat_join_member')) {
+                document.querySelector('.strat_join_member>a').href = "/forum"
             }
+
+
+
             // 首頁上方
             if (document.querySelector('.head_welcomebox_right')) {
                 document.querySelector('.head_welcomebox_right.btn7').addEventListener('click', function() {
                     location.href = '/member?name=' + login_member_name
                 });
             }
-            // 討論區
+
+
+            init()
+
+            // 預測版
             if (document.querySelector('.main_right_memberdata')) {
                 document.querySelector('.main_right_memberdata.name').textContent = result.name;
                 document.querySelector('.main_right_memberdata.name').addEventListener('click', function() {
@@ -113,6 +118,16 @@ function load_member_data() {
                 document.querySelector('.main_right_memberdata_div').style.display = "flex";
                 document.querySelector('.base_load_gif_forum_memberdata').style.display = "none";
 
+            }
+
+
+
+            if (result.level == 1) {
+                // console.log("管理員")
+                login_member_level = true;
+                // if (document.querySelector('.administrator_delete_predict_message')) {
+                //     document.querySelector('.administrator_delete_predict_message').style.display = "flex"
+                // }
 
             }
         }
@@ -141,10 +156,3 @@ function onLoad() {
             var auth_code = resp.code;
         });
 }
-
-
-
-// options = new gapi.auth2.SigninOptionsBuilder();
-// options.setAppPackageName('com.example.app');
-// options.setFetchBasicProfile(True);
-// options.setPrompt('consent');

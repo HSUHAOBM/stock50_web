@@ -78,7 +78,7 @@ def web_member_register():
     member_email = session.get('member_email')
     member_name = session.get('member_name')
     if member_email and member_name:
-        return redirect("/member")
+        return redirect("/")
     else:
         return render_template("member_register.html")
 # 會員登入web
@@ -87,7 +87,7 @@ def web_member_sigin():
     member_email = session.get('member_email')
     member_name = session.get('member_name')
     if member_email and member_name:
-        return redirect("/member")
+        return redirect("/")
     else:
         return render_template("member_sigin.html")
 
@@ -149,7 +149,8 @@ def member():
                     session['member_email'] = thirdarea_return.get('member_email')
                     session['member_name'] = thirdarea_return.get('member_name')
                     session['member_src'] = thirdarea_return.get("member_src")
-                    # print("session", session)
+                    session['level'] = thirdarea_return.get("level")
+                    # print("--------------session-----------", session)
                     return {"ok":True,"member_name":thirdarea_return.get('member_name')}
             else:
                 member_email = member_data["member_email"]
@@ -164,7 +165,6 @@ def member():
                     elif (len(member_name)>10 or len(member_password)<6 or len(member_password)>12):
                         return {"error": True, "message": "輸入字元數不符合規定"}
                     else:
-                        # print(member_data,member_email,member_password,member_name)
                         returnstate=DB_Use_memberdata.member_registered(member_email,member_password,member_name)
                         return returnstate
                 #登入
@@ -178,8 +178,8 @@ def member():
                             session['member_email'] = member_email
                             session['member_name'] = returnstate.get('member_name')
                             session['member_src']=DB_Use_load_rank_data.load_member_src(returnstate.get('member_name'))
-                            
-                            # print("session", session)
+                            session['level'] = returnstate.get("level")
+                            print("--------------session-----------", session)
                         return returnstate
         else:
             return {"data": None}
@@ -204,7 +204,7 @@ def member_get_data():
 
             if not modify_member_web_data["name"].strip() or not modify_member_web_data["introduction"].strip() or not modify_member_web_data["interests"].strip():
                 return {"error": True, "message": "檢查輸入是否為空白!"}
-
+            
             elif (len(modify_member_web_data["name"])>10 or len(modify_member_web_data["introduction"])>24 or len(modify_member_web_data["interests"])>24):
                 return {"error": True, "message": "興趣、自介，請在24字以內"}
             else:
@@ -236,11 +236,13 @@ def member_modify_imgsrc():
         return {"data": None}
 
 #預測留言新增api
-@app.route("/api/message_predict_add", methods=["POST", "GET"])
+@app.route("/api/message_predict_add", methods=["POST", "GET","DELETE"])
 def message_predict_add():
     member_email = session.get('member_email')
     member_name = session.get('member_name')
     member_src=session.get('member_src')
+    member_level=session.get('level')
+
     if member_email and member_name:
         # print("登入中")  
         if request.method == "POST":#留言新增
@@ -261,17 +263,21 @@ def message_predict_add():
                     predict_trend="-1"            
                 if(add_member_predict_message_data["predict_trend"]=="持平"):
                     predict_trend="0"
-
                 message_predict_add_return=DB_Use_message.message_predict_add(member_email,member_name,member_src,stock_id,stock_name,predict_trend,add_member_predict_message_data["predict_message"])
-
-
                 return message_predict_add_return
 
+        if request.method == "DELETE" and member_level=="1":#留言刪除
+            delete_member_predict_message_data = request.get_json()
+            # print(delete_member_predict_message_data["message_id"])
+            message_predict_delete_return=DB_Use_message.message_predict_delete(delete_member_predict_message_data["message_id"],delete_member_predict_message_data["member_name"],member_name)
+            return message_predict_delete_return
+        else:
+            return {"error": True, "message": "沒有權限"}
     else:
         return {"error": True, "message": "未登入"}
 
- #預測留言 回復的 新增
-@app.route("/api/message_predict_reply_add", methods=["POST", "GET"])
+ #預測留言 回復的 處理
+@app.route("/api/message_predict_reply_add", methods=["POST", "GET","DELETE"])
 def message_predict_reply_add():
     member_email = session.get('member_email')
     member_name = session.get('member_name')    
@@ -287,13 +293,10 @@ def message_predict_reply_add():
                 return {"error": True, "message": "留言字數超過 50"}
             else:
                 message_predict_reply_add_return=DB_Use_message.message_predict_add_reply(message_predict_reply_add_data["message_mid"],member_email,member_name,member_src,message_predict_reply_add_data["message_reply_text"])
-
-
                 return message_predict_reply_add_return
-            
-
+    
     else:
-        return {"error": True, "message": "未登入"}      
+        return {"error": True, "message": "未登入"}
 
 
 #/api/message_predict_load?user_name=?&data_keyword=?&data_number=?&data_status=?
@@ -365,7 +368,7 @@ def private_message_sent():
     member_src=session.get('member_src')
 
     if member_email and member_name:
-        print("登入中")  
+        # print("登入中")  
         if request.method == "POST":#新增
             private_message_data = request.get_json()
             if not private_message_data["message_sent_text"].strip():
@@ -416,9 +419,6 @@ def page_500(error):
 
 
 
-# @app.route("/test")
-# def test():
-#     return render_template("testt.html")
-app.run(host="0.0.0.0", port=5000)
-# app.run(port=5000, debug=True)
+# app.run(host="0.0.0.0", port=5000)
+app.run(port=5000, debug=True)
 

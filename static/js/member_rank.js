@@ -109,6 +109,10 @@ function member_predict_load_rank(data_status) {
     })
 }
 
-// member_predict_load_rank("rate")
-// member_predict_load_rank("win")
-// member_predict_load_rank("fail")
+
+
+function init() {
+    member_predict_load_rank("rate")
+    member_predict_load_rank("win")
+    member_predict_load_rank("fail")
+}

@@ -194,13 +194,17 @@
 
 /* ---------------------------- */
 
-.hr {
-    background-color: transparent !important;
-    /* 顏色透明 */
-    border-bottom: 2px #5f5f5f dashed;
-    border-width: 2px 0 0 0;
-    border-style: solid;
-    border-color: #5f5f5f;
+.administrator_delete_predict_message {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    opacity: 0.5;
+    cursor: pointer;
+    display: none;
+}
+
+.administrator_delete_predict_message img {
+    width: 30px;
 }
 
 

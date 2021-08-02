@@ -40,6 +40,7 @@ def message_predict_rank_update():
                 predict_good=member_message_predict_like_number(records[member_][0])
                 # print(predict_total,predict_win,predict_fail,predict_win_rate)
                 message_predict_rank_add(records[member_][0],predict_win_rate,predict_win,predict_fail,predict_total,predict_good)
+                
         return "排行數據已更新"
     finally:
         if (connection.is_connected()):

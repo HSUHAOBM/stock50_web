@@ -28,12 +28,12 @@ def message_predict_add(message_user_email,message_user_name,message_user_imgsrc
         cursor = connection.cursor()
 
         message_statsu_check=time_check()
-        print(message_statsu_check)
+        # print(message_statsu_check)
         if(message_statsu_check):
             cursor = connection.cursor()
             cursor.execute("select count(*) from message_predict where message_user_name ='%s' and check_status=0;"%(message_user_name))
             records = cursor.fetchone()
-            print("今日預測",records[0])
+            # print("今日預測",records[0])
             if(records[0]<=4):
                 cursor = connection.cursor()
                 cursor.execute("select * from message_predict where stock_id='%s' and message_user_name ='%s' and check_status=0 limit 1;"%(stock_id,message_user_name))
@@ -62,6 +62,49 @@ def message_predict_add(message_user_email,message_user_name,message_user_imgsrc
             connection.close()
             # print("資料庫連線已關閉")
 
+#預測留言的刪除
+def message_predict_delete(mid,member_name,login_member):
+    try:
+        # print(message_user_email,message_user_name,message_user_imgsrc,stock_id,stock_name,stock_state,text)
+        connection = mysql.connector.connect(
+        host=DBhost,         
+        database=DBdatabase, 
+        user=DBuser,      
+        password=DBpassword)
+
+        cursor = connection.cursor()
+        cursor.execute("select level from member_basedata where name='%s' limit 1;"%(login_member))
+        records = cursor.fetchone()
+        print("權限",records[0])
+        if(records[0]=="1"):
+            cursor = connection.cursor()
+            cursor.execute("delete from message_predict where mid ='%s' ;"%(mid))
+            connection.commit()
+
+            cursor = connection.cursor()
+            cursor.execute("delete from message_predict_reply where mid ='%s' ;"%(mid))
+            connection.commit()
+
+            cursor = connection.cursor()
+            cursor.execute("delete from message_predict_good where mid ='%s' ;"%(mid))
+            connection.commit()
+
+            cursor = connection.cursor()
+            cursor.execute("delete from message_predict_rank_stock_info where member_name ='%s' ;"%(member_name))
+            connection.commit()
+
+            cursor = connection.cursor()
+            cursor.execute("delete from message_predict_rank where member_name ='%s' ;"%(member_name))
+            connection.commit()
+            return {"ok": True, "message": "刪除"} 
+        else:
+            return {"erorr": True, "message": "權限不足"} 
+
+
+    finally:
+        if (connection.is_connected()):
+            cursor.close()
+            connection.close()
 
 def time_check(h_start=13,wd1=6,wd2=7):
     # print("現在時間為",datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
@@ -73,7 +116,7 @@ def time_check(h_start=13,wd1=6,wd2=7):
         # print(i[0].month,i[0].day)
 
         if(datetime.now().month == i[0].month and datetime.now().day == i[0].day):
-            print("今日為國定假日，休市。")
+            # print("今日為國定假日，休市。")
             return True
 
         else:
@@ -281,7 +324,7 @@ def message_predict_load(member_name,user_name,data_keyword,data_number,data_sta
                     cursor.execute("select * from message_predict where message_user_name ='%s'order by time DESC limit %d , %d;"%(user_name,(int(data_number))*5,5))
                     records = cursor.fetchall()
                 else:
-                    print("此會員無預測資料")            
+                    # print("此會員無預測資料")            
                     return {"member_no_data":True,"message":"此會員無預測資料"}
 
             else:
@@ -515,7 +558,7 @@ def message_predict_reply_number(mid):
 #留言板_預測留言_的回覆
 def message_predict_add_reply(mid,message_reply_user_email,message_reply_user_name,message_reply_user_imgsrc,message_reply_text):
     try:
-        # print(message_user_email,message_user_name,message_user_imgsrc,stock_id,stock_name,stock_state,text)
+        # print(message_reply_user_imgsrc)
         connection = mysql.connector.connect(
         host=DBhost,         
         database=DBdatabase, 
