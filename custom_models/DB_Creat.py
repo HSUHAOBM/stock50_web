@@ -13,6 +13,7 @@ import DB_Creattable_stock50_DB
 # DB_Creattable_stock50_DB.getstock50_stopdeal()#將休市資料存入每年?
 
 # DB_Creattable_DB.private_message_creat()#建立私訊資料庫
+DB_Creattable_DB.contact_message_creat()#回報系統
 
 # DB_Creattable_DB.message_predict_rank() #會員勝負資料統整
 # DB_Creattable_DB.message_predict_rank_stock_info() #各股排行統整

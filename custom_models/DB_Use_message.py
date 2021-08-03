@@ -630,7 +630,7 @@ def days_hours_minutes(td):
     return td.days, td.seconds//3600, (td.seconds//60)%60
 #-----------------------*
 
-
+# 私訊
 def private_message_add(private_message_member,private_message_src,private_message_text,private_message_member_to):
     try:
         connection = mysql.connector.connect(
@@ -686,8 +686,59 @@ def private_message_load(login_user):
 
 
 
+#-----------------------*
+
+#問題回報
+def contact_message_add(message_member,message_src,message_text):
+    try:
+        connection = mysql.connector.connect(
+        host=DBhost,         
+        database=DBdatabase, 
+        user=DBuser,      
+        password=DBpassword)
+        cursor = connection.cursor()
+
+        sql = "INSERT INTO contact_message (message_member,message_src,message_text)VALUES (%s,%s,%s);"
+        data=(message_member,message_src,message_text)
+        cursor = connection.cursor()
+        cursor.execute(sql, data)
+        connection.commit()
+
+        return {"ok":True}
+
+    finally:
+        if (connection.is_connected()):
+            cursor.close()
+            connection.close()
+            # print("資料庫連線已關閉")
 
 
+def contact_message_load():
+    try:
+        connection = mysql.connector.connect(
+        host=DBhost,         
+        database=DBdatabase, 
+        user=DBuser,      
+        password=DBpassword)
 
+        return_list=[]
 
-
+        cursor = connection.cursor()
+        cursor.execute("select * from contact_message ORDER BY time DESC ;")
+        records = cursor.fetchall()
+        if(records):
+            for i in range(len(records)):
+                return_list.append({'member_name':records[i][1],
+                                    'member_img':records[i][2],
+                                "message_text":records[i][3],
+                                "time":records[i][4].strftime('%Y-%m-%d %H:%M:%S'),
+                                'time_about':time_ago_use(records[i][4])})
+                
+            return return_list
+        else:
+            return {'contact_message_not':True}
+    finally:
+        if (connection.is_connected()):
+            cursor.close()
+            connection.close()
+            # print("資料庫連線已關閉")

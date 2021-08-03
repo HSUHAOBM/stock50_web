@@ -240,6 +240,32 @@ def private_message_creat():
             cursor.close()
             connection.close()
             print("資料庫連線已關閉")
+
+
+#建立私人訊息的資料庫
+def contact_message_creat():
+    try:
+        connection = mysql.connector.connect(
+        host=DBhost,         
+        database=DBdatabase, 
+        user=DBuser,      
+        password=DBpassword) 
+
+        sql = '''CREATE TABLE contact_message  (
+            no INT AUTO_INCREMENT PRIMARY KEY,
+            message_member VARCHAR(25) NOT NULL,
+            message_src VARCHAR(225) NOT NULL,
+            message_text VARCHAR(500) NOT NULL,
+            time datetime DEFAULT CURRENT_TIMESTAMP);'''
+
+        cursor = connection.cursor()
+        cursor.execute(sql)
+        connection.commit()
+    finally:
+        if (connection.is_connected()):
+            cursor.close()
+            connection.close()
+            print("資料庫連線已關閉")
 # ----------------------------------------------#
 #取得台灣50並存資料庫
 def get_stock50_id():

@@ -115,6 +115,14 @@
     justify-content: center;
 }
 
+.base_load_gif_member_message.contact {
+    display: none;
+}
+
+.member_private_message_web_title.contact {
+    display: none;
+}
+
 .base_load_gif_member_message>img {
     width: 200px;
 }

@@ -1,8 +1,14 @@
-function member_private_message_load_add(private_member_name, private_member_img, private_member_text, private_member_time, private_member_about_time) {
-    let member_private_message = document.querySelector('.member_private_message')
+function member_private_message_load_add(private_member_name, private_member_img, private_member_text, private_member_time, private_member_about_time, level) {
+    let member_private_message = document.querySelector('.member_private_message' + level)
+        // class="member_private_message_load privateh01.contact"
 
     let div_member_private_message_load = document.createElement("div");
-    div_member_private_message_load.className = "member_private_message_load private" + private_member_name;
+    if (level == "") {
+        div_member_private_message_load.className = "member_private_message_load private" + private_member_name;
+    } else {
+        div_member_private_message_load.className = "member_private_message_load private_" + private_member_name;
+
+    }
     member_private_message.appendChild(div_member_private_message_load)
 
     let div_member_private_img = document.createElement("div");
@@ -14,7 +20,12 @@ function member_private_message_load_add(private_member_name, private_member_img
     div_member_private_img.appendChild(img_member_private_img)
 
     let div_member_private_message_box = document.createElement("div");
-    div_member_private_message_box.className = "member_private_message_box message_box" + private_member_name;
+    if (level == "") {
+        div_member_private_message_box.className = "member_private_message_box message_box" + private_member_name;
+    } else {
+        div_member_private_message_box.className = "member_private_message_box message_box_" + private_member_name;
+
+    }
     div_member_private_message_load.appendChild(div_member_private_message_box)
 
     let div_private_message_name = document.createElement("div");
@@ -40,11 +51,14 @@ function member_private_message_load_add(private_member_name, private_member_img
 
 
 }
-member_private_message_load()
-
-function member_private_message_load_add_(private_member_name, private_member_text, private_member_time, private_member_about_time) {
-    let div_member_private_message_box = document.querySelector('.member_private_message_box.message_box' + private_member_name)
-        // class="member_private_message_box h01"
+// class="member_private_message_box message_boxh01.contact"
+function member_private_message_load_add_(private_member_name, private_member_text, private_member_time, private_member_about_time, level) {
+    let div_member_private_message_box;
+    if (level == "") {
+        div_member_private_message_box = document.querySelector('.member_private_message_box.message_box' + private_member_name)
+    } else {
+        div_member_private_message_box = document.querySelector('.member_private_message_box.message_box_' + private_member_name)
+    }
 
     let div_message_date = document.createElement("div");
     div_message_date.className = "message_date";
@@ -76,18 +90,58 @@ function member_private_message_load() {
                 private_member_time = result.data[i].time;
                 private_member_about_time = result.data[i].time_about;
                 if (document.querySelector('.member_private_message_load.private' + private_member_name)) {
-                    member_private_message_load_add_(private_member_name, private_member_text, private_member_time, private_member_about_time)
+                    member_private_message_load_add_(private_member_name, private_member_text, private_member_time, private_member_about_time, "")
                 } else {
-                    member_private_message_load_add(private_member_name, private_member_img, private_member_text, private_member_time, private_member_about_time)
+                    member_private_message_load_add(private_member_name, private_member_img, private_member_text, private_member_time, private_member_about_time, "")
                 }
 
             }
             document.querySelector('.base_load_gif_member_message').style.display = "none";
 
         }
-
-
-
-
     })
+}
+
+
+
+function member_contact_message_load() {
+    fetch("api/contact_message_sent").then(function(response) {
+        return response.json();
+    }).then(function(result) {
+        console.log(result)
+
+        if (result.data.contact_message_not) {
+            document.querySelector('.data_not_message.contact').style.display = "flex";
+            document.querySelector('.base_load_gif_member_message.contact').style.display = "none";
+
+        } else {
+            for (let i = 0; i < result.data.length; i++) {
+                private_member_name = result.data[i].member_name;
+                private_member_img = result.data[i].member_img;
+                private_member_text = result.data[i].message_text;
+                private_member_time = result.data[i].time;
+                private_member_about_time = result.data[i].time_about;
+                // class="member_private_message_load privateh01.contact"
+                if (document.querySelector('.member_private_message_load.private_' + private_member_name)) {
+                    member_private_message_load_add_(private_member_name, private_member_text, private_member_time, private_member_about_time, ".contact")
+                } else {
+                    member_private_message_load_add(private_member_name, private_member_img, private_member_text, private_member_time, private_member_about_time, ".contact")
+                }
+
+            }
+            document.querySelector('.base_load_gif_member_message.contact').style.display = "none";
+
+        }
+    })
+}
+
+
+function init() {
+    member_private_message_load();
+    if (login_member_level) {
+        document.querySelector('.base_load_gif_member_message.contact').style.display = "flex";
+        document.querySelector('.member_private_message_web_title.contact').style.display = "block";
+        member_contact_message_load();
+
+    }
 }

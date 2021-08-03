@@ -385,6 +385,30 @@ def private_message_sent():
     else:
         return {"error": True, "message": "未登入"}
 
+#私人訊息api
+@app.route("/api/contact_message_sent", methods=["POST", "GET"])
+def contact_message_sent():
+    member_email = session.get('member_email')
+    member_name = session.get('member_name')  
+    member_src=session.get('member_src')
+
+    if member_email and member_name:
+        # print("登入中")  
+        if request.method == "POST":#新增
+            contact_message_data = request.get_json()
+            if not contact_message_data["message_sent_text"].strip():
+                return {"error": True, "message": "檢查輸入是否為空白!"}
+            elif len(contact_message_data["message_sent_text"])>500:
+                return {"error": True, "message": "字數超過 500"}
+            else:
+                contact_message_add_return=DB_Use_message.contact_message_add(member_name,member_src,contact_message_data["message_sent_text"])
+                return contact_message_add_return
+        if request.method == "GET":
+            contact_message_load_return=DB_Use_message.contact_message_load()
+            return Response(json.dumps({"ok": True,"data": contact_message_load_return}, sort_keys=False), mimetype='application/json')
+
+    else:
+        return {"error": True, "message": "未登入"}
 
 #資料尋找api
 @app.route("/api/search_data", methods=["POST", "GET"])
@@ -419,6 +443,6 @@ def page_500(error):
 
 
 
-# app.run(host="0.0.0.0", port=5000)
-app.run(port=5000, debug=True)
+app.run(host="0.0.0.0", port=5000)
+# app.run(port=5000, debug=True)
 
