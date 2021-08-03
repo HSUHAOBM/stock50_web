@@ -121,6 +121,7 @@
 
 .member_main_member_databydb {
     background-color: #e8e8e8;
+    padding-bottom: 20px;
 }
 
 @media screen and (min-width: 500px) and (max-width: 1200px) {

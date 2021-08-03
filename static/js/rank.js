@@ -74,7 +74,7 @@ function member_predict_rank_api_load_rank_web(status) {
     fetch("/api/message_predict_rank?data_status=" + status).then(function(response) {
         return response.json();
     }).then(function(result) {
-        console.log(result)
+        // console.log(result)
         if (result.ok) {
             for (let i = 0; i < 10; i++) {
                 if (result.data[i]) {
@@ -102,12 +102,16 @@ function member_predict_rank_api_load_rank_web(status) {
                 // console.log(i, member_name, predict_win, predict_fail, predict_total, predict_win_rate)
                 member_predict_add_rank_web(i + 1, member_name, rank_text, member_src, status)
             }
+            document.querySelector('.base_load_gif_rank').style.display = "none";
         }
 
 
     })
 
 }
-member_predict_rank_api_load_rank_web("rate")
-member_predict_rank_api_load_rank_web("like")
-member_predict_rank_api_load_rank_web("total")
+
+function init() {
+    member_predict_rank_api_load_rank_web("rate")
+    member_predict_rank_api_load_rank_web("like")
+    member_predict_rank_api_load_rank_web("total")
+}

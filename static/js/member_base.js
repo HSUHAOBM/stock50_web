@@ -27,8 +27,8 @@ function load_member_data() {
             if (result.rank_total.nodata) {
                 document.querySelector('.member_main_member_data_.rate.text1').textContent = "目前還沒有預測的資料";
             } else {
-                document.querySelector('.member_main_member_data_.rate.text1').textContent = result.rank_total.win + "成功、" + result.rank_total.fail + "失敗";
-                document.querySelector('.member_main_member_data_.rate.text2').textContent = "共預測 " + result.rank_total.total + "次， 勝率為 " + result.rank_total.rate + " % ";
+                document.querySelector('.member_main_member_data_.rate.text1').textContent = "成功：" + result.rank_total.win + "次、失敗：" + result.rank_total.fail + "次";
+                document.querySelector('.member_main_member_data_.rate.text2').textContent = "預測：" + result.rank_total.total + "次， 勝率 " + result.rank_total.rate + " % ";
             }
             document.querySelector('.member_main_member_data').style.display = "flex";
             document.querySelector('.base_load_gif_member_basedata').style.display = "none";
@@ -114,7 +114,7 @@ function updata_img_to_ec2_rwd() {
 
     var member_data_img_form = new FormData();
     member_data_img_form.append('member_img_modify', member_img_modify.files[0]);
-    console.log(member_data_img_form)
+    // console.log(member_data_img_form)
 
     fetch("/api/member_modify_imgsrc", {
         method: 'POST',
@@ -228,8 +228,6 @@ member_private_message_form.addEventListener('submit', function(event) {
     if (member_private_message_form_.get("private_message_text").length > 100) {
         document.querySelector('.private_message_box_error_text').textContent = "字數大於100，超過規定。";
     }
-    console.log(member_private_message_form_data);
-    console.log(member_private_message_form_.get("private_message_text").length)
 
     fetch("/api/private_message_sent", {
         method: "POST",
@@ -240,7 +238,7 @@ member_private_message_form.addEventListener('submit', function(event) {
     }).then(function(res) {
         return res.json();
     }).then(function(result) {
-        console.log(result);
+        // console.log(result);
         if (result.ok) {
             // location.href = '/member?name=' + member_modify_data_form_.get("member_modify_name")
             window.location.reload();

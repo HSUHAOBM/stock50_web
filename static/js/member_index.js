@@ -647,7 +647,7 @@ function administrator_delete_predict(mid, member_name) {
             return res.json();
         })
         .then(result => {
-            console.log(result);
+            // console.log(result);
             if (result.ok) {
                 window.location.href = window.location.href
 
@@ -659,5 +659,4 @@ function administrator_delete_predict(mid, member_name) {
 
 function init() {
     member_predict_load_message()
-    console.log("load_html")
 }

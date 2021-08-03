@@ -63,7 +63,6 @@ function member_predict_load_rank(data_status) {
     fetch("/api/message_predict_rank?user_name=" + web_name + "&data_status=" + data_status).then(function(response) {
         return response.json();
     }).then(function(result) {
-        console.log(result)
         if (result.data.member_no_data) {
             document.querySelector('.data_not_have.' + data_status).style.display = "flex";
 

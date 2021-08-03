@@ -14,7 +14,6 @@ memberform.addEventListener('submit', function(event) {
     let member_password = document.querySelector('.member_register_input.password1').value
     let member_check_password = document.querySelector('.member_register_input.password2').value
     let error_text = document.querySelector('.errortext')
-    console.log(member_email, member_password, member_check_password, member_name)
 
     if (member_email.indexOf(" ") != -1 || member_password.indexOf(" ") != -1 || member_check_password.indexOf(" ") != -1 || member_name.indexOf(" ") != -1) {
         error_text.textContent = "請勿輸入空白字元"
