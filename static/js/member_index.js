@@ -659,4 +659,5 @@ function administrator_delete_predict(mid, member_name) {
 
 function init() {
     member_predict_load_message()
+    console.log("load_html")
 }
