@@ -443,6 +443,6 @@ def page_500(error):
 
 
 
-# app.run(host="0.0.0.0", port=5000)
+app.run(host="0.0.0.0", port=5000)
 # app.run(port=5000, debug=True)
 
