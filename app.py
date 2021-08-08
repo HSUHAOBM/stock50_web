@@ -179,7 +179,7 @@ def member():
                             session['member_name'] = returnstate.get('member_name')
                             session['member_src']=DB_Use_load_rank_data.load_member_src(returnstate.get('member_name'))
                             session['level'] = returnstate.get("level")
-                            print("--------------session-----------", session)
+                            # print("--------------session-----------", session)
                         return returnstate
         else:
             return {"data": None}

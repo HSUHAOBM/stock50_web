@@ -95,18 +95,18 @@ def member_registered_thirdarea (email,password,name,img_src):
         #資料處理
         email=password+email
         #檢查是否註冊過
-        cursor.execute("SELECT * FROM member_basedata WHERE  email='%s';" % (email))
+        cursor.execute("SELECT email,name,picturesrc,level FROM member_basedata WHERE  email='%s' limit 1;" % (email))
         records = cursor.fetchone()
 
             
         if (records):
             # print("登入")
-            return {"ok": True, "message": "登入","member_email":records[1],"member_name":records[3],"member_src":records[6],"level":records[7]}
+            return {"ok": True, "message": "登入","member_email":records[0],"member_name":records[1],"member_src":records[2],"level":records[3]}
             
         else:
             #註冊進資料庫 檢查名子是否被使用
             cursor = connection.cursor()
-            cursor.execute("SELECT * FROM member_basedata WHERE name= '%s';" % (name))
+            cursor.execute("SELECT name FROM member_basedata WHERE name= '%s' limit 1;" % (name))
             records = cursor.fetchone()
 
             if(records):
@@ -123,12 +123,8 @@ def member_registered_thirdarea (email,password,name,img_src):
             cursor.execute(sql, member_data)
             connection.commit()
 
-            cursor = connection.cursor()
-            cursor.execute("select level from member_basedata where name='%s' limit 1;"%(name))
-            records = cursor.fetchone()
-            print("權限",records[0])
 
-            return {"ok": True, "message": "登入","member_email":email,"member_name":name,"member_src":img_src,"level":records[0]}
+            return {"ok": True, "message": "登入","member_email":email,"member_name":name,"member_src":img_src,"level":"0"}
     finally:
         cursor.close()
         connection.close()
@@ -142,7 +138,7 @@ def load_member_data (name,member_name):
         connection = connection.connection()
         cursor = connection.cursor()
 
-        cursor.execute("SELECT * FROM member_basedata WHERE name= '%s'  ;" % (name))
+        cursor.execute("SELECT * FROM member_basedata WHERE name= '%s' limit 1 ;" % (name))
         records = cursor.fetchone()
         if(records):
             # print(records[9])
@@ -181,7 +177,7 @@ def modify_member_data (email,name,newname,gender,address,birthday,introduction,
         if(name!=newname):
         #檢查名稱是否重複
             cursor = connection.cursor()
-            cursor.execute("SELECT * FROM member_basedata  WHERE name= '%s' ;" % (newname))
+            cursor.execute("SELECT name FROM member_basedata  WHERE name= '%s' limit 1 ;" % (newname))
             records = cursor.fetchone()
             if (records):
                 return {"error": True, "message": "暱稱已被註冊使用。"}
@@ -258,33 +254,27 @@ def modify_member_picturesrc (email,name,picturesrc):
 
 #會員總共有多少讚
 def member_message_predict_like_number(member_name):
-    try:
-        connection = connection_pool.getConnection()
-        connection = connection.connection()
-        cursor = connection.cursor()
+    connection = connection_pool.getConnection()
+    connection = connection.connection()
+    cursor = connection.cursor()
 
-        cursor.execute("SELECT count(*) FROM message_predict_good WHERE mid_member= '%s' ;" % (member_name))
-        records = cursor.fetchone()
-            
-        return records[0]
-    finally:
-        cursor.close()
-        connection.close()
+    cursor.execute("SELECT count(*) FROM message_predict_good WHERE mid_member= '%s' ;" % (member_name))
+    records = cursor.fetchone()
+        
+    return records[0]
+
 
 
 #取得預測成績            
 def message_rank_select(member_name):
-    try:
-        connection = connection_pool.getConnection()
-        connection = connection.connection()
-        cursor = connection.cursor()
+    connection = connection_pool.getConnection()
+    connection = connection.connection()
+    cursor = connection.cursor()
 
-        cursor.execute("select * from message_predict_rank where member_name='%s';"%(member_name))
-        records = cursor.fetchone()
-        if(records):
-            return {"ok":True,"rate":records[1],"win":records[2],"fail":records[3],"total":records[4]}
-        else:
-            return {"nodata":True}
-    finally:
-        cursor.close()
-        connection.close()
+    cursor.execute("select * from message_predict_rank where member_name='%s' limit 1;"%(member_name))
+    records = cursor.fetchone()
+    if(records):
+        return {"ok":True,"rate":records[1],"win":records[2],"fail":records[3],"total":records[4]}
+    else:
+        return {"nodata":True}
+

@@ -141,24 +141,20 @@ def DB_get_stopdealdate():
 
 #功能-留言板流水號製作
 def message_select_mid():
-    try:
-        connection = connection_pool.getConnection()
-        connection = connection.connection()
-        cursor = connection.cursor()
+    connection = connection_pool.getConnection()
+    connection = connection.connection()
+    cursor = connection.cursor()
 
-        sql = "SELECT mid from message_predict ORDER BY time DESC"
-        cursor.execute(sql)
-        records = cursor.fetchone()
-        if(records):
-            #print(records[0].split("_")[-1])#現在的流水號
-            # print("留言編號:","mid_"+str(int(records[0].split("_")[-1])+1))
-            return "mid_"+str(int(records[0].split("_")[-1])+1)
-        else:
-            print("預測留言資料庫是空的，開始建立新編號")
-            return "mid_1"
-    finally:
-        cursor.close()
-        connection.close()
+    sql = "SELECT mid from message_predict ORDER BY time DESC"
+    cursor.execute(sql)
+    records = cursor.fetchone()
+    if(records):
+        #print(records[0].split("_")[-1])#現在的流水號
+        # print("留言編號:","mid_"+str(int(records[0].split("_")[-1])+1))
+        return "mid_"+str(int(records[0].split("_")[-1])+1)
+    else:
+        print("預測留言資料庫是空的，開始建立新編號")
+        return "mid_1"
 
 
 
@@ -270,39 +266,35 @@ def message_predict_load(member_name,user_name,data_keyword,data_number,data_sta
 
 #預測留言讀取_回覆
 def message_predict_reply_load(mid):
-    try:
-        connection = connection_pool.getConnection()
-        connection = connection.connection()
-        cursor = connection.cursor()
+    connection = connection_pool.getConnection()
+    connection = connection.connection()
+    cursor = connection.cursor()
 
 
-        message_predict_reply_load_list=[]
-        
-        cursor.execute("select * from message_predict_reply where mid ='%s' order by time;" %(mid))
-        records = cursor.fetchall()
+    message_predict_reply_load_list=[]
+    
+    cursor.execute("select * from message_predict_reply where mid ='%s' order by time;" %(mid))
+    records = cursor.fetchall()
 
-        if (records):
-            for j in range(len(records)):
-                message_predict_reply_load_list.append({
-                "message_mid":records[j][1],
-                "message_reply_mid":records[j][2],
-                "message_reply_user_name":records[j][4],
-                "message_reply_user_imgsrc":records[j][5],
-                "message_reply_text":records[j][6],
-                "message_reply_time":records[j][7].strftime('%Y-%m-%d %H:%M:%S'),
-                "message_reply_time_about":time_ago_use(records[j][7])
-                })
-            return{"data":True,"message_predict_reply_load_data":message_predict_reply_load_list}
-                
-                
+    if (records):
+        for j in range(len(records)):
+            message_predict_reply_load_list.append({
+            "message_mid":records[j][1],
+            "message_reply_mid":records[j][2],
+            "message_reply_user_name":records[j][4],
+            "message_reply_user_imgsrc":records[j][5],
+            "message_reply_text":records[j][6],
+            "message_reply_time":records[j][7].strftime('%Y-%m-%d %H:%M:%S'),
+            "message_reply_time_about":time_ago_use(records[j][7])
+            })
+        return{"data":True,"message_predict_reply_load_data":message_predict_reply_load_list}
             
-        else:
-            return {"data":False}
+            
+        
+    else:
+        return {"data":False}
 
 
-    finally:
-        cursor.close()
-        connection.close()
         # print("資料庫連線已關閉")
 #-----------------------*
 
@@ -315,7 +307,7 @@ def message_predict_like(mid_member,mid,like_message_user_name):
 
         #檢查是否註按過
         
-        cursor.execute("SELECT * FROM message_predict_good WHERE mid= '%s' and like_message_user_name='%s';" % (mid,like_message_user_name))
+        cursor.execute("SELECT mid FROM message_predict_good WHERE mid= '%s' and like_message_user_name='%s' limit 1;" % (mid,like_message_user_name))
         records = cursor.fetchone()
             
         if (records):
@@ -354,55 +346,44 @@ def message_predict_unlike(mid,like_message_user_name):
 
 #檢查當前使用者有無按讚
 def message_predict_like_check(mid,like_message_user_name):
-    try:
-        connection = connection_pool.getConnection()
-        connection = connection.connection()
-        cursor = connection.cursor()
+    connection = connection_pool.getConnection()
+    connection = connection.connection()
+    cursor = connection.cursor()
 
-        cursor.execute("SELECT mid FROM message_predict_good WHERE mid= '%s' and like_message_user_name='%s' limit 1;" % (mid,like_message_user_name))
-        records = cursor.fetchone()
-            
-        if (records):
-            return True
-        else:
-            return False
-    finally:
-        cursor.close()
-        connection.close()
-        # print("資料庫連線已關閉")
+    cursor.execute("SELECT mid FROM message_predict_good WHERE mid= '%s' and like_message_user_name='%s' limit 1;" % (mid,like_message_user_name))
+    records = cursor.fetchone()
+        
+    if (records):
+        return True
+    else:
+        return False
 
 
 #文章總共有多少讚
 def message_predict_like_number(mid):
-    try:
-        connection = connection_pool.getConnection()
-        connection = connection.connection()
-        cursor = connection.cursor()
+    connection = connection_pool.getConnection()
+    connection = connection.connection()
+    cursor = connection.cursor()
 
-        cursor.execute("SELECT count(*) FROM message_predict_good WHERE mid= '%s' limit 1 ;" % (mid))
-        records = cursor.fetchone()
-            
-        return records[0]
-    finally:
-        cursor.close()
-        connection.close()
+    cursor.execute("SELECT count(*) FROM message_predict_good WHERE mid= '%s' limit 1 ;" % (mid))
+    records = cursor.fetchone()
+        
+    return records[0]
+
 
 
 
 #文章總共有多少回覆
 def message_predict_reply_number(mid):
-    try:
-        connection = connection_pool.getConnection()
-        connection = connection.connection()
-        cursor = connection.cursor()
+    connection = connection_pool.getConnection()
+    connection = connection.connection()
+    cursor = connection.cursor()
 
-        cursor.execute("SELECT count(*) FROM message_predict_reply WHERE mid= '%s' limit 1;" % (mid))
-        records = cursor.fetchone()
-            
-        return records[0]
-    finally:
-        cursor.close()
-        connection.close()
+    cursor.execute("SELECT count(*) FROM message_predict_reply WHERE mid= '%s' limit 1;" % (mid))
+    records = cursor.fetchone()
+        
+    return records[0]
+
 
 
 #-----------------------*
@@ -410,47 +391,40 @@ def message_predict_reply_number(mid):
 
 #留言板_預測留言_的回覆
 def message_predict_add_reply(mid,message_reply_user_email,message_reply_user_name,message_reply_user_imgsrc,message_reply_text):
-    try:
-        connection = connection_pool.getConnection()
-        connection = connection.connection()
-        cursor = connection.cursor()
+    connection = connection_pool.getConnection()
+    connection = connection.connection()
+    cursor = connection.cursor()
 
 
-        sql = "INSERT INTO message_predict_reply (mid,mid_reply,message_reply_user_email,message_reply_user_name,message_reply_user_imgsrc,message_reply_text) VALUES (%s,%s,%s,%s,%s,%s);"
-        mid_reply=message_select_mid_reply(mid)
-        data=(mid,mid_reply,message_reply_user_email,message_reply_user_name,message_reply_user_imgsrc,message_reply_text)
-        cursor = connection.cursor()
-        cursor.execute(sql, data)
-        connection.commit()
+    sql = "INSERT INTO message_predict_reply (mid,mid_reply,message_reply_user_email,message_reply_user_name,message_reply_user_imgsrc,message_reply_text) VALUES (%s,%s,%s,%s,%s,%s);"
+    mid_reply=message_select_mid_reply(mid)
+    data=(mid,mid_reply,message_reply_user_email,message_reply_user_name,message_reply_user_imgsrc,message_reply_text)
+    cursor = connection.cursor()
+    cursor.execute(sql, data)
+    connection.commit()
 
-        return {"ok":True,"mid":mid,"mid_reply":mid_reply,"time":datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-    finally:
-        cursor.close()
-        connection.close()
-        # print("資料庫連線已關閉")
+    return {"ok":True,"mid":mid,"mid_reply":mid_reply,"time":datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
 
 #-----------------------*
 
 #功能-留言板流水號製作
 def message_select_mid_reply(mid):
-    try:
-        connection = connection_pool.getConnection()
-        connection = connection.connection()
-        cursor = connection.cursor()
+    connection = connection_pool.getConnection()
+    connection = connection.connection()
+    cursor = connection.cursor()
 
-        cursor.execute("SELECT mid_reply from message_predict_reply where mid='%s' ORDER BY time DESC ;" % (mid))
+    cursor.execute("SELECT mid_reply from message_predict_reply where mid='%s' ORDER BY time DESC ;" % (mid))
 
-        records = cursor.fetchone()
-        if(records):
-            #print(records[0].split("_")[-1])#現在的流水號
-            # print("留言編號:","mid_"+str(int(records[0].split("_")[-1])+1))
-            return mid+"_"+str(int(records[0].split("_")[-1])+1)
-        else:
-            # print("預測留言資料庫是空的，開始建立新編號")
-            return mid+"_1"
-    finally:
-        cursor.close()
-        connection.close()
+    records = cursor.fetchone()
+    if(records):
+        #print(records[0].split("_")[-1])#現在的流水號
+        # print("留言編號:","mid_"+str(int(records[0].split("_")[-1])+1))
+        return mid+"_"+str(int(records[0].split("_")[-1])+1)
+    else:
+        # print("預測留言資料庫是空的，開始建立新編號")
+        return mid+"_1"
+
 #-----------------------*
 
 #將時間轉換成XXX前
