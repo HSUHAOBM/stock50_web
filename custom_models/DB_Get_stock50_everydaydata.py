@@ -2,20 +2,21 @@ import requests
 import json
 from datetime import datetime
 import time
-import mysql.connector
-import configparser
-import os
+# import mysql.connector
+# import configparser
+# import os
+import connection_pool
 
 
-config = configparser.ConfigParser()
-config.read('config.ini')
-parent_dir = os.path.dirname(os.path.abspath(__file__))
-config.read(parent_dir + "/config.ini")
+# config = configparser.ConfigParser()
+# config.read('config.ini')
+# parent_dir = os.path.dirname(os.path.abspath(__file__))
+# config.read(parent_dir + "/config.ini")
 
-DBhost=config.get('use_db', 'DBhost')   
-DBdatabase=config.get('use_db', 'DBdatabase')
-DBuser=config.get('use_db', 'DBuser')
-DBpassword=config.get('use_db', 'DBpassword')
+# DBhost=config.get('use_db', 'DBhost')   
+# DBdatabase=config.get('use_db', 'DBdatabase')
+# DBuser=config.get('use_db', 'DBuser')
+# DBpassword=config.get('use_db', 'DBpassword')
 
 
 
@@ -56,12 +57,10 @@ def loadstockdata(stocknumber):
 #資料庫_存50的相關資料
 def stock50_getstock50_toDB(stock_id,stock_name,date,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+        
         sql = "INSERT INTO stock50_data (stock_id,stock_name,date,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
         stock_data=(stock_id,stock_name,date,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal)
         cursor = connection.cursor()
@@ -70,10 +69,9 @@ def stock50_getstock50_toDB(stock_id,stock_name,date,stock_total,open_price,high
         print("資料庫連線")
 
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        print("資料庫連線已關閉")
 
 
 
@@ -100,14 +98,10 @@ def stock50_getdata():
 #檢查是否有沒抓到資料
 def stock50_getstock50_check_error():
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-        
-      
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+        
         cursor.execute("select * from stock50_data where open_price is null")
         records = cursor.fetchall()
         if (records):
@@ -118,19 +112,16 @@ def stock50_getstock50_check_error():
         else:
             return "今日無錯誤。"
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        print("資料庫連線已關閉")
 
 #修正程式
 def stock50_getstock50_error_modify(getstock50_data,stock_id):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
         
         stock_total,open_price,high_price,low_price,end_price,differ,totaldeal=getstock50_data[1],getstock50_data[2],getstock50_data[3],getstock50_data[4],getstock50_data[5],getstock50_data[6],getstock50_data[7]
         
@@ -140,7 +131,6 @@ def stock50_getstock50_error_modify(getstock50_data,stock_id):
 
 
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        print("資料庫連線已關閉")

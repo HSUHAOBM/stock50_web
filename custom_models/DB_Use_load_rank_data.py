@@ -4,29 +4,19 @@ from datetime import datetime
 import configparser
 import os
 import time
+from custom_models import connection_pool
 
 
-config = configparser.ConfigParser()
-config.read('config.ini')
-parent_dir = os.path.dirname(os.path.abspath(__file__))
-config.read(parent_dir + "/config.ini")
 
-DBhost=config.get('use_db', 'DBhost')   
-DBdatabase=config.get('use_db', 'DBdatabase')
-DBuser=config.get('use_db', 'DBuser')
-DBpassword=config.get('use_db', 'DBpassword')
 
 # 成績彙整讀取(user_name,stock_id,data_number,data_status)
 def message_predict_rank_load(user_name,stock_id,data_number,data_status):
     try:
         message_predict_load_rank_list=[]
 
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-        cursor = connection.cursor(buffered=True)
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
         if(user_name==None and stock_id==None):
             if(data_status=="rate"):
@@ -105,84 +95,53 @@ def message_predict_rank_load(user_name,stock_id,data_number,data_status):
                 return {"member_no_data":True,"message":"此會員無預測資料"}
         else:
             return {"error":True,"message":"錯誤"}
-
-
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        
 #load img src
 def load_member_src(member_name):
-    try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
+    connection = connection_pool.getConnection()
+    connection = connection.connection()
+    cursor = connection.cursor()
 
-        cursor = connection.cursor()
-        cursor.execute("select picturesrc from member_basedata where name='%s';"%(member_name))
-        records = cursor.fetchone()
-        return records[0]
-    finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+    cursor.execute("select picturesrc from member_basedata where name='%s';"%(member_name))
+    records = cursor.fetchone()
+    return records[0]
+
 
 
 
 
 def load_rank_data_predict_win_rate(member_name):
-    try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-        
-        cursor = connection.cursor()
-        cursor.execute("select * from message_predict_rank_stock_info where member_name='%s' and predict_win>0 order by cast(predict_win_rate as unsigned) DESC limit 5 ;"%(member_name))
-        records = cursor.fetchall()
-        # print(records)
-        return records
-    finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+    connection = connection_pool.getConnection()
+    connection = connection.connection()
+    cursor = connection.cursor()
+
+    cursor.execute("select * from message_predict_rank_stock_info where member_name='%s' and predict_win>0 order by cast(predict_win_rate as unsigned) DESC limit 5 ;"%(member_name))
+    records = cursor.fetchall()
+    # print(records)
+    return records
+
 
 def load_rank_data_predict_win(member_name):
-    try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-        
-        cursor = connection.cursor()
-        cursor.execute("select * from message_predict_rank_stock_info where member_name='%s' and predict_win>0 order by cast(predict_win as unsigned) DESC limit 5 ;"%(member_name))
-        records = cursor.fetchall()
-        return records
-    finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+    connection = connection_pool.getConnection()
+    connection = connection.connection()
+    cursor = connection.cursor()
+
+    cursor.execute("select * from message_predict_rank_stock_info where member_name='%s' and predict_win>0 order by cast(predict_win as unsigned) DESC limit 5 ;"%(member_name))
+    records = cursor.fetchall()
+    return records
+
 
 def load_rank_data_predict_fail(member_name):
-    try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-        
-        cursor = connection.cursor()
-        cursor.execute("select * from message_predict_rank_stock_info where member_name='%s' and predict_fail>0 order by cast(predict_fail as unsigned) DESC limit 5 ;"%(member_name))
-        records = cursor.fetchall()
-        return records
-    finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+    connection = connection_pool.getConnection()
+    connection = connection.connection()
+    cursor = connection.cursor()
+    
+    cursor.execute("select * from message_predict_rank_stock_info where member_name='%s' and predict_fail>0 order by cast(predict_fail as unsigned) DESC limit 5 ;"%(member_name))
+    records = cursor.fetchall()
+    return records
+
 
 

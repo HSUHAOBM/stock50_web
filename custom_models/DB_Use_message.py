@@ -1,31 +1,20 @@
 import re
 import mysql.connector
 from datetime import datetime
-import configparser
-import os
+
 import time
+from custom_models import connection_pool
 
 
-config = configparser.ConfigParser()
-config.read('config.ini')
-parent_dir = os.path.dirname(os.path.abspath(__file__))
-config.read(parent_dir + "/config.ini")
 
-DBhost=config.get('use_db', 'DBhost')   
-DBdatabase=config.get('use_db', 'DBdatabase')
-DBuser=config.get('use_db', 'DBuser')
-DBpassword=config.get('use_db', 'DBpassword')
 
 #留言板_預測留言
 def message_predict_add(message_user_email,message_user_name,message_user_imgsrc,stock_id,stock_name,stock_state,text):
     try:
-        # print(message_user_email,message_user_name,message_user_imgsrc,stock_id,stock_name,stock_state,text)
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword)
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
 
         message_statsu_check=time_check()
         # print(message_statsu_check)
@@ -57,22 +46,18 @@ def message_predict_add(message_user_email,message_user_name,message_user_imgsrc
         else:
             return {"error": True, "message": "為公平起見，下午13時至14時，不能送預測。"}
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        # print("資料庫連線已關閉")
 
 #預測留言的刪除
 def message_predict_delete(mid,member_name,login_member):
     try:
         # print(message_user_email,message_user_name,message_user_imgsrc,stock_id,stock_name,stock_state,text)
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword)
-
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("select level from member_basedata where name='%s' limit 1;"%(login_member))
         records = cursor.fetchone()
         print("權限",records[0])
@@ -102,9 +87,8 @@ def message_predict_delete(mid,member_name,login_member):
 
 
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()
 
 def time_check(h_start=13,wd1=6,wd2=7):
     # print("現在時間為",datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
@@ -139,13 +123,10 @@ def time_check(h_start=13,wd1=6,wd2=7):
 #取得休市日期
 def DB_get_stopdealdate():
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("SELECT date FROM stock50_stopdeal_date")
         records = cursor.fetchall()
 
@@ -153,24 +134,19 @@ def DB_get_stopdealdate():
         return(records)
 
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        print("資料庫連線已關閉")
 
 
 #功能-留言板流水號製作
 def message_select_mid():
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
-        cursor = connection.cursor()
         sql = "SELECT mid from message_predict ORDER BY time DESC"
-        cursor = connection.cursor()
         cursor.execute(sql)
         records = cursor.fetchone()
         if(records):
@@ -181,111 +157,10 @@ def message_select_mid():
             print("預測留言資料庫是空的，開始建立新編號")
             return "mid_1"
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-
-#-----------------------*
-
-#留言板_預測檢測
-def message_predict_check():
-    try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-
-        cursor = connection.cursor()
-        sql = "select mid,message_user_email,stock_id,stock_state from message_predict where check_status=0"
-        cursor = connection.cursor()
-        cursor.execute(sql)
-        records = cursor.fetchall()
-        for message_data in records:
-            stock50_check(message_data[0],message_data[1],message_data[2],message_data[3])
-        return {"ok": True, "message": "會員預測留言檢查完成"}
-
-    finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
-
-#檢查預測留言值有無成功
-def stock50_check(mid,account,stock_id,stock_state):
-    try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-
-        cursor = connection.cursor()
-
-        cursor.execute("select differ from stock50_data WHERE stock_id= '%s' ORDER BY date DESC;" % (stock_id))
-        records = cursor.fetchone()
-        if stock_state =="1" and records[0]>0:
-            message_predict_check_correct(mid)
-        elif stock_state =="0" and records[0]==0:
-            message_predict_check_correct(mid)
-        elif stock_state =="-1" and records[0]<0:
-            message_predict_check_correct(mid)
-        
-        else:
-            message_predict_check_error(mid)
-        return records
-    finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
-
-#預測留言成功
-def message_predict_check_correct(mid):
-    try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-
-        cursor = connection.cursor()
-        
-        cursor.execute("UPDATE message_predict SET check_status='1' where mid='%s';"%(mid))
-        connection.commit()
-        return {"ok": True, "message": "預測成功，結果已上傳資料庫"}
-
-        
-    finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
 
 
-#預測留言失敗
-def message_predict_check_error(mid):
-    try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-
-        cursor = connection.cursor()
-        
-        cursor.execute("UPDATE message_predict SET check_status='-1' where mid='%s';"%(mid))
-        connection.commit()
-        return {"ok": True, "message": "預測失敗，結果已上傳資料庫"}
-
-        
-    finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
-
-#-----------------------*
 
 
 
@@ -294,21 +169,20 @@ def message_predict_load(member_name,user_name,data_keyword,data_number,data_sta
     try:
         message_predict_load_list=[]
 
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-        cursor = connection.cursor(buffered=True)
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+
+        # cursor = connection.cursor(buffered=True)
         # print("資料檢測處理")
 
         if(user_name==None and data_keyword==None  and data_status==None):
-            # cursor.execute("Select * from taipei_trip limit %d , %d;"%((int(WebPage))*12,12)) 
+            cursor = connection.cursor()
             cursor.execute("select * from message_predict order by time DESC limit %d , %d;"%((int(data_number))*16,16))
             return_text=int(data_number)*16+16
             records = cursor.fetchall()
 
         if(user_name!=None):
+            cursor = connection.cursor()
             cursor.execute("select * from member_basedata where name ='%s';"%(user_name))
             records = cursor.fetchone()
             #檢查有無此會員
@@ -334,6 +208,7 @@ def message_predict_load(member_name,user_name,data_keyword,data_number,data_sta
 
         if(data_keyword!=None):
             #檢查有無股票資料
+            cursor = connection.cursor()
             cursor.execute("select * from stock50 where stock_id ='%s' limit 1 ;"%(data_keyword))
             records = cursor.fetchone()
             
@@ -360,6 +235,7 @@ def message_predict_load(member_name,user_name,data_keyword,data_number,data_sta
             return {"nodata":True,"message":"無資料","find":return_text}
         else:
             for i in range(len(records)):
+                # print(i)
                 message_predict_like_check_return=message_predict_like_check(records[i][1],member_name)
                 message_predict_like_number_return=message_predict_like_number(records[i][1])
                 message_predict_reply_number_return=message_predict_reply_number(records[i][1])
@@ -388,23 +264,20 @@ def message_predict_load(member_name,user_name,data_keyword,data_number,data_sta
 
             return message_predict_load_list
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        # print("資料庫連線已關閉")
 
 #預測留言讀取_回覆
 def message_predict_reply_load(mid):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
+
 
         message_predict_reply_load_list=[]
         
-        cursor = connection.cursor()
         cursor.execute("select * from message_predict_reply where mid ='%s' order by time;" %(mid))
         records = cursor.fetchall()
 
@@ -428,24 +301,20 @@ def message_predict_reply_load(mid):
 
 
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        # print("資料庫連線已關閉")
 #-----------------------*
 
 #預測留言按讚
 def message_predict_like(mid_member,mid,like_message_user_name):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-        
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
+
         #檢查是否註按過
         
-        cursor = connection.cursor()
         cursor.execute("SELECT * FROM message_predict_good WHERE mid= '%s' and like_message_user_name='%s';" % (mid,like_message_user_name))
         records = cursor.fetchone()
             
@@ -463,40 +332,33 @@ def message_predict_like(mid_member,mid,like_message_user_name):
 
             return {"ok":True}
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        # print("資料庫連線已關閉")
 
 #預測留言取消按讚
 def message_predict_unlike(mid,like_message_user_name):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("DELETE FROM message_predict_good WHERE mid= '%s' and like_message_user_name='%s';" % (mid,like_message_user_name))
         connection.commit()
 
         return {"ok":True}
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        # print("資料庫連線已關閉")
 
 #檢查當前使用者有無按讚
 def message_predict_like_check(mid,like_message_user_name):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-        
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("SELECT mid FROM message_predict_good WHERE mid= '%s' and like_message_user_name='%s' limit 1;" % (mid,like_message_user_name))
         records = cursor.fetchone()
             
@@ -505,51 +367,42 @@ def message_predict_like_check(mid,like_message_user_name):
         else:
             return False
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        # print("資料庫連線已關閉")
 
 
 #文章總共有多少讚
 def message_predict_like_number(mid):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-        
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("SELECT count(*) FROM message_predict_good WHERE mid= '%s' limit 1 ;" % (mid))
         records = cursor.fetchone()
             
         return records[0]
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()
 
 
 
 #文章總共有多少回覆
 def message_predict_reply_number(mid):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-        
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("SELECT count(*) FROM message_predict_reply WHERE mid= '%s' limit 1;" % (mid))
         records = cursor.fetchone()
             
         return records[0]
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()
 
 
 #-----------------------*
@@ -558,14 +411,11 @@ def message_predict_reply_number(mid):
 #留言板_預測留言_的回覆
 def message_predict_add_reply(mid,message_reply_user_email,message_reply_user_name,message_reply_user_imgsrc,message_reply_text):
     try:
-        # print(message_reply_user_imgsrc)
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword)  
-
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
+
         sql = "INSERT INTO message_predict_reply (mid,mid_reply,message_reply_user_email,message_reply_user_name,message_reply_user_imgsrc,message_reply_text) VALUES (%s,%s,%s,%s,%s,%s);"
         mid_reply=message_select_mid_reply(mid)
         data=(mid,mid_reply,message_reply_user_email,message_reply_user_name,message_reply_user_imgsrc,message_reply_text)
@@ -575,23 +425,19 @@ def message_predict_add_reply(mid,message_reply_user_email,message_reply_user_na
 
         return {"ok":True,"mid":mid,"mid_reply":mid_reply,"time":datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        # print("資料庫連線已關閉")
 
 #-----------------------*
 
 #功能-留言板流水號製作
 def message_select_mid_reply(mid):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("SELECT mid_reply from message_predict_reply where mid='%s' ORDER BY time DESC ;" % (mid))
 
         records = cursor.fetchone()
@@ -603,9 +449,8 @@ def message_select_mid_reply(mid):
             # print("預測留言資料庫是空的，開始建立新編號")
             return mid+"_1"
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()
 #-----------------------*
 
 #將時間轉換成XXX前
@@ -633,12 +478,10 @@ def days_hours_minutes(td):
 # 私訊
 def private_message_add(private_message_member,private_message_src,private_message_text,private_message_member_to):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword)
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
 
         sql = "INSERT INTO private_message (private_message_member,private_message_src,private_message_text,private_message_member_to)VALUES (%s,%s,%s,%s);"
         data=(private_message_member,private_message_src,private_message_text,private_message_member_to)
@@ -649,22 +492,18 @@ def private_message_add(private_message_member,private_message_src,private_messa
         return {"ok":True}
 
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        # print("資料庫連線已關閉")
             
 def private_message_load(login_user):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword)
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
+
 
         return_list=[]
-
-        cursor = connection.cursor()
         cursor.execute("select * from private_message where private_message_member_to='%s' ORDER BY time DESC ;"%(login_user))
         records = cursor.fetchall()
         if(records):
@@ -679,10 +518,9 @@ def private_message_load(login_user):
         else:
             return {'private_message_not':True}
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        # print("資料庫連線已關閉")
 
 
 
@@ -691,12 +529,10 @@ def private_message_load(login_user):
 #問題回報
 def contact_message_add(message_member,message_src,message_text):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword)
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
 
         sql = "INSERT INTO contact_message (message_member,message_src,message_text)VALUES (%s,%s,%s);"
         data=(message_member,message_src,message_text)
@@ -707,23 +543,20 @@ def contact_message_add(message_member,message_src,message_text):
         return {"ok":True}
 
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        # print("資料庫連線已關閉")
 
 
 def contact_message_load():
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword)
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
+
 
         return_list=[]
 
-        cursor = connection.cursor()
         cursor.execute("select * from contact_message ORDER BY time DESC ;")
         records = cursor.fetchall()
         if(records):
@@ -738,7 +571,6 @@ def contact_message_load():
         else:
             return {'contact_message_not':True}
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        # print("資料庫連線已關閉")

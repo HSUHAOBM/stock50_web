@@ -1,33 +1,23 @@
 from re import escape
 import mysql.connector
 from datetime import datetime
-import configparser
-import os
 import hashlib
 
-member_password_key = "w50stock"
-config = configparser.ConfigParser()
-config.read('config.ini')
-parent_dir = os.path.dirname(os.path.abspath(__file__))
-config.read(parent_dir + "/config.ini")
+from custom_models import connection_pool
 
-DBhost=config.get('use_db', 'DBhost')   
-DBdatabase=config.get('use_db', 'DBdatabase')
-DBuser=config.get('use_db', 'DBuser')
-DBpassword=config.get('use_db', 'DBpassword')
+member_password_key = "w50stock"
+
+
 
 
 #一般會員註冊
 def member_registered (email,password,name):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
         #檢查是否註冊過
-        cursor = connection.cursor()
         cursor.execute("SELECT * FROM member_basedata WHERE name= '%s' or email='%s';" % (name,email))
         records = cursor.fetchone()
 
@@ -52,20 +42,16 @@ def member_registered (email,password,name):
             connection.commit()
             return {"ok": True, "message": "註冊成功!"}
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
 
 
 #一般會員登入
 def member_signin(email,password,logip):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
         password=password+member_password_key
         # print("password字串",password)
@@ -74,7 +60,6 @@ def member_signin(email,password,logip):
         # print("password加密",password)
             
         #檢查是否註冊過
-        cursor = connection.cursor()
         cursor.execute("SELECT name,password,level FROM member_basedata WHERE email= '%s';" % (email))
         records = cursor.fetchone()
         if (records):
@@ -85,9 +70,6 @@ def member_signin(email,password,logip):
                 cursor = connection.cursor()
                 cursor.execute("UPDATE member_basedata SET logingtime = CURRENT_TIMESTAMP , ip='%s' where email='%s';"%(logip,email))
                 connection.commit()
-                # member_signin_update_data(email,logip)
-
-
                 return {"ok": True,"member_name":records[0],"level":records[2]}
             else:
                 # print("密碼錯誤")
@@ -96,9 +78,8 @@ def member_signin(email,password,logip):
             # print("帳號錯誤")
             return {"error": True, "message": "帳號或密碼錯誤"}
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()
             # print("資料庫連線已關閉")
 
 
@@ -107,46 +88,32 @@ def member_signin(email,password,logip):
 #第三方會員登入與註冊
 def member_registered_thirdarea (email,password,name,img_src):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
         #資料處理
         email=password+email
-
-        # print(email)
         #檢查是否註冊過
-        cursor = connection.cursor()
         cursor.execute("SELECT * FROM member_basedata WHERE  email='%s';" % (email))
         records = cursor.fetchone()
 
             
         if (records):
-
-            # print("權限",records[7])
-
             # print("登入")
             return {"ok": True, "message": "登入","member_email":records[1],"member_name":records[3],"member_src":records[6],"level":records[7]}
             
         else:
-            #註冊進資料庫
-            #檢查名子是否被使用
+            #註冊進資料庫 檢查名子是否被使用
             cursor = connection.cursor()
             cursor.execute("SELECT * FROM member_basedata WHERE name= '%s';" % (name))
             records = cursor.fetchone()
 
             if(records):
                 name=name+"_google"
-
-
-
             # print("開始新增")
-            #指令
             password=password+member_password_key
             # print("password字串",password)
-
             password = hashlib.sha256(password.encode('utf-8')).hexdigest()   
             # print("password加密",password)
 
@@ -163,22 +130,18 @@ def member_registered_thirdarea (email,password,name,img_src):
 
             return {"ok": True, "message": "登入","member_email":email,"member_name":name,"member_src":img_src,"level":records[0]}
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()
             # print("資料庫連線已關閉")
 
 
 #會員詳細資料讀取
 def load_member_data (name,member_name):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("SELECT * FROM member_basedata WHERE name= '%s'  ;" % (name))
         records = cursor.fetchone()
         if(records):
@@ -205,18 +168,15 @@ def load_member_data (name,member_name):
         else:
             return {"error":True,"message":"無此會員"}
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        # print("資料庫連線已關閉")
 #會員詳細資料修改
 def modify_member_data (email,name,newname,gender,address,birthday,introduction,interests):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
         
         if(name!=newname):
         #檢查名稱是否重複
@@ -267,23 +227,17 @@ def modify_member_data (email,name,newname,gender,address,birthday,introduction,
         
             return {"ok":True}
     finally:
-        
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        # print("資料庫連線已關閉")
 
 #會員頭貼修改
 def modify_member_picturesrc (email,name,picturesrc):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-        
-
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("UPDATE member_basedata SET picturesrc='%s' WHERE name= '%s'  and email= '%s';" % (picturesrc,name,email))
         connection.commit()      
 
@@ -299,51 +253,38 @@ def modify_member_picturesrc (email,name,picturesrc):
 
         return {"ok":True}
     finally:
-        
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            # print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
 
 #會員總共有多少讚
 def member_message_predict_like_number(member_name):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-        
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("SELECT count(*) FROM message_predict_good WHERE mid_member= '%s' ;" % (member_name))
         records = cursor.fetchone()
             
         return records[0]
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()
 
 
 #取得預測成績            
 def message_rank_select(member_name):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("select * from message_predict_rank where member_name='%s';"%(member_name))
         records = cursor.fetchone()
         if(records):
             return {"ok":True,"rate":records[1],"win":records[2],"fail":records[3],"total":records[4]}
         else:
             return {"nodata":True}
-        
-
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()

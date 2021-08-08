@@ -1,22 +1,13 @@
 import re
 import mysql.connector
 from datetime import datetime
-import configparser
-import os
+from custom_models import connection_pool
+
 import time
 
-from werkzeug.utils import escape
+# from werkzeug.utils import escape
 
 
-config = configparser.ConfigParser()
-config.read('config.ini')
-parent_dir = os.path.dirname(os.path.abspath(__file__))
-config.read(parent_dir + "/config.ini")
-
-DBhost=config.get('use_db', 'DBhost')   
-DBdatabase=config.get('use_db', 'DBdatabase')
-DBuser=config.get('use_db', 'DBuser')
-DBpassword=config.get('use_db', 'DBpassword')
 
 def search_keyword_data(key_word):
     member_data=False
@@ -41,36 +32,28 @@ def search_keyword_data(key_word):
 
 def search_keyword_data_member(key_word):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("select name,picturesrc from member_basedata where name LIKE '%{}%' ;".format(key_word))
         records = cursor.fetchall()
         print(records)
         return records
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()
 
 def search_keyword_data_stock(key_word):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("select stock_id,stock_name from stock50 where stock_name LIKE '%{}%' or stock_id LIKE '%{}%' ;".format(key_word,key_word))
         records = cursor.fetchall()
         print(records)
         return records
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()

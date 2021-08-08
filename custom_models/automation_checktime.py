@@ -1,12 +1,11 @@
 
-import mysql.connector
 from datetime import datetime,date
-import configparser
 import os
 import time
 
+import DB_Get_stock50_everydaydata,DB_Use_rank,DB_Use_rank_stock_info,message_predict_check
+import connection_pool
 
-import DB_Use_message,DB_Get_stock50_everydaydata,DB_Use_rank,DB_Use_rank_stock_info
 
 modelPath = os.path.dirname(os.path.realpath(__file__))
 # print(modelPath)
@@ -37,26 +36,15 @@ logger.info("日誌紀錄寫入中")
 
 
 
-config = configparser.ConfigParser()
-config.read('config.ini')
-parent_dir = os.path.dirname(os.path.abspath(__file__))
-config.read(parent_dir + "/config.ini")
-
-DBhost=config.get('use_db', 'DBhost')   
-DBdatabase=config.get('use_db', 'DBdatabase')
-DBuser=config.get('use_db', 'DBuser')
-DBpassword=config.get('use_db', 'DBpassword')
 
 #取得休市日期
 def DB_get_stopdealdate():
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
 
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("SELECT date FROM stock50_stopdeal_date")
         records = cursor.fetchall()
 
@@ -64,10 +52,9 @@ def DB_get_stopdealdate():
         return(records)
 
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        print("資料庫連線已關閉")
 
 
 
@@ -119,7 +106,7 @@ def doSth():
 
     print("留言資料的檢測")
     logger.info("留言資料的檢測")
-    DB_Use_message.message_predict_check() #留言資料的檢測
+    message_predict_check.message_predict_check() #留言資料的檢測
 
     print("排行榜的資料更新")
     logger.info("排行榜的資料更新")

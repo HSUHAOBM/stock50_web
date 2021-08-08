@@ -1,32 +1,15 @@
 import re
 import mysql.connector
 from datetime import datetime
-import configparser
-import os
-import time
-
-
-config = configparser.ConfigParser()
-config.read('config.ini')
-parent_dir = os.path.dirname(os.path.abspath(__file__))
-config.read(parent_dir + "/config.ini")
-
-DBhost=config.get('use_db', 'DBhost')   
-DBdatabase=config.get('use_db', 'DBdatabase')
-DBuser=config.get('use_db', 'DBuser')
-DBpassword=config.get('use_db', 'DBpassword')
+import connection_pool
 
 
 
 #讀取排行數據並存資料庫
 def message_predict_rank_update():
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
         cursor.execute("select name from member_basedata")
         records = cursor.fetchall()
@@ -43,53 +26,41 @@ def message_predict_rank_update():
                 
         return "排行數據已更新"
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()
 
 #取得總預測數            
 def message_predict_rank_update_select_total(member_name):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
         cursor.execute("select count(*) from message_predict where message_user_name='%s';"%(member_name))
         records = cursor.fetchone()
         return records[0]
 
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()
 #取得總成功數
 def message_predict_rank_update_select_win(member_name):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("select count(*) from message_predict where message_user_name='%s' and check_status=1;"%(member_name))
         records = cursor.fetchone()
         return records[0]
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()
+
 #將數據送進資料庫
 def message_predict_rank_add(member_name,predict_win_rate,predict_win,predict_fail,predict_total,predict_good):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
         
         cursor.execute("select member_name from message_predict_rank where member_name='%s';"%(member_name))
@@ -108,21 +79,17 @@ def message_predict_rank_add(member_name,predict_win_rate,predict_win,predict_fa
             cursor.execute(sql, data)
             connection.commit()    
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()
 
 
 #檢查會員有無預測
 def message_predict_rank_update_select_total_check(member_name):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("select * from message_predict where message_user_name='%s' LIMIT 1 ;"%(member_name))
         records = cursor.fetchone()
         if(records):
@@ -131,26 +98,21 @@ def message_predict_rank_update_select_total_check(member_name):
             return False
 
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()
 
 
 #會員總共有多少讚
 def member_message_predict_like_number(member_name):
     try:
-        connection = mysql.connector.connect(
-        host=DBhost,         
-        database=DBdatabase, 
-        user=DBuser,      
-        password=DBpassword) 
-        
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+
         cursor.execute("SELECT count(*) FROM message_predict_good WHERE mid_member= '%s' ;" % (member_name))
         records = cursor.fetchone()
             
         return records[0]
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
+        cursor.close()
+        connection.close()
