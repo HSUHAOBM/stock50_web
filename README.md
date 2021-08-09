@@ -17,14 +17,14 @@
     <li>Database: MySQL, Connection Pool</li>
     <li>Version Control: Git, GitHub</li>
     <li>Reverse Proxy: Nginx</li>
-    <li>Web Crawler：Python Requests, BeautifulSoup</li>  
+    <li>Web Crawler: Python Requests, BeautifulSoup</li>  
 
 </ul>  
 
 #### Others:
 
 <ul>
-    <li>Third-Party：Google login API, CloudFlare, GoDaddy</li>
+    <li>Third-Party: Google login API, CloudFlare, GoDaddy</li>
     <li>linux Crontab</li>
     <li>hashlib</li>  
 </ul>
