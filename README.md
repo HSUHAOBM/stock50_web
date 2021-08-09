@@ -11,7 +11,7 @@
 ## Technologies
 
 <ul>
-    <li>Frontend: HTML, CSS, JavaScript, RWD</li>
+    <li>Frontend: HTML, CSS, JavaScript, RWD, AJAX</li>
     <li>Backend: Python Flask</li>
     <li>AWS: EC2, S3, Cloudfront </li>
     <li>Database: MySQL, Connection Pool</li>
