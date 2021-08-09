@@ -15,13 +15,13 @@
 
 <br>
 
-## 預測功能
+## 預測功能：預測留言發布、討論
 ![預測](https://user-images.githubusercontent.com/73993570/128681512-ffc37d63-08e0-4dff-b19d-fa0db05fd82b.jpg)
 ![預測審核](https://user-images.githubusercontent.com/73993570/128681528-5710a6c4-2482-4000-a24b-3bfa1a882dc4.jpg)
 
 <br>
 
-## 根據預測成績排名
+## 排行榜：根據預測成績排名
 ![排行榜](https://user-images.githubusercontent.com/73993570/128681551-959f334f-ae94-45db-97ad-6edcedb01987.jpg)
 
 <br>
@@ -30,3 +30,17 @@
 ![股票資訊查詢](https://user-images.githubusercontent.com/73993570/128681566-f5fac237-83c2-428b-8f8d-0b05bae8d96a.jpg)
 
 <br>
+
+## 會員私訊：發送與讀取
+![私人訊息](https://user-images.githubusercontent.com/73993570/128683441-6373a673-3a1b-4db7-be87-eb50d6851730.jpg)
+![私訊讀取](https://user-images.githubusercontent.com/73993570/128683450-041552c1-2ec7-4a82-bb25-6c078fa8681b.jpg)
+
+## 網站問題與建議回報![站內訊息站方](https://user-images.githubusercontent.com/73993570/128683630-96e92d7f-8a8f-4dcc-b65f-f2f0ea5d304d.jpg)
+<hr>
+
+## 管理者模式：讀取網站問題與建議的私訊
+![特殊權限](https://user-images.githubusercontent.com/73993570/128683815-7f690a43-8216-46c3-8a2d-2e3d2bca7072.jpg)
+## 管理者模式：刪除預測留言
+![特殊權限刪除](https://user-images.githubusercontent.com/73993570/128683832-48c3bb78-2bbd-4ff1-ae98-64de8c19f769.jpg)
+
+
