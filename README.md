@@ -16,7 +16,8 @@
 <br>
 
 ## 預測功能：預測留言發布、討論
-![預測](https://user-images.githubusercontent.com/73993570/128681512-ffc37d63-08e0-4dff-b19d-fa0db05fd82b.jpg)
+![01](https://user-images.githubusercontent.com/73993570/128708380-e3cb8a1a-1bd2-42ab-abd9-ea69277b2c3a.gif)
+
 ![預測審核](https://user-images.githubusercontent.com/73993570/128681528-5710a6c4-2482-4000-a24b-3bfa1a882dc4.jpg)
 
 <br>
@@ -27,7 +28,7 @@
 <br>
 
 ## 個股資訊：報價、新聞、預測、排名
-![股票資訊查詢](https://user-images.githubusercontent.com/73993570/128681566-f5fac237-83c2-428b-8f8d-0b05bae8d96a.jpg)
+![03](https://user-images.githubusercontent.com/73993570/128722830-a310c381-edb1-407f-87c0-f4f768571149.gif)
 
 <br>
 
