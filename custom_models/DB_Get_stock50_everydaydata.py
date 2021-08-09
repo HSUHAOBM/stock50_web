@@ -2,9 +2,23 @@ import requests
 import json
 from datetime import datetime
 import time
-import mysql.connector
-import configparser
-import os
+# import mysql.connector
+# import configparser
+# import os
+import connection_pool
+
+
+# config = configparser.ConfigParser()
+# config.read('config.ini')
+# parent_dir = os.path.dirname(os.path.abspath(__file__))
+# config.read(parent_dir + "/config.ini")
+
+# DBhost=config.get('use_db', 'DBhost')   
+# DBdatabase=config.get('use_db', 'DBdatabase')
+# DBuser=config.get('use_db', 'DBuser')
+# DBpassword=config.get('use_db', 'DBpassword')
+
+
 
 #取得台灣50
 stock_id=[]
@@ -19,59 +33,104 @@ def loadstock50dataname():
 
     return stock_name,stock_id
 
+
+
 #功能_爬台灣證券網，延遲3s設定
-def loadstockdata(stocknumber):
-    url_tese='https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date='+datetime.now().strftime('%Y%m%d')+'&stockNo='+str(stocknumber)+'&_=1604642840350'
+def loadstockdata(stocknumber):    
+    time.sleep(3)
+
+    url_tese='https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date='+datetime.now().strftime('%Y%m%d')+'&stockNo='+str(stocknumber)+'&_='
+    print("網址來源：",url_tese)
     res= requests.get(url_tese)
     jdata = json.loads(res.text)
-    time.sleep(3)
-    return jdata["data"][-1][0],jdata["data"][-1][1],jdata["data"][-1][3],jdata["data"][-1][4],jdata["data"][-1][5],jdata["data"][-1][6],jdata["data"][-1][7],jdata["data"][-1][8]
+    
+    if ('data' not in jdata):
+        print(datetime.now().strftime('%Y%m%d'))
+        return datetime.now().strftime('%Y%m%d') ,None ,None ,None ,None ,None ,None ,None
+    else:
+        print(jdata['data'][-1])
 
-#功能_轉捔民國日期為西元:106/01/02->20170102
-def convertDate(date): 
-    str1 = str(date)
-    yearstr = str1[:3]
-    realyear = str(int(yearstr) + 1911)
-    realdate = realyear + str1[4:6] + str1[7:9]
-    return realdate
+        returndata=jdata['data'][-1]
+        
+        return jdata['date'] ,returndata[1].replace(',','') ,returndata[3].replace(',','') ,returndata[4].replace(',','') ,returndata[5].replace(',','') ,returndata[6].replace(',','') ,returndata[7].replace(',','') ,returndata[8].replace(',','')
 
 #資料庫_存50的相關資料
-def stock50_getstock50_toDB(stock_id,stock_name,data,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal):
+def stock50_getstock50_toDB(stock_id,stock_name,date,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal):
     try:
-        connection = mysql.connector.connect(
-        host="localhost",         
-        database="stock50_web", 
-        user="root",      
-        password="root") 
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
+        
         sql = "INSERT INTO stock50_data (stock_id,stock_name,date,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
-        data=(stock_id,stock_name,data,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal)
+        stock_data=(stock_id,stock_name,date,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal)
         cursor = connection.cursor()
-        cursor.execute(sql, data)
+        cursor.execute(sql, stock_data)
         connection.commit()
         print("資料庫連線")
 
     finally:
-        if (connection.is_connected()):
-            cursor.close()
-            connection.close()
-            print("資料庫連線已關閉")
+        cursor.close()
+        connection.close()
+        print("資料庫連線已關閉")
+
+
 
 
 #執行
 def stock50_getdata():
-    i=0
-    loadstock50dataname()
+    i=0    
+
+    stock_name,stock_id=loadstock50dataname()
+
     for index in stock_id:
-        data,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal=loadstockdata(index)
-        data=convertDate(data)
-        print(stock_id[i],stock_name[i],data,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal)
+        date,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal=loadstockdata(index)
+
+        print(stock_id[i],stock_name[i],date,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal)
         if(stock_total!="0"):
             if differ =="X0.00":
                 print(stock_name[i],"今日除息")
                 differ=round(float(open_price)-float(end_price), 2)
                 differ=str(differ)
-            stock50_getstock50_toDB(stock_id[i],stock_name[i],data,stock_total.replace(',',''),open_price.replace(',',''),high_price.replace(',',''),low_price.replace(',',''),end_price.replace(',',''),differ.replace(',',''),totaldeal.replace(',',''))
+            stock50_getstock50_toDB(stock_id[i],stock_name[i],date,stock_total,open_price,high_price,low_price,end_price,differ,totaldeal)
         i=i+1
 
-# stock50_getdata()
+
+#檢查是否有沒抓到資料
+def stock50_getstock50_check_error():
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
+        
+        cursor.execute("select * from stock50_data where open_price is null")
+        records = cursor.fetchall()
+        if (records):
+            for i in range(len(records)):
+                getstock50_data=loadstockdata(records[i][1])
+                stock50_getstock50_error_modify(getstock50_data,records[i][1])
+            return "錯誤修改完成。"
+        else:
+            return "今日無錯誤。"
+    finally:
+        cursor.close()
+        connection.close()
+        print("資料庫連線已關閉")
+
+#修正程式
+def stock50_getstock50_error_modify(getstock50_data,stock_id):
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
+        
+        stock_total,open_price,high_price,low_price,end_price,differ,totaldeal=getstock50_data[1],getstock50_data[2],getstock50_data[3],getstock50_data[4],getstock50_data[5],getstock50_data[6],getstock50_data[7]
+        
+        cursor = connection.cursor()
+        cursor.execute("UPDATE stock50_data SET stock_total='%s',open_price='%s',high_price='%s',low_price='%s',end_price='%s',differ='%s',totaldeal='%s' WHERE stock_id= '%s' ;" % (stock_total,open_price,high_price,low_price,end_price,differ,totaldeal,stock_id))
+        connection.commit()  
+
+
+    finally:
+        cursor.close()
+        connection.close()
+        print("資料庫連線已關閉")

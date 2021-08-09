@@ -20,51 +20,59 @@ DBpassword=config.get('use_db', 'DBpassword')
 
 #建立台50基本資料庫
 def stock50_data():
-    connection = mysql.connector.connect(
-    host=DBhost,         
-    database=DBdatabase, 
-    user=DBuser,      
-    password=DBpassword) 
+    try:
+        connection = mysql.connector.connect(
+        host=DBhost,         
+        database=DBdatabase, 
+        user=DBuser,      
+        password=DBpassword) 
 
-    sql = '''CREATE TABLE stock50_data  (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        stock_id int ,
-        stock_name VARCHAR(25),
-        date date,
-        stock_total INT ,
-        open_price float,
-        high_price float,
-        low_price float,
-        end_price float,
-        differ float,
-        totaldeal int,
-        time datetime DEFAULT CURRENT_TIMESTAMP);'''
+        sql = '''CREATE TABLE stock50_data  (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            stock_id int ,
+            stock_name VARCHAR(25),
+            date date,
+            stock_total INT ,
+            open_price float,
+            high_price float,
+            low_price float,
+            end_price float,
+            differ float,
+            totaldeal int,
+            time datetime DEFAULT CURRENT_TIMESTAMP);'''
 
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    connection.commit()
+        cursor = connection.cursor()
+        cursor.execute(sql)
+        connection.commit()
 
-    cursor.close()
-    connection.close()
+    finally:
+        if (connection.is_connected()):
+            cursor.close()
+            connection.close()
+            print("資料庫連線已關閉")
 #建立休市資料庫
 def stock50_stopdeal_date():
-    connection = mysql.connector.connect(
-    host=DBhost,         
-    database=DBdatabase, 
-    user=DBuser,      
-    password=DBpassword) 
+    try:
+        connection = mysql.connector.connect(
+        host=DBhost,         
+        database=DBdatabase, 
+        user=DBuser,      
+        password=DBpassword) 
 
-    sql = '''CREATE TABLE stock50_stopdeal_date  (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        date date,
-        time datetime DEFAULT CURRENT_TIMESTAMP);'''
+        sql = '''CREATE TABLE stock50_stopdeal_date  (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            date date,
+            time datetime DEFAULT CURRENT_TIMESTAMP);'''
 
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    connection.commit()
+        cursor = connection.cursor()
+        cursor.execute(sql)
+        connection.commit()
+    finally:
+        if (connection.is_connected()):
+            cursor.close()
+            connection.close()
+            print("資料庫連線已關閉")
 
-    cursor.close()
-    connection.close()
 
 
 
