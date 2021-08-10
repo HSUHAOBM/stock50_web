@@ -25,7 +25,7 @@
 
 <ul>
     <li>Third-Party: Google login API, CloudFlare, GoDaddy</li>
-    <li>linux Crontab</li>
+    <li>Linux crontab</li>
     <li>hashlib</li>  
 </ul>
  
