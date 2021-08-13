@@ -49,7 +49,7 @@ def stock50_data():
         if (connection.is_connected()):
             cursor.close()
             connection.close()
-            print("資料庫連線已關閉")
+            
 #建立休市資料庫
 def stock50_stopdeal_date():
     try:

@@ -146,6 +146,7 @@ def member():
 
                 thirdarea_return=DB_Use_memberdata.member_registered_thirdarea(gmail_member_email,gmail_member_password,gmail_member_name,gmail_member_src)
                 if(thirdarea_return['ok']):
+                    session.clear()     
                     session['member_email'] = thirdarea_return.get('member_email')
                     session['member_name'] = thirdarea_return.get('member_name')
                     session['member_src'] = thirdarea_return.get("member_src")
@@ -175,6 +176,7 @@ def member():
                     else:
                         returnstate = DB_Use_memberdata.member_signin(member_email, member_password,request.remote_addr)
                         if(returnstate.get('ok')):
+                            session.clear()     
                             session['member_email'] = member_email
                             session['member_name'] = returnstate.get('member_name')
                             session['member_src']=DB_Use_load_rank_data.load_member_src(returnstate.get('member_name'))

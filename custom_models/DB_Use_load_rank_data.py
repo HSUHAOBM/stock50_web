@@ -101,47 +101,59 @@ def message_predict_rank_load(user_name,stock_id,data_number,data_status):
         
 #load img src
 def load_member_src(member_name):
-    connection = connection_pool.getConnection()
-    connection = connection.connection()
-    cursor = connection.cursor()
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
-    cursor.execute("select picturesrc from member_basedata where name='%s';"%(member_name))
-    records = cursor.fetchone()
-    return records[0]
-
+        cursor.execute("select picturesrc from member_basedata where name='%s';"%(member_name))
+        records = cursor.fetchone()
+        return records[0]
+    finally:
+        cursor.close()
+        connection.close()
 
 
 
 
 def load_rank_data_predict_win_rate(member_name):
-    connection = connection_pool.getConnection()
-    connection = connection.connection()
-    cursor = connection.cursor()
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
-    cursor.execute("select * from message_predict_rank_stock_info where member_name='%s' and predict_win>0 order by cast(predict_win_rate as unsigned) DESC limit 5 ;"%(member_name))
-    records = cursor.fetchall()
-    # print(records)
-    return records
-
+        cursor.execute("select * from message_predict_rank_stock_info where member_name='%s' and predict_win>0 order by cast(predict_win_rate as unsigned) DESC limit 5 ;"%(member_name))
+        records = cursor.fetchall()
+        # print(records)
+        return records
+    finally:
+        cursor.close()
+        connection.close()
 
 def load_rank_data_predict_win(member_name):
-    connection = connection_pool.getConnection()
-    connection = connection.connection()
-    cursor = connection.cursor()
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
-    cursor.execute("select * from message_predict_rank_stock_info where member_name='%s' and predict_win>0 order by cast(predict_win as unsigned) DESC limit 5 ;"%(member_name))
-    records = cursor.fetchall()
-    return records
-
+        cursor.execute("select * from message_predict_rank_stock_info where member_name='%s' and predict_win>0 order by cast(predict_win as unsigned) DESC limit 5 ;"%(member_name))
+        records = cursor.fetchall()
+        return records
+    finally:
+        cursor.close()
+        connection.close()
 
 def load_rank_data_predict_fail(member_name):
-    connection = connection_pool.getConnection()
-    connection = connection.connection()
-    cursor = connection.cursor()
-    
-    cursor.execute("select * from message_predict_rank_stock_info where member_name='%s' and predict_fail>0 order by cast(predict_fail as unsigned) DESC limit 5 ;"%(member_name))
-    records = cursor.fetchall()
-    return records
-
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
+        
+        cursor.execute("select * from message_predict_rank_stock_info where member_name='%s' and predict_fail>0 order by cast(predict_fail as unsigned) DESC limit 5 ;"%(member_name))
+        records = cursor.fetchall()
+        return records
+    finally:
+        cursor.close()
+        connection.close()
 
 

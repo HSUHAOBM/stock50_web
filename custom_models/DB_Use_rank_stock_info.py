@@ -50,62 +50,78 @@ def message_predict_rank_update_stock_info_get_data_to_db(stock_id,stock_name):
 
 #資料
 def message_predict_rank_update_select_total_stock_info(member_name,stock_id):
-    connection = connection_pool.getConnection()
-    connection = connection.connection()
-    cursor = connection.cursor()
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
-    cursor.execute("select count(*) from message_predict where message_user_name='%s' and stock_id='%s' ;"%(member_name,stock_id))
-    records = cursor.fetchone()
-    return records[0]
+        cursor.execute("select count(*) from message_predict where message_user_name='%s' and stock_id='%s' ;"%(member_name,stock_id))
+        records = cursor.fetchone()
+        return records[0]
+    finally:
+        cursor.close()
+        connection.close()
 
 
 def message_predict_rank_update_select_win_stock_info(member_name,stock_id):
-    connection = connection_pool.getConnection()
-    connection = connection.connection()
-    cursor = connection.cursor()
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
 
-    cursor.execute("select count(*) from message_predict where message_user_name='%s' and check_status=1 and stock_id='%s';"%(member_name,stock_id))
-    records = cursor.fetchone()
-    return records[0]
+        cursor.execute("select count(*) from message_predict where message_user_name='%s' and check_status=1 and stock_id='%s';"%(member_name,stock_id))
+        records = cursor.fetchone()
+        return records[0]
+    finally:
+        cursor.close()
+        connection.close()
 
 
 #資料：確認有預測過
 def message_predict_rank_update_select_total_stock_info_check(member_name,stock_id):
-    connection = connection_pool.getConnection()
-    connection = connection.connection()
-    cursor = connection.cursor()
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
-    cursor.execute("select message_user_name from message_predict where message_user_name='%s' and stock_id='%s' LIMIT 1 ;"%(member_name,stock_id))
-    records = cursor.fetchone()
-    if(records):
-        return True
-    else:
-        return False
+        cursor.execute("select message_user_name from message_predict where message_user_name='%s' and stock_id='%s' LIMIT 1 ;"%(member_name,stock_id))
+        records = cursor.fetchone()
+        if(records):
+            return True
+        else:
+            return False
+    finally:
+        cursor.close()
+        connection.close()
 
 
 #資料庫
 def message_predict_rank_add_stock_info(stock_id,stock_name,member_name,predict_win_rate,predict_win,predict_fail,predict_total):
-    connection = connection_pool.getConnection()
-    connection = connection.connection()
-    cursor = connection.cursor()
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
-    
-    cursor.execute("select member_name from message_predict_rank_stock_info where member_name='%s' and stock_id='%s' LIMIT 1;"%(member_name,stock_id))
-    records = cursor.fetchone()
-    
-    if(records):
-        print(stock_id,"會員",member_name,"已有資料_更新")                
-        cursor = connection.cursor()
-        cursor.execute("UPDATE message_predict_rank_stock_info SET predict_win_rate ='%s',predict_win='%s' ,predict_fail='%s',predict_total='%s' where member_name='%s' and stock_id='%s';"%(predict_win_rate,predict_win,predict_fail,predict_total,member_name,stock_id))
-        connection.commit()
-    else:
-        print(stock_id,"會員無",member_name,"資料_新增")                
-        sql = "INSERT INTO message_predict_rank_stock_info (stock_id,stock_name,member_name,predict_win_rate,predict_win,predict_fail,predict_total) VALUES (%s,%s,%s,%s,%s,%s,%s);"
-        data=(stock_id,stock_name,member_name,predict_win_rate,predict_win,predict_fail,predict_total)
-        cursor = connection.cursor()
-        cursor.execute(sql, data)
-        connection.commit()    
+        
+        cursor.execute("select member_name from message_predict_rank_stock_info where member_name='%s' and stock_id='%s' LIMIT 1;"%(member_name,stock_id))
+        records = cursor.fetchone()
+        
+        if(records):
+            print(stock_id,"會員",member_name,"已有資料_更新")                
+            cursor = connection.cursor()
+            cursor.execute("UPDATE message_predict_rank_stock_info SET predict_win_rate ='%s',predict_win='%s' ,predict_fail='%s',predict_total='%s' where member_name='%s' and stock_id='%s';"%(predict_win_rate,predict_win,predict_fail,predict_total,member_name,stock_id))
+            connection.commit()
+        else:
+            print(stock_id,"會員無",member_name,"資料_新增")                
+            sql = "INSERT INTO message_predict_rank_stock_info (stock_id,stock_name,member_name,predict_win_rate,predict_win,predict_fail,predict_total) VALUES (%s,%s,%s,%s,%s,%s,%s);"
+            data=(stock_id,stock_name,member_name,predict_win_rate,predict_win,predict_fail,predict_total)
+            cursor = connection.cursor()
+            cursor.execute(sql, data)
+            connection.commit()    
+    finally:
+        cursor.close()
+        connection.close()
 
 
 

@@ -17,10 +17,10 @@ import pymysql
 def getConnection():
     connection = PooledDB(
     creator=pymysql,
-    maxconnections=3,   
-    mincached=2,
-    maxcached=5,
-    maxshared=3,
+    maxconnections=5,   #最大連接
+    mincached=3,        #啟動開啟空連接
+    maxcached=6,        #最大可用連接
+    maxshared=6,        #大可共享連接
     host=DBhost,
     charset='utf8',
     database=DBdatabase,

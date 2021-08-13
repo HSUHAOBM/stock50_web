@@ -18,7 +18,7 @@ def member_registered (email,password,name):
         cursor = connection.cursor()
 
         #檢查是否註冊過
-        cursor.execute("SELECT * FROM member_basedata WHERE name= '%s' or email='%s';" % (name,email))
+        cursor.execute("SELECT name FROM member_basedata WHERE name= '%s' or email='%s' limit 1;" % (name,email))
         records = cursor.fetchone()
 
             
@@ -60,7 +60,7 @@ def member_signin(email,password,logip):
         # print("password加密",password)
             
         #檢查是否註冊過
-        cursor.execute("SELECT name,password,level FROM member_basedata WHERE email= '%s';" % (email))
+        cursor.execute("SELECT name,password,level FROM member_basedata WHERE email= '%s' limit 1;" % (email))
         records = cursor.fetchone()
         if (records):
             # print("帳號正確。。。開始檢查密碼")
@@ -254,14 +254,18 @@ def modify_member_picturesrc (email,name,picturesrc):
 
 #會員總共有多少讚
 def member_message_predict_like_number(member_name):
-    connection = connection_pool.getConnection()
-    connection = connection.connection()
-    cursor = connection.cursor()
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
-    cursor.execute("SELECT count(*) FROM message_predict_good WHERE mid_member= '%s' ;" % (member_name))
-    records = cursor.fetchone()
-        
-    return records[0]
+        cursor.execute("SELECT count(*) FROM message_predict_good WHERE mid_member= '%s' ;" % (member_name))
+        records = cursor.fetchone()
+            
+        return records[0]
+    finally:
+        cursor.close()
+        connection.close()
 
 
 
@@ -273,8 +277,12 @@ def message_rank_select(member_name):
 
     cursor.execute("select * from message_predict_rank where member_name='%s' limit 1;"%(member_name))
     records = cursor.fetchone()
-    if(records):
-        return {"ok":True,"rate":records[1],"win":records[2],"fail":records[3],"total":records[4]}
-    else:
-        return {"nodata":True}
+    try:
+        if(records):
+            return {"ok":True,"rate":records[1],"win":records[2],"fail":records[3],"total":records[4]}
+        else:
+            return {"nodata":True}
+    finally:
+        cursor.close()
+        connection.close()
 

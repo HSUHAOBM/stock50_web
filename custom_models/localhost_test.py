@@ -1,8 +1,7 @@
 import message_predict_check,DB_Get_stock50_everydaydata,DB_Use_rank,DB_Use_rank_stock_info
+DB_Get_stock50_everydaydata.stock50_getdata() #取得最新的股市資料
 
-# DB_Get_stock50_everydaydata.stock50_getdata() #取得最新的股市資料
-
-# DB_Get_stock50_everydaydata.stock50_getstock50_check_error()#檢查有無異常的資料
+DB_Get_stock50_everydaydata.stock50_getstock50_check_error()#檢查有無異常的資料
 
 message_predict_check.message_predict_check() #留言資料的檢測
 
