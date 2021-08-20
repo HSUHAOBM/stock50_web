@@ -1,6 +1,6 @@
 document.querySelector('.member_register_input.username').value = "";
-document.querySelector('.member_register_input.email').value = "";
-document.querySelector('.member_register_input.password1').value = "";
+// document.querySelector('.member_register_input.email').value = "";
+// document.querySelector('.member_register_input.password1').value = "";
 document.querySelector('.member_register_input.password2').value = "";
 
 let memberform = document.getElementById('member_form');

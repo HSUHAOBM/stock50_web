@@ -200,6 +200,10 @@ def modify_member_data (email,name,newname,gender,address,birthday,introduction,
                 connection.commit()  
 
                 cursor = connection.cursor()
+                cursor.execute("UPDATE message_predict_good SET mid_member='%s' WHERE mid_member= '%s' ;" % (newname,name))
+                connection.commit()  
+
+                cursor = connection.cursor()
                 cursor.execute("UPDATE message_predict_rank SET member_name='%s' WHERE member_name= '%s' ;" % (newname,name))
                 connection.commit()  
 
