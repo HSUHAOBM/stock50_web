@@ -34,7 +34,10 @@
 <hr/>
 
 ## AWS 架構
-### Client > EC2 (Nginx + Flask) > S3 > CloudFront
+
+### Client > EC2 (Nginx + Flask)　>　┌ S3 > CloudFront
+### 　　　　　　　　　　　　　　　 └ RDS (MySQL)
+
 <hr/>
 
 <br>
