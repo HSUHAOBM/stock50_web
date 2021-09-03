@@ -24,7 +24,6 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
     div_predict_message_box.appendChild(div_predict_message_box_result)
 
     // 預測檢測後的顯示
-    // 預測檢測後的顯示
     let imgdiv_predict_message_box_result = document.createElement("img");
     if (message_check_status == "0") {
         imgdiv_predict_message_box_result.src = ""
