@@ -27,7 +27,7 @@ r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
 def load_stock_data(stock_id):
  
-        pw = r.hgetall(2330)
+        pw = r.hgetall(stock_id)
         if not pw:
             try:
                 print("無快取資料")
