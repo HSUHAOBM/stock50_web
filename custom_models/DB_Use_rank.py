@@ -31,59 +31,76 @@ def message_predict_rank_update():
 
 #取得總預測數            
 def message_predict_rank_update_select_total(member_name):
-    connection = connection_pool.getConnection()
-    connection = connection.connection()
-    cursor = connection.cursor()
-    cursor.execute("select count(*) from message_predict where message_user_name='%s';"%(member_name))
-    records = cursor.fetchone()
-    return records[0]
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
+        cursor.execute("select count(*) from message_predict where message_user_name='%s';"%(member_name))
+        records = cursor.fetchone()
+        return records[0]
+    finally:
+        cursor.close()
+        connection.close()
+
 
 #取得總成功數
 def message_predict_rank_update_select_win(member_name):
-    connection = connection_pool.getConnection()
-    connection = connection.connection()
-    cursor = connection.cursor()
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
-    cursor.execute("select count(*) from message_predict where message_user_name='%s' and check_status=1;"%(member_name))
-    records = cursor.fetchone()
-    return records[0]
+        cursor.execute("select count(*) from message_predict where message_user_name='%s' and check_status=1;"%(member_name))
+        records = cursor.fetchone()
+        return records[0]
+    finally:
+        cursor.close()
+        connection.close()
 
 
 #將數據送進資料庫
 def message_predict_rank_add(member_name,predict_win_rate,predict_win,predict_fail,predict_total,predict_good):
-    connection = connection_pool.getConnection()
-    connection = connection.connection()
-    cursor = connection.cursor()
-    
-    cursor.execute("select member_name from message_predict_rank where member_name='%s' limit 1;"%(member_name))
-    records = cursor.fetchone()
-    if(records):
-        print("會員已有資料_更新")                
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
         cursor = connection.cursor()
-        cursor.execute("UPDATE message_predict_rank SET predict_win_rate ='%s',predict_win='%s' ,predict_fail='%s',predict_total='%s',predict_good='%s' where member_name='%s';"%(predict_win_rate,predict_win,predict_fail,predict_total,predict_good,member_name))
-        connection.commit()
-    else:
-        print("會員無資料_新增")                
+        
+        cursor.execute("select member_name from message_predict_rank where member_name='%s' limit 1;"%(member_name))
+        records = cursor.fetchone()
+        if(records):
+            print("會員已有資料_更新")                
+            cursor = connection.cursor()
+            cursor.execute("UPDATE message_predict_rank SET predict_win_rate ='%s',predict_win='%s' ,predict_fail='%s',predict_total='%s',predict_good='%s' where member_name='%s';"%(predict_win_rate,predict_win,predict_fail,predict_total,predict_good,member_name))
+            connection.commit()
+        else:
+            print("會員無資料_新增")                
 
-        sql = "INSERT INTO message_predict_rank (member_name,predict_win_rate,predict_win,predict_fail,predict_total,predict_good) VALUES (%s,%s,%s,%s,%s,%s);"
-        data=(member_name,predict_win_rate,predict_win,predict_fail,predict_total,predict_good)
-        cursor = connection.cursor()
-        cursor.execute(sql, data)
-        connection.commit()    
+            sql = "INSERT INTO message_predict_rank (member_name,predict_win_rate,predict_win,predict_fail,predict_total,predict_good) VALUES (%s,%s,%s,%s,%s,%s);"
+            data=(member_name,predict_win_rate,predict_win,predict_fail,predict_total,predict_good)
+            cursor = connection.cursor()
+            cursor.execute(sql, data)
+            connection.commit()    
+    finally:
+        cursor.close()
+        connection.close()
 
 
 #檢查會員有無預測
 def message_predict_rank_update_select_total_check(member_name):
-    connection = connection_pool.getConnection()
-    connection = connection.connection()
-    cursor = connection.cursor()
+    try:
+        connection = connection_pool.getConnection()
+        connection = connection.connection()
+        cursor = connection.cursor()
 
-    cursor.execute("select message_user_name from message_predict where message_user_name='%s' LIMIT 1 ;"%(member_name))
-    records = cursor.fetchone()
-    if(records):
-        return True
-    else:
-        return False
+        cursor.execute("select message_user_name from message_predict where message_user_name='%s' LIMIT 1 ;"%(member_name))
+        records = cursor.fetchone()
+        if(records):
+            return True
+        else:
+            return False
+    finally:
+        cursor.close()
+        connection.close()
 
 
 

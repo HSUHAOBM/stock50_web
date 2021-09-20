@@ -49,7 +49,7 @@ def DB_get_stopdealdate():
         records = cursor.fetchall()
 
             
-        return(records)
+        return records
 
     finally:
         cursor.close()

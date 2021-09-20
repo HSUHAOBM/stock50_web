@@ -13,10 +13,10 @@ config.read('config.ini')
 parent_dir = os.path.dirname(os.path.abspath(__file__))
 config.read(parent_dir + "/config.ini")
 
-DBhost=config.get('use_db', 'DBhost')   
-DBdatabase=config.get('use_db', 'DBdatabase')
-DBuser=config.get('use_db', 'DBuser')
-DBpassword=config.get('use_db', 'DBpassword')
+DBhost=config.get('aws_rd', 'DBhost')   
+DBdatabase=config.get('aws_rd', 'DBdatabase')
+DBuser=config.get('aws_rd', 'DBuser')
+DBpassword=config.get('aws_rd', 'DBpassword')
 
 #建立台50基本資料庫
 def stock50_data():
@@ -49,7 +49,7 @@ def stock50_data():
         if (connection.is_connected()):
             cursor.close()
             connection.close()
-            print("資料庫連線已關閉")
+            
 #建立休市資料庫
 def stock50_stopdeal_date():
     try:
