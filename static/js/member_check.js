@@ -1,7 +1,10 @@
 let login_member_email = "";
 let login_member_name = "";
+let login_member_id = "";
+
 let login_member_img_src = "";
 let login_member_level = false
+
 checklogstate();
 
 
@@ -18,8 +21,10 @@ function checklogstate() {
     }).then(function(result) {
         // console.log(result);
         // console.log(result.data.email, result.data.name);
-        login_member_email = result.data.email;
-        login_member_name = result.data.name;
+        login_member_email = result.data.login_email;
+        login_member_name = result.data.login_name;
+        login_member_id = result.data.login_id;
+        login_member_img_src = result.data.login_imgsrc;
 
         // console.log(login_member_email, login_member_name)
         if (result.data != null) {
@@ -69,12 +74,9 @@ function load_member_data() {
     }).then(function(res) {
         return res.json();
     }).then(function(result) {
-        // console.log(result)
+        console.log(result)
         if (result) {
-            login_member_img_src = result.picturesrc;
             document.querySelector('.member_name').textContent = "你好，" + login_member_name + "。"
-
-
 
             //首頁
             if (document.querySelector('.strat_join_member')) {
@@ -86,7 +88,7 @@ function load_member_data() {
             // 首頁上方
             if (document.querySelector('.head_welcomebox_right')) {
                 document.querySelector('.head_welcomebox_right.btn7').addEventListener('click', function() {
-                    location.href = '/member?name=' + login_member_name
+                    location.href = '/member?id=' + login_member_id
                 });
             }
 
@@ -96,7 +98,7 @@ function load_member_data() {
             if (document.querySelector('.main_right_memberdata')) {
                 document.querySelector('.main_right_memberdata.name').textContent = result.name;
                 document.querySelector('.main_right_memberdata.name').addEventListener('click', function() {
-                    location.href = '/member?name=' + result.name
+                    location.href = '/member?id=' + result.login_member_id
                 });
                 document.querySelector('.main_right_memberdata_div>img').src = result.picturesrc;
                 if (result.rank_total.ok) {

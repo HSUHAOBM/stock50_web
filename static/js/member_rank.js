@@ -60,14 +60,14 @@ function load_rank_rate_add(no, stock_id, stock_name, predict_win_rate, predict_
 function member_predict_load_rank(data_status) {
     // http://127.0.0.1:5000/api/message_predict_rank?user_name=h02&data_status=fail
 
-    fetch("/api/message_predict_rank?user_name=" + web_name + "&data_status=" + data_status).then(function(response) {
+    fetch("/api/message_predict_rank?id=" + memer_id + "&data_status=" + data_status).then(function(response) {
         return response.json();
     }).then(function(result) {
         if (result.data.member_no_data) {
             document.querySelector('.data_not_have.' + data_status).style.display = "flex";
 
             predic_data_not_have = predic_data_not_have + 1
-            if (web_name == login_member_name) {
+            if (memer_id == login_member_id) {
                 document.querySelector('.data_not_have_text_other').style.display = "flex";
             }
             if (predic_data_not_have == 3) {

@@ -50,7 +50,7 @@ def search_keyword_data_stock(key_word):
         connection = connection.connection()
         cursor = connection.cursor()
 
-        cursor.execute("select stock_id,stock_name from stock50 where stock_name LIKE '%{}%' or stock_id LIKE '%{}%' ;".format(key_word,key_word))
+        cursor.execute("select stock_id,stock_name from stock50 where stock_name LIKE '{}%' or stock_id LIKE '%{}%' ;".format(key_word,key_word))
         records = cursor.fetchall()
         print(records)
         return records

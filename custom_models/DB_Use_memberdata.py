@@ -60,17 +60,17 @@ def member_signin(email,password,logip):
         # print("password加密",password)
             
         #檢查是否註冊過
-        cursor.execute("SELECT name,password,level FROM member_basedata WHERE email= '%s' limit 1;" % (email))
+        cursor.execute("SELECT id,name,password,picturesrc,level FROM member_basedata WHERE email= '%s' limit 1;" % (email))
         records = cursor.fetchone()
         if (records):
             # print("帳號正確。。。開始檢查密碼")
 
-            if (password==records[1]):
+            if (password==records[2]):
                 # print("密碼驗證成功")
                 cursor = connection.cursor()
                 cursor.execute("UPDATE member_basedata SET logingtime = CURRENT_TIMESTAMP , ip='%s' where email='%s';"%(logip,email))
                 connection.commit()
-                return {"ok": True,"member_name":records[0],"level":records[2]}
+                return {"ok": True,"member_id":records[0],"member_name":records[1],"picturesrc":records[3],"level":records[4]}
             else:
                 # print("密碼錯誤")
                 return {"error": True, "message": "帳號或密碼錯誤"}
@@ -95,13 +95,13 @@ def member_registered_thirdarea (email,password,name,img_src):
         #資料處理
         email=password+email
         #檢查是否註冊過
-        cursor.execute("SELECT email,name,picturesrc,level FROM member_basedata WHERE  email='%s' limit 1;" % (email))
+        cursor.execute("SELECT id,email,name,picturesrc,level FROM member_basedata WHERE  email='%s' limit 1;" % (email))
         records = cursor.fetchone()
 
             
         if (records):
             # print("登入")
-            return {"ok": True, "message": "登入","member_email":records[0],"member_name":records[1],"member_src":records[2],"level":records[3]}
+            return {"ok": True, "message": "登入","id":records[0],"member_email":records[1],"member_name":records[2],"member_src":records[3],"level":records[4]}
             
         else:
             #註冊進資料庫 檢查名子是否被使用
@@ -122,9 +122,14 @@ def member_registered_thirdarea (email,password,name,img_src):
             cursor = connection.cursor()
             cursor.execute(sql, member_data)
             connection.commit()
+            
+            
+            cursor = connection.cursor()
+            cursor.execute("SELECT id FROM member_basedata WHERE password='%s' limit 1;" % (password))
+            records = cursor.fetchone()
 
 
-            return {"ok": True, "message": "登入","member_email":email,"member_name":name,"member_src":img_src,"level":"0"}
+            return {"ok": True,"id":records[0] ,"message": "登入","member_email":email,"member_name":name,"member_src":img_src,"level":"0"}
     finally:
         cursor.close()
         connection.close()
@@ -132,13 +137,12 @@ def member_registered_thirdarea (email,password,name,img_src):
 
 
 #會員詳細資料讀取
-def load_member_data (name,member_name):
+def load_member_data (id,login_name,login_id):
     try:
         connection = connection_pool.getConnection()
         connection = connection.connection()
         cursor = connection.cursor()
-
-        cursor.execute("SELECT * FROM member_basedata WHERE name= '%s' limit 1 ;" % (name))
+        cursor.execute("SELECT * FROM member_basedata WHERE id= '%s' limit 1 ;" % (id))
         records = cursor.fetchone()
         if(records):
             # print(records[9])
@@ -148,6 +152,7 @@ def load_member_data (name,member_name):
                 birthday="無"
             registertime= records[12].strftime('%Y-%m-%d %H:%M:%S')
             return {"ok":True, 
+            "id":records[0],
             "name":records[3],
             "gender":records[4],
             "address":records[5],
@@ -157,9 +162,10 @@ def load_member_data (name,member_name):
             "introduction":records[10],
             "interests":records[11],
             "registertime":registertime,
-            "login_member_name":member_name,
-            "like_total_number":member_message_predict_like_number(records[3]),
-            "rank_total":message_rank_select(records[3])
+            "login_member_name":login_name,
+            "login_member_id":login_id,
+            "like_total_number":member_message_predict_like_number(id),
+            "rank_total":message_rank_select(id)
             }    
         else:
             return {"error":True,"message":"無此會員"}
@@ -168,7 +174,7 @@ def load_member_data (name,member_name):
         connection.close()
         # print("資料庫連線已關閉")
 #會員詳細資料修改
-def modify_member_data (email,name,newname,gender,address,birthday,introduction,interests):
+def modify_member_data (id,email,name,newname,gender,address,birthday,introduction,interests):
     try:
         connection = connection_pool.getConnection()
         connection = connection.connection()
@@ -184,40 +190,9 @@ def modify_member_data (email,name,newname,gender,address,birthday,introduction,
 
             else:
                 cursor = connection.cursor()
-                cursor.execute("UPDATE member_basedata SET name='%s',gender='%s',address='%s',birthday='%s',introduction='%s',interests='%s' WHERE name= '%s'  and email= '%s';" % (newname,gender,address,birthday,introduction,interests,name,email))
+                cursor.execute("UPDATE member_basedata SET name='%s',gender='%s',address='%s',birthday='%s',introduction='%s',interests='%s' WHERE id= '%s'  ;" % (newname,gender,address,birthday,introduction,interests,id))
                 connection.commit()  
 
-                cursor = connection.cursor()
-                cursor.execute("UPDATE message_predict SET message_user_name='%s' WHERE message_user_name= '%s'  and message_user_email= '%s';" % (newname,name,email))
-                connection.commit()  
-                
-                cursor = connection.cursor()
-                cursor.execute("UPDATE message_predict_reply SET message_reply_user_name='%s' WHERE message_reply_user_name= '%s'  and message_reply_user_email= '%s';" % (newname,name,email))
-                connection.commit()  
-
-                cursor = connection.cursor()
-                cursor.execute("UPDATE message_predict_good SET like_message_user_name='%s' WHERE like_message_user_name= '%s' ;" % (newname,name))
-                connection.commit()  
-
-                cursor = connection.cursor()
-                cursor.execute("UPDATE message_predict_good SET mid_member='%s' WHERE mid_member= '%s' ;" % (newname,name))
-                connection.commit()  
-
-                cursor = connection.cursor()
-                cursor.execute("UPDATE message_predict_rank SET member_name='%s' WHERE member_name= '%s' ;" % (newname,name))
-                connection.commit()  
-
-                cursor = connection.cursor()
-                cursor.execute("UPDATE message_predict_rank_stock_info SET member_name='%s' WHERE member_name= '%s' ;" % (newname,name))
-                connection.commit()  
-
-                cursor = connection.cursor()
-                cursor.execute("UPDATE private_message SET private_message_member='%s' WHERE private_message_member= '%s' ;" % (newname,name))
-                connection.commit()
-                
-                cursor = connection.cursor()
-                cursor.execute("UPDATE private_message SET private_message_member_to='%s' WHERE private_message_member_to= '%s' ;" % (newname,name))
-                connection.commit()   
 
                 return {"ok":True,"modify_name":True}
         else:
@@ -232,38 +207,33 @@ def modify_member_data (email,name,newname,gender,address,birthday,introduction,
         # print("資料庫連線已關閉")
 
 #會員頭貼修改
-def modify_member_picturesrc (email,name,picturesrc):
+def modify_member_picturesrc (id,picturesrc):
     try:
         connection = connection_pool.getConnection()
         connection = connection.connection()
         cursor = connection.cursor()
 
-        cursor.execute("UPDATE member_basedata SET picturesrc='%s' WHERE name= '%s'  and email= '%s';" % (picturesrc,name,email))
+        cursor.execute("UPDATE member_basedata SET picturesrc='%s' WHERE id= '%s';" % (picturesrc,id))
         connection.commit()      
-
-
-        cursor = connection.cursor()
-        cursor.execute("UPDATE message_predict_reply SET message_reply_user_imgsrc='%s' WHERE message_reply_user_name= '%s'  and message_reply_user_email= '%s';" % (picturesrc,name,email))
-        connection.commit() 
-        
-        cursor = connection.cursor()
-        cursor.execute("UPDATE message_predict SET message_user_imgsrc='%s' WHERE message_user_name= '%s'  and message_user_email= '%s';" % (picturesrc,name,email))
-        connection.commit()  
-
 
         return {"ok":True}
     finally:
         cursor.close()
         connection.close()
-
-#會員總共有多少讚
-def member_message_predict_like_number(member_name):
+#待修正
+#會員總共有多少讚 
+def member_message_predict_like_number(id):
     try:
         connection = connection_pool.getConnection()
         connection = connection.connection()
         cursor = connection.cursor()
 
-        cursor.execute("SELECT count(*) FROM message_predict_good WHERE mid_member= '%s' ;" % (member_name))
+        sql ='''SELECT count(*) from message_predict_good
+        Inner join message_predict on message_predict_good.mid=message_predict.mid
+        WHERE message_predict.user_id= '%s' '''
+        
+        cursor = connection.cursor()
+        cursor.execute(sql%id)
         records = cursor.fetchone()
             
         return records[0]
@@ -274,12 +244,12 @@ def member_message_predict_like_number(member_name):
 
 
 #取得預測成績            
-def message_rank_select(member_name):
+def message_rank_select(id):
     connection = connection_pool.getConnection()
     connection = connection.connection()
     cursor = connection.cursor()
 
-    cursor.execute("select * from message_predict_rank where member_name='%s' limit 1;"%(member_name))
+    cursor.execute("select * from predict_rank where user_id='%s' limit 1;"%(id))
     records = cursor.fetchone()
     try:
         if(records):

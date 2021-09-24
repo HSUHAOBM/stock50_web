@@ -1,4 +1,4 @@
-function member_predict_add_rank_web(no, member_name, rank_text, member_src, status) {
+function member_predict_add_rank_web(no, member_name, rank_text, member_src, status, member_id) {
     let main_right_ranking = document.querySelector('.ranK_main_' + status)
 
     let div_rank_data_box = document.createElement("div");
@@ -35,7 +35,7 @@ function member_predict_add_rank_web(no, member_name, rank_text, member_src, sta
     div_rank_data_member_box.className = "div_rank_data_member_box";
     if (member_name != "從缺中") {
         div_rank_data_member_box.addEventListener('click', function() {
-            location.href = '/member?name=' + member_name
+            location.href = '/member?id=' + member_id
         });
     }
 
@@ -78,6 +78,7 @@ function member_predict_rank_api_load_rank_web(status) {
         if (result.ok) {
             for (let i = 0; i < 10; i++) {
                 if (result.data[i]) {
+                    member_id = result.data[i].member_id;
 
                     member_name = result.data[i].member_name;
                     if (status == "rate") {
@@ -100,7 +101,7 @@ function member_predict_rank_api_load_rank_web(status) {
                     member_src = 'img/unknown.png'
                 }
                 // console.log(i, member_name, predict_win, predict_fail, predict_total, predict_win_rate)
-                member_predict_add_rank_web(i + 1, member_name, rank_text, member_src, status)
+                member_predict_add_rank_web(i + 1, member_name, rank_text, member_src, status, member_id)
             }
             document.querySelector('.base_load_gif_rank').style.display = "none";
         }

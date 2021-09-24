@@ -39,14 +39,14 @@ def load_stock_data(stock_id):
                 cursor.execute("select * from stock50_data where stock_id='%s'order by time desc limit 1;"%(stock_id))
                 records = cursor.fetchone()
 
-                r.hmset(stock_id, {"stock_id":records[1],"stock_name":records[2],"date":records[3].strftime('%Y-%m-%d'),
-                "total":records[4],"open_price":records[5],"high_price":records[6],"low_price":records[7],
-                "end_price":records[8],"differ":records[9],"total_deal":records[10],"update_time":records[11].strftime('%Y-%m-%d %H:%M')})
+                r.hmset(stock_id, {"stock_id":records[0],"stock_name":records[1],"date":records[2].strftime('%Y-%m-%d'),
+                "total":records[3],"open_price":records[4],"high_price":records[5],"low_price":records[6],
+                "end_price":records[7],"differ":records[8],"total_deal":records[9],"update_time":records[10].strftime('%Y-%m-%d %H:%M')})
                 r.expire(stock_id, 600) 
 
-                return {"stock_id":records[1],"stock_name":records[2],"date":records[3].strftime('%Y-%m-%d'),
-                "total":records[4],"open_price":records[5],"high_price":records[6],"low_price":records[7],
-                "end_price":records[8],"differ":records[9],"total_deal":records[10],"update_time":records[11].strftime('%Y-%m-%d %H:%M')}
+                return {"stock_id":records[0],"stock_name":records[1],"date":records[2].strftime('%Y-%m-%d'),
+                "total":records[3],"open_price":records[4],"high_price":records[5],"low_price":records[6],
+                "end_price":records[7],"differ":records[8],"total_deal":records[9],"update_time":records[10].strftime('%Y-%m-%d %H:%M')}
             finally:
                 cursor.close()
                 connection.close()

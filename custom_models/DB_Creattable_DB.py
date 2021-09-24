@@ -15,6 +15,12 @@ DBdatabase=config.get('aws_rd', 'DBdatabase')
 DBuser=config.get('aws_rd', 'DBuser')
 DBpassword=config.get('aws_rd', 'DBpassword')
 
+# DBhost="localhost"
+# DBdatabase="stock50_web_v2"
+# DBuser="root"
+# DBpassword="root"
+
+
 #會員基本資料的資料庫
 def member_basedata():
     try:
@@ -25,21 +31,22 @@ def member_basedata():
         password=DBpassword) 
 
         sql = '''CREATE TABLE member_basedata  (
-            no INT AUTO_INCREMENT PRIMARY KEY,
-            email VARCHAR(255) NOT NULL,
-            password VARCHAR(128) NOT NULL,
-            name VARCHAR(50) UNIQUE NOT NULL ,
-            gender VARCHAR(4) DEFAULT '無',
-            address VARCHAR(255) DEFAULT '無',
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            email VARCHAR(64) NOT NULL,
+            password VARCHAR(64) NOT NULL,
+            name VARCHAR(20) UNIQUE NOT NULL ,
+            gender VARCHAR(1) DEFAULT '無',
+            address VARCHAR(5) DEFAULT '無',
             picturesrc VARCHAR(255) DEFAULT 'img/peo.png',
             level VARCHAR(1)  DEFAULT "0" NOT NULL,
             authentication VARCHAR(1)  DEFAULT "0" NOT NULL,
             birthday date,
             introduction VARCHAR(255) DEFAULT '無', 
-            interests VARCHAR(255) DEFAULT '無',
+            interests VARCHAR(24) DEFAULT '無',
             registertime datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             logingtime datetime DEFAULT CURRENT_TIMESTAMP,
-            ip VARCHAR(30) );'''
+            ip VARCHAR(30),
+            index(name) );'''
 
 
 
@@ -62,17 +69,14 @@ def message_predict():
         password=DBpassword) 
 
         sql = '''CREATE TABLE message_predict  (
-            no INT AUTO_INCREMENT PRIMARY KEY,
-            mid VARCHAR(25) NOT NULL,
-            message_user_email VARCHAR(200) NOT NULL,
-            message_user_name VARCHAR(200) NOT NULL,
-            message_user_imgsrc VARCHAR(200) NOT NULL,
-            stock_id VARCHAR(25) NOT NULL,
-            stock_name VARCHAR(25) NOT NULL,
-            stock_state VARCHAR(25) NOT NULL,
+            mid VARCHAR(25) NOT NULL PRIMARY KEY,
+			user_id int NOT NULL,
+            stock_id VARCHAR(10) NOT NULL,
+            stock_state VARCHAR(2) NOT NULL,
             text VARCHAR(250) ,
-            check_status VARCHAR(25) DEFAULT "0" NOT NULL,
-            time datetime DEFAULT CURRENT_TIMESTAMP);'''
+            check_status VARCHAR(2) DEFAULT "0" NOT NULL,
+            time datetime DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES member_basedata(id));'''
 
         cursor = connection.cursor()
         cursor.execute(sql)
@@ -94,11 +98,14 @@ def message_predict_good():
 
         sql = '''CREATE TABLE message_predict_good  (
             no INT AUTO_INCREMENT PRIMARY KEY,
-            mid_member VARCHAR(25) NOT NULL,
-            mid VARCHAR(25) NOT NULL,
-            like_message_user_name VARCHAR(50) NOT NULL,
-            time datetime DEFAULT CURRENT_TIMESTAMP);'''
+            mid VARCHAR(25) NOT NULL ,
+			like_id int NOT NULL,
+            time datetime DEFAULT CURRENT_TIMESTAMP,
+            KEY `mid` (`mid`),
+            FOREIGN KEY(mid) REFERENCES message_predict(mid) ON DELETE CASCADE ON UPDATE CASCADE);'''
+        
 
+        
         cursor = connection.cursor()
         cursor.execute(sql)
         connection.commit()
@@ -119,13 +126,14 @@ def message_predict_reply():
 
         sql = '''CREATE TABLE message_predict_reply  (
             no INT AUTO_INCREMENT PRIMARY KEY,
-            mid VARCHAR(25) NOT NULL,
+            mid VARCHAR(25) NOT NULL ,
             mid_reply VARCHAR(25) NOT NULL,
-            message_reply_user_email VARCHAR(200) NOT NULL,
-            message_reply_user_name VARCHAR(200) NOT NULL,
-            message_reply_user_imgsrc VARCHAR(200) NOT NULL,
-            message_reply_text VARCHAR(200) NOT NULL,
-            time datetime DEFAULT CURRENT_TIMESTAMP);'''
+            user_id int NOT NULL,
+            text VARCHAR(200) NOT NULL,
+            time datetime DEFAULT CURRENT_TIMESTAMP,
+            KEY `mid` (`mid`),
+            FOREIGN KEY(mid) REFERENCES message_predict(mid) ON DELETE CASCADE ON UPDATE CASCADE);'''
+
 
         cursor = connection.cursor()
         cursor.execute(sql)
@@ -145,14 +153,16 @@ def message_predict_rank():
         user=DBuser,      
         password=DBpassword) 
 
-        sql = '''CREATE TABLE message_predict_rank (
-            member_name VARCHAR(50) UNIQUE NOT NULL ,
-            predict_win_rate VARCHAR(5),
-            predict_win VARCHAR(10),
-            predict_fail VARCHAR(10),
-            predict_total VARCHAR(10),
-            predict_good VARCHAR(10),
-            time datetime DEFAULT CURRENT_TIMESTAMP);'''
+        sql = '''CREATE TABLE predict_rank (
+            user_id int NOT NULL PRIMARY KEY,
+            win_rate VARCHAR(5),
+            win VARCHAR(10),
+            fail VARCHAR(10),
+            total VARCHAR(10),
+            good VARCHAR(10),
+            time datetime DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES member_basedata(id) );'''
+
         cursor = connection.cursor()
         cursor.execute(sql)
         connection.commit()
@@ -171,16 +181,21 @@ def message_predict_rank_stock_info():
         user=DBuser,      
         password=DBpassword) 
 
-        sql = '''CREATE TABLE message_predict_rank_stock_info (
+        sql = '''CREATE TABLE predict_rank_stock_info (
             no INT AUTO_INCREMENT PRIMARY KEY,
             stock_id VARCHAR(10) NOT NULL,
-            stock_name VARCHAR(10) NOT NULL,
-            member_name VARCHAR(50) NOT NULL ,
-            predict_win_rate VARCHAR(5),
-            predict_win VARCHAR(10),
-            predict_fail VARCHAR(10),
-            predict_total VARCHAR(10),
-            time datetime DEFAULT CURRENT_TIMESTAMP);'''
+            user_id int NOT NULL,
+            win_rate VARCHAR(5),
+            win VARCHAR(10),
+            fail VARCHAR(10),
+            total VARCHAR(10),
+
+            KEY `user_id` (`user_id`),
+            KEY `stock_id` (`stock_id`),
+
+            time datetime DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES member_basedata(id));'''
+
         cursor = connection.cursor()
         cursor.execute(sql)
         connection.commit()
@@ -201,7 +216,7 @@ def stock50_db_creat():
         cursor = connection.cursor()
 
         sql = '''CREATE TABLE stock50  (
-            stock_id int UNIQUE NOT NULL ,
+            stock_id int NOT NULL PRIMARY KEY,
             stock_name VARCHAR(25) UNIQUE NOT NULL,
             time datetime DEFAULT CURRENT_TIMESTAMP);'''
 
@@ -226,11 +241,16 @@ def private_message_creat():
 
         sql = '''CREATE TABLE private_message  (
             no INT AUTO_INCREMENT PRIMARY KEY,
-            private_message_member VARCHAR(25) NOT NULL,
-            private_message_src VARCHAR(225) NOT NULL,
-            private_message_text VARCHAR(100) NOT NULL,
-            private_message_member_to VARCHAR(25) NOT NULL,
-            time datetime DEFAULT CURRENT_TIMESTAMP);'''
+            user_id int NOT NULL ,
+            text VARCHAR(100) NOT NULL,
+            user_id_to int NOT NULL,
+            
+            KEY `user_id` (`user_id`),
+            KEY `user_id_to` (`user_id_to`),
+
+            time datetime DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES member_basedata(id));'''
+
 
         cursor = connection.cursor()
         cursor.execute(sql)
@@ -242,7 +262,7 @@ def private_message_creat():
             print("資料庫連線已關閉")
 
 
-#建立私人訊息的資料庫
+#站內訊息的資料庫
 def contact_message_creat():
     try:
         connection = mysql.connector.connect(
@@ -253,10 +273,12 @@ def contact_message_creat():
 
         sql = '''CREATE TABLE contact_message  (
             no INT AUTO_INCREMENT PRIMARY KEY,
-            message_member VARCHAR(25) NOT NULL,
-            message_src VARCHAR(225) NOT NULL,
-            message_text VARCHAR(500) NOT NULL,
-            time datetime DEFAULT CURRENT_TIMESTAMP);'''
+            user_id int NOT NULL ,
+            text VARCHAR(100) NOT NULL,
+            KEY `user_id` (`user_id`),
+            time datetime DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES member_basedata(id));'''
+
 
         cursor = connection.cursor()
         cursor.execute(sql)

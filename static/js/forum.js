@@ -127,7 +127,7 @@ member_predict_data_form.addEventListener('submit', function(event) {
 
 let main_left_center = document.querySelector('.main_left_center')
 
-function member_predict_add_message(predict_stock, predict_trend, predict_message, predict_message_member_name, predict_message_member_img_src, time, time_about, message_mid, message_check_status, login_member_name_good_have, message_good_number, message_reply_number, message_reply_data) {
+function member_predict_add_message(predict_message_member_id, predict_stock, predict_trend, predict_message, predict_message_member_name, predict_message_member_img_src, time, time_about, message_mid, message_check_status, login_member_name_good_have, message_good_number, message_reply_number, message_reply_data) {
     let div_predict_message_box = document.createElement("div");
     div_predict_message_box.className = "predict_message_box";
 
@@ -169,7 +169,7 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
     let div_delete_predict_message = document.createElement("div");
     div_delete_predict_message.className = "administrator_delete_predict_message";
     div_delete_predict_message.setAttribute("alt", message_mid)
-    div_delete_predict_message.setAttribute("member", predict_message_member_name);
+    div_delete_predict_message.setAttribute("member", predict_message_member_id);
 
     if (login_member_level) {
         div_delete_predict_message.style.display = "flex"
@@ -178,9 +178,9 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
 
     div_delete_predict_message.onclick = function() {
         let message_mid = this.getAttribute('alt');
-        let member_name = this.getAttribute('member');
+        let member_user_id = this.getAttribute('member');
 
-        administrator_delete_predict(message_mid, member_name)
+        administrator_delete_predict(message_mid, member_user_id)
 
     }
     div_predict_message_box.appendChild(div_delete_predict_message)
@@ -217,7 +217,7 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
 
     let a_message_box_title_name = document.createElement("a");
     a_message_box_title_name.className = "message_box_title_name " + message_mid
-    a_message_box_title_name.setAttribute("href", "/member?name=" + predict_message_member_name)
+    a_message_box_title_name.setAttribute("href", "/member?id=" + predict_message_member_id)
     a_message_box_title_name.textContent = predict_message_member_name
     div_message_box_title.appendChild(a_message_box_title_name)
 
@@ -345,7 +345,7 @@ function member_predict_add_message(predict_stock, predict_trend, predict_messag
         for (let i = 0; i < message_reply_data.message_predict_reply_load_data.length; i++) {
 
             message_reply_data_ = message_reply_data.message_predict_reply_load_data[i]
-            box_other_write_message_reply_add(message_reply_data_.message_mid, message_reply_data_.message_reply_mid, message_reply_data_.message_reply_user_imgsrc, message_reply_data_.message_reply_user_name, message_reply_data_.message_reply_text, message_reply_data_.message_reply_time, message_reply_data_.message_reply_time_about)
+            box_other_write_message_reply_add(message_reply_data_.message_reply_user_id, message_reply_data_.message_mid, message_reply_data_.message_reply_mid, message_reply_data_.message_reply_user_imgsrc, message_reply_data_.message_reply_user_name, message_reply_data_.message_reply_text, message_reply_data_.message_reply_time, message_reply_data_.message_reply_time_about)
         }
     }
     let div_message_box_other_message_write = document.createElement("div")
@@ -392,7 +392,7 @@ function member_predict_load_message() {
     fetch("/api/message_predict_load?data_number=" + String(forum_page)).then(function(response) {
         return response.json();
     }).then(function(result) {
-        // console.log(result)
+        console.log(result)
         if (result.data.nodata) {
             document.querySelector('.base_load_gif_forum').style.display = "none";
 
@@ -410,6 +410,8 @@ function member_predict_load_message() {
                 if (result.data[i].predict == "0") {
                     predict_trend = "持平"
                 }
+                //會員資料
+                predict_message_member_id = result.data[i].user_id
                 predict_message = result.data[i].message_user_text
                 predict_message_member_name = result.data[i].message_user_name
                 predict_message_member_img_src = result.data[i].message_user_imgsrc
@@ -429,7 +431,7 @@ function member_predict_load_message() {
                 message_mid = result.data[i].mid
                 message_check_status = result.data[i].message_check_status
                     // console.log(predict_stock + predict_trend)
-                member_predict_add_message(predict_stock, predict_trend, predict_message, predict_message_member_name, predict_message_member_img_src, time, time_about, message_mid, message_check_status, login_member_name_good_have, message_good_number, message_reply_number, message_reply_data)
+                member_predict_add_message(predict_message_member_id, predict_stock, predict_trend, predict_message, predict_message_member_name, predict_message_member_img_src, time, time_about, message_mid, message_check_status, login_member_name_good_have, message_good_number, message_reply_number, message_reply_data)
 
             }
             document.querySelector('.base_load_gif_forum').style.display = "none";
@@ -582,7 +584,7 @@ function box_other_write_message_reply(message_mid) {
                     if (result.ok) {
 
 
-                        box_other_write_message_reply_add(result.mid, result.mid_reply, login_member_img_src, login_member_name, message_reply_text, result.time, "剛剛");
+                        box_other_write_message_reply_add(login_member_id, result.mid, result.mid_reply, login_member_img_src, login_member_name, message_reply_text, result.time, "剛剛");
                         document.querySelector('.textarea_message_box_other_message_write.' + message_mid).value = "";
 
                         "a_div_message_box_btn_message_" + message_reply_number
@@ -610,7 +612,7 @@ function box_other_write_message_reply(message_mid) {
 }
 
 // 增加回覆區物件
-function box_other_write_message_reply_add(message_mid, reply_message_mid, reply_member_img_src, reply_member_name, reply_message_text, reply_time, reply_time_about) {
+function box_other_write_message_reply_add(user_id, message_mid, reply_message_mid, reply_member_img_src, reply_member_name, reply_message_text, reply_time, reply_time_about) {
 
 
     let div_message_box_other_message = document.querySelector('.message_box_other_message.' + message_mid);
@@ -645,7 +647,7 @@ function box_other_write_message_reply_add(message_mid, reply_message_mid, reply
     let a_message_box_other_message_load_right_name = document.createElement("a")
     a_message_box_other_message_load_right_name.className = "message_box_other_message_load_right_name"
     a_message_box_other_message_load_right_name.textContent = reply_member_name
-    a_message_box_other_message_load_right_name.setAttribute("href", "/member?name=" + reply_member_name)
+    a_message_box_other_message_load_right_name.setAttribute("href", "/member?id=" + user_id)
 
     div_message_box_other_message_load_right.appendChild(a_message_box_other_message_load_right_name)
 
@@ -691,7 +693,7 @@ window.addEventListener('scroll', function() {
 let main_right_ranking = document.querySelector('.main_right_ranking')
 
 
-function member_predict_add_rank(no, member_name, predict_win, predict_fail, predict_total, predict_win_rate, member_src) {
+function member_predict_add_rank(no, member_name, predict_win, predict_fail, predict_total, predict_win_rate, member_src, member_id) {
     let div_main_right_ranking_stock_box = document.createElement("div");
     div_main_right_ranking_stock_box.className = "main_right_ranking_stock box";
     main_right_ranking.appendChild(div_main_right_ranking_stock_box)
@@ -708,7 +710,7 @@ function member_predict_add_rank(no, member_name, predict_win, predict_fail, pre
     let div_main_right_rank_box = document.createElement("div");
     div_main_right_rank_box.className = "div_main_right_rank_box";
     div_main_right_rank_box.addEventListener('click', function() {
-        location.href = '/member?name=' + member_name
+        location.href = '/member?id=' + member_id
     });
     div_main_right_ranking_stock_data.appendChild(div_main_right_rank_box)
 
@@ -784,8 +786,11 @@ function member_predict_rank_api_load() {
     fetch("/api/message_predict_rank?data_status=rate").then(function(response) {
         return response.json();
     }).then(function(result) {
+        console.log(result)
         if (result.ok) {
             for (let i = 0; i < result.data.length; i++) {
+
+                member_id = result.data[i].member_id;
                 member_name = result.data[i].member_name;
                 predict_win = result.data[i].predict_win
                 predict_fail = result.data[i].predict_fail
@@ -793,7 +798,7 @@ function member_predict_rank_api_load() {
                 predict_win_rate = result.data[i].predict_win_rate
                 member_src = result.data[i].member_src
                     // console.log(i, member_name, predict_win, predict_fail, predict_total, predict_win_rate)
-                member_predict_add_rank(i + 1, member_name, predict_win, predict_fail, predict_total, predict_win_rate, member_src)
+                member_predict_add_rank(i + 1, member_name, predict_win, predict_fail, predict_total, predict_win_rate, member_src, member_id)
             }
         }
         document.querySelector('.base_load_gif_forum_rank').style.display = "none";
@@ -808,10 +813,10 @@ function member_predict_rank_api_load() {
 
 
 /*-----------------------------*/
-function administrator_delete_predict(mid, member_name) {
+function administrator_delete_predict(mid, member_user_id) {
     let delete_predict = {
         "message_id": mid,
-        "member_name": member_name
+        "member_user_id": member_user_id
     }
     fetch("/api/message_predict_add", {
             method: 'DELETE',

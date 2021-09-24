@@ -59,7 +59,7 @@ memberform.addEventListener('submit', function(event) {
                     // console.log(result.member_name)
                     if (member_name == "") {
                         // alert("登入成功")
-                        location.href = '/member?name=' + result.member_name
+                        location.href = '/member?id=' + result.member_id
                             // head_member_name.textContent = result.member_name + "歡迎!!"
                             // window.location.reload();
                             // window.location.reload();

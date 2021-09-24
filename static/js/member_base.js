@@ -1,17 +1,19 @@
 let url = location.href;
-url = url.split("name=")
-let web_name = url[url.length - 1]
+url = url.split("id=")
+let memer_id = url[url.length - 1]
     // console.log(web_name)
-
+let web_member_name = ""
+let web_member_id = ""
 
 function load_member_data() {
-    fetch("api/member_get_data?user_name=" + web_name, {
+    fetch("api/member_get_data?id=" + memer_id, {
         method: 'GET'
     }).then(function(res) {
         return res.json();
     }).then(function(result) {
-        login_member_img_src = result.picturesrc;
-        // console.log(result);
+        console.log(result);
+        web_member_name = result.name
+        web_member_id = result.id
 
         if (result.error) {
             location.href = '/'
@@ -38,16 +40,16 @@ function load_member_data() {
         // 標題連結處理
         if (document.querySelector('.member_main_head')) {
             document.querySelector('.member_main_head_btn1').addEventListener('click', function() {
-                location.href = '/member?name=' + web_name
+                location.href = '/member?id=' + memer_id
             });
             document.querySelector('.member_main_head_btn2').addEventListener('click', function() {
-                location.href = '/member_data?name=' + web_name
+                location.href = '/member_data?id=' + memer_id
             });
             document.querySelector('.member_main_head_btn3').addEventListener('click', function() {
-                location.href = '/member_rank?name=' + web_name
+                location.href = '/member_rank?id=' + memer_id
             });
             document.querySelector('.member_main_head_btn4').addEventListener('click', function() {
-                location.href = '/member_private?name=' + web_name
+                location.href = '/member_private?id=' + memer_id
             });
 
         }
@@ -72,7 +74,7 @@ function load_member_data() {
         }
 
 
-        if (web_name == encodeURIComponent(result.login_member_name)) {
+        if (memer_id == encodeURIComponent(result.login_member_id)) {
             if (document.querySelector('.member_main_member_img_change')) {
                 document.querySelector('.member_main_member_img_change').style.display = "flex";
 
@@ -179,7 +181,7 @@ function show_private_message_box() {
     // document.querySelector('.inputtextpassword').value = "";
     // document.querySelector('.textpoint').textContent = "";
     document.querySelector('.private_message_box').style.display = "flex";
-    document.querySelector('.private_message_box_main_top_title').textContent = "私訊給" + decodeURI(web_name);
+    document.querySelector('.private_message_box_main_top_title').textContent = "私訊給" + web_member_name;
 
     //灰層
     let hidebg = document.getElementById("hidebg_private");
@@ -220,10 +222,9 @@ member_private_message_form.addEventListener('submit', function(event) {
     let member_private_message_form_data = {};
     event.preventDefault();
     member_private_message_form_data = {
-        "login_user_name": login_member_name,
-        "login_user_src": login_member_img_src,
         "message_sent_text": member_private_message_form_.get("private_message_text"),
-        "message_sent": decodeURI(web_name)
+        "message_sent": web_member_id
+
     }
     if (member_private_message_form_.get("private_message_text").length > 100) {
         document.querySelector('.private_message_box_error_text').textContent = "字數大於100，超過規定。";

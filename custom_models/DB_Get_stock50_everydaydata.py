@@ -106,8 +106,8 @@ def stock50_getstock50_check_error():
         records = cursor.fetchall()
         if (records):
             for i in range(len(records)):
-                getstock50_data=loadstockdata(records[i][1])
-                stock50_getstock50_error_modify(getstock50_data,records[i][1])
+                getstock50_data=loadstockdata(records[i][0])
+                stock50_getstock50_error_modify(getstock50_data,records[i][0])
             return "錯誤修改完成。"
         else:
             return "今日無錯誤。"
