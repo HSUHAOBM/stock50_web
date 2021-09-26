@@ -77,7 +77,7 @@ function member_private_message_load() {
     fetch("api/private_message_sent").then(function(response) {
         return response.json();
     }).then(function(result) {
-        console.log(result)
+        // console.log(result)
         if (result.data.private_message_not) {
             document.querySelector('.data_not_message').style.display = "flex";
             document.querySelector('.base_load_gif_member_message').style.display = "none";
@@ -105,7 +105,7 @@ function member_contact_message_load() {
     fetch("api/contact_message_sent").then(function(response) {
         return response.json();
     }).then(function(result) {
-        console.log(result)
+        // console.log(result)
 
         if (result.data.contact_message_not) {
             document.querySelector('.data_not_message.contact').style.display = "flex";

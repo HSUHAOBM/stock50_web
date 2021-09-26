@@ -74,7 +74,7 @@ function load_member_data() {
     }).then(function(res) {
         return res.json();
     }).then(function(result) {
-        console.log(result)
+        // console.log(result)
         if (result) {
             document.querySelector('.member_name').textContent = "你好，" + login_member_name + "。"
 

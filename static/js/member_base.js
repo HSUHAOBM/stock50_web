@@ -11,7 +11,7 @@ function load_member_data() {
     }).then(function(res) {
         return res.json();
     }).then(function(result) {
-        console.log(result);
+        // console.log(result);
         web_member_name = result.name
         web_member_id = result.id
 

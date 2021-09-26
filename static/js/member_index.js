@@ -263,7 +263,7 @@ function member_predict_load_message() {
     fetch("/api/message_predict_load?id=" + memer_id + "&data_number=" + String(forum_page)).then(function(response) {
         return response.json();
     }).then(function(result) {
-        console.log(result)
+        // console.log(result)
         check_onload = false
 
         if (result.data.member_no_data) {
