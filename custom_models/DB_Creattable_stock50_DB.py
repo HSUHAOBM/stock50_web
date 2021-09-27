@@ -33,7 +33,8 @@ def stock50_data():
         password=DBpassword) 
 
         sql = '''CREATE TABLE stock50_data  (
-            stock_id int PRIMARY KEY,
+            no INT AUTO_INCREMENT PRIMARY KEY,
+            stock_id int ,
             stock_name VARCHAR(25),
             date date,
             stock_total INT ,
