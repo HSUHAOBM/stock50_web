@@ -12,6 +12,11 @@ DBdatabase=config.get('aws_rd', 'DBdatabase')
 DBuser=config.get('aws_rd', 'DBuser')
 DBpassword=config.get('aws_rd', 'DBpassword')
 
+# DBhost="localhost"
+# DBdatabase="stock50_web_v2"
+# DBuser="root"
+# DBpassword="root"
+
 from DBUtils.PooledDB import PooledDB,SharedDBConnection
 import pymysql
 def getConnection():

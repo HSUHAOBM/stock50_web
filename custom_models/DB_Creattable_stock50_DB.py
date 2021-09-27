@@ -18,6 +18,11 @@ DBdatabase=config.get('aws_rd', 'DBdatabase')
 DBuser=config.get('aws_rd', 'DBuser')
 DBpassword=config.get('aws_rd', 'DBpassword')
 
+# DBhost="localhost"
+# DBdatabase="stock50_web_v2"
+# DBuser="root"
+# DBpassword="root"
+
 #建立台50基本資料庫
 def stock50_data():
     try:
@@ -28,8 +33,7 @@ def stock50_data():
         password=DBpassword) 
 
         sql = '''CREATE TABLE stock50_data  (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            stock_id int ,
+            stock_id int PRIMARY KEY,
             stock_name VARCHAR(25),
             date date,
             stock_total INT ,
@@ -40,6 +44,7 @@ def stock50_data():
             differ float,
             totaldeal int,
             time datetime DEFAULT CURRENT_TIMESTAMP);'''
+
 
         cursor = connection.cursor()
         cursor.execute(sql)

@@ -18,11 +18,11 @@ app.config['SECRET_KEY'] = 'laowangaigebi'
 def index():
     return render_template("index.html")
 
-#/member?name=?
+#/member?id=?
 # 會員中心
 @app.route("/member")
 def web_member():
-    web_user_name = request.args.get("name", None)
+    member_id = request.args.get("id", None)
 
     member_email = session.get('member_email')
     member_name = session.get('member_name')
@@ -31,11 +31,10 @@ def web_member():
     else:
         return redirect("/member_sigin")
 
+
 @app.route("/member_data")
 def web_member_data():
-    web_user_name = request.args.get("name", None)
-
-
+    member_id = request.args.get("id", None)
     member_email = session.get('member_email')
     member_name = session.get('member_name')
     # print(member_name)
@@ -45,7 +44,7 @@ def web_member_data():
         return redirect("/")  
 @app.route("/member_rank")
 def web_member_rank():    
-    web_user_name = request.args.get("name", None)
+    member_id = request.args.get("id", None)
     member_email = session.get('member_email')
     member_name = session.get('member_name')
     if member_email and member_name:
@@ -55,10 +54,11 @@ def web_member_rank():
         
 @app.route("/member_private")
 def web_member_fans():
-    web_user_name = request.args.get("name", None)
+    member_id = request.args.get("id", None)
 
-    member_name = session.get('member_name')
-    if member_name==web_user_name:
+    id = session.get('id')
+
+    if int(id)==int(member_id):
         return render_template("member_private_message.html")
     else:
         return redirect("/")                    
@@ -91,7 +91,7 @@ def web_member_sigin():
     else:
         return render_template("member_sigin.html")
 
-#各股資訊頁
+#股資訊頁web
 @app.route("/stock_info")
 def stock_info_web():
     stock_id_key = request.args.get("stock_id", None)
@@ -104,7 +104,7 @@ def stock_info_web():
     else:
         return redirect("/member_sigin")
 
-#排行榜頁
+#排行榜頁web
 @app.route("/rank")
 def rank_web():
     member_email = session.get('member_email')
@@ -122,13 +122,18 @@ def about_us_web():
 #會員系統API
 @app.route("/api/member", methods=["POST", "GET", "PATCH", "DELETE"])
 def member():
+    id = session.get('id')
     member_email = session.get('member_email')
     member_name = session.get('member_name')
+    member_src=session.get('member_src')
+
     if member_email and member_name:
         if request.method == "GET":
             return {"data": {
-                "name": member_name,
-                "email": member_email}}
+                "login_name": member_name,
+                "login_email": member_email,
+                "login_imgsrc":member_src,
+                "login_id":id}}
         #登出
         if request.method == "DELETE":
             session.clear()            
@@ -138,8 +143,7 @@ def member():
         if member_data != None:  
             #使用地三方登入
             if(member_data.get('member_status') !=None):
-                # member_name= member_data["member_name"]
-                # member_src= member_data["member_src"]
+
                 id_token= member_data["id_token"]                
 
                 gmail_member_name,gmail_member_email,gmail_member_password,gmail_member_src=google_account_verify.google_verify_oauth2_token(id_token)
@@ -147,12 +151,13 @@ def member():
                 thirdarea_return=DB_Use_memberdata.member_registered_thirdarea(gmail_member_email,gmail_member_password,gmail_member_name,gmail_member_src)
                 if(thirdarea_return['ok']):
                     session.clear()     
+                    session['id'] = thirdarea_return.get('id')
                     session['member_email'] = thirdarea_return.get('member_email')
                     session['member_name'] = thirdarea_return.get('member_name')
                     session['member_src'] = thirdarea_return.get("member_src")
                     session['level'] = thirdarea_return.get("level")
                     # print("--------------session-----------", session)
-                    return {"ok":True,"member_name":thirdarea_return.get('member_name')}
+                    return {"ok":True,"member_name":thirdarea_return.get('member_name'),"member_id":thirdarea_return.get('id')}
             else:
                 member_email = member_data["member_email"]
                 member_password= member_data["member_password"]
@@ -176,12 +181,12 @@ def member():
                     else:
                         returnstate = DB_Use_memberdata.member_signin(member_email, member_password,request.remote_addr)
                         if(returnstate.get('ok')):
-                            session.clear()     
+                            session.clear()    
+                            session['id']=  returnstate.get('member_id')
                             session['member_email'] = member_email
                             session['member_name'] = returnstate.get('member_name')
-                            session['member_src']=DB_Use_load_rank_data.load_member_src(returnstate.get('member_name'))
+                            session['member_src']=returnstate.get('picturesrc')
                             session['level'] = returnstate.get("level")
-                            # print("--------------session-----------", session)
                         return returnstate
         else:
             return {"data": None}
@@ -190,14 +195,16 @@ def member():
 #/api/member_get_data?user_name=?
 #會員資料處理API
 @app.route("/api/member_get_data", methods=["POST", "GET"])
-def member_get_data():    
+def member_get_data(): 
+
+    id = session.get('id')
     member_email = session.get('member_email')
     member_name = session.get('member_name')
-    user_name = request.args.get("user_name", member_name)
+    member_id = request.args.get("id", id)
 
     if member_email and member_name:
         if request.method == "GET":#會員詳細資料讀取
-            member_load_data_return=DB_Use_memberdata.load_member_data(user_name,member_name)
+            member_load_data_return=DB_Use_memberdata.load_member_data(member_id,member_name,id)
             # print(member_load_data_return)
             return member_load_data_return
 
@@ -210,7 +217,7 @@ def member_get_data():
             elif (len(modify_member_web_data["name"])>10 or len(modify_member_web_data["introduction"])>24 or len(modify_member_web_data["interests"])>24):
                 return {"error": True, "message": "興趣、自介，請在24字以內"}
             else:
-                member_modify_data_return=DB_Use_memberdata.modify_member_data (member_email,member_name,modify_member_web_data["name"],modify_member_web_data["gender"],modify_member_web_data["address"],modify_member_web_data["birthday"],modify_member_web_data["introduction"],modify_member_web_data["interests"])   
+                member_modify_data_return=DB_Use_memberdata.modify_member_data (id,member_email,member_name,modify_member_web_data["name"],modify_member_web_data["gender"],modify_member_web_data["address"],modify_member_web_data["birthday"],modify_member_web_data["introduction"],modify_member_web_data["interests"])   
                 if ("modify_name" in member_modify_data_return):
                     session['member_name']=modify_member_web_data["name"]
                 return member_modify_data_return
@@ -219,9 +226,11 @@ def member_get_data():
 
 #會員圖像修改api
 @app.route("/api/member_modify_imgsrc", methods=["POST","GET"])
-def member_modify_imgsrc():    
+def member_modify_imgsrc(): 
+    id = session.get('id')
     member_email = session.get('member_email')
     member_name = session.get('member_name')
+
     if member_email and member_name:
         if request.method == "POST":
             # print("request",request.files)
@@ -232,14 +241,18 @@ def member_modify_imgsrc():
             # print("上傳的檔案名稱",file.filename)
             # print("圖片連結網址",s3_img_src)
             session['member_src']=s3_img_src
-            member_modify_imgsrc_retrun=DB_Use_memberdata.modify_member_picturesrc(member_email,member_name,s3_img_src)
+            member_modify_imgsrc_retrun=DB_Use_memberdata.modify_member_picturesrc(id,s3_img_src)
             return member_modify_imgsrc_retrun
     else:
         return {"data": None}
 
+
+
 #預測留言新增api
 @app.route("/api/message_predict_add", methods=["POST", "GET","DELETE"])
 def message_predict_add():
+    
+    id = session.get('id')
     member_email = session.get('member_email')
     member_name = session.get('member_name')
     member_src=session.get('member_src')
@@ -265,13 +278,13 @@ def message_predict_add():
                     predict_trend="-1"            
                 if(add_member_predict_message_data["predict_trend"]=="持平"):
                     predict_trend="0"
-                message_predict_add_return=DB_Use_message.message_predict_add(member_email,member_name,member_src,stock_id,stock_name,predict_trend,add_member_predict_message_data["predict_message"])
+                message_predict_add_return=DB_Use_message.message_predict_add(id,stock_id,stock_name,predict_trend,add_member_predict_message_data["predict_message"])
                 return message_predict_add_return
 
         if request.method == "DELETE" and member_level=="1":#留言刪除
             delete_member_predict_message_data = request.get_json()
             # print(delete_member_predict_message_data["message_id"])
-            message_predict_delete_return=DB_Use_message.message_predict_delete(delete_member_predict_message_data["message_id"],delete_member_predict_message_data["member_name"],member_name)
+            message_predict_delete_return=DB_Use_message.message_predict_delete(id,delete_member_predict_message_data["message_id"],delete_member_predict_message_data["member_user_id"])
             return message_predict_delete_return
         else:
             return {"error": True, "message": "沒有權限"}
@@ -281,9 +294,9 @@ def message_predict_add():
  #預測留言 回復的 處理
 @app.route("/api/message_predict_reply_add", methods=["POST", "GET","DELETE"])
 def message_predict_reply_add():
+    id = session.get('id')
     member_email = session.get('member_email')
-    member_name = session.get('member_name')    
-    member_src=session.get('member_src')
+    member_name = session.get('member_name')
 
     if member_email and member_name:
         if request.method == "POST":#留言新增
@@ -294,7 +307,7 @@ def message_predict_reply_add():
             elif len(message_predict_reply_add_data["message_reply_text"])>50:
                 return {"error": True, "message": "留言字數超過 50"}
             else:
-                message_predict_reply_add_return=DB_Use_message.message_predict_add_reply(message_predict_reply_add_data["message_mid"],member_email,member_name,member_src,message_predict_reply_add_data["message_reply_text"])
+                message_predict_reply_add_return=DB_Use_message.message_predict_add_reply(message_predict_reply_add_data["message_mid"],id,message_predict_reply_add_data["message_reply_text"])
                 return message_predict_reply_add_return
     
     else:
@@ -305,19 +318,22 @@ def message_predict_reply_add():
 #預測留言讀取api
 @app.route("/api/message_predict_load", methods=["POST","GET"])
 def message_predict_load():
-    user_name = request.args.get("user_name", None)
+    
+    member_id = request.args.get("id", None)
     data_keyword = request.args.get("data_keyword", None)
     data_number = request.args.get("data_number", 0)
     data_status = request.args.get("data_status", None)
-    # print("user_name:",user_name,"data_keyword:",data_keyword,"data_number",data_number,"data_status",data_status)
-    member_name = session.get('member_name')
-    # print("member_name",member_name)
-    data=DB_Use_message.message_predict_load(member_name,user_name,data_keyword,data_number,data_status)
+
+    id = session.get('id')
+
+    data=DB_Use_message.message_predict_load(id,member_id,data_keyword,data_number,data_status)
     return Response(json.dumps({"ok": True,"data": data}, sort_keys=False), mimetype='application/json')
 
 #按讚api
 @app.route("/api/message_predict_like", methods=["POST", "GET"])
 def message_predict_like():
+    id = session.get('id')
+
     member_email = session.get('member_email')
     member_name = session.get('member_name')
     # print(member_name,member_email)
@@ -325,10 +341,11 @@ def message_predict_like():
     if member_email and member_name:
         message_predict_like_data = request.get_json()
         if(message_predict_like_data['status']=="like"):
-            message_predict_like_return=DB_Use_message.message_predict_like(message_predict_like_data['message_member'],message_predict_like_data['message_mid_like'],member_name)
+            message_predict_like_return=DB_Use_message.message_predict_like(message_predict_like_data['message_mid_like'],id)
             return message_predict_like_return
+
         if(message_predict_like_data['status']=="unlike"):
-            message_predict_like_return=DB_Use_message.message_predict_unlike(message_predict_like_data['message_mid_like'],member_name)
+            message_predict_like_return=DB_Use_message.message_predict_unlike(message_predict_like_data['message_mid_like'],id)
             return message_predict_like_return
 
     else:
@@ -354,12 +371,13 @@ def getstock_info_news():
 #預測成績讀取api
 @app.route("/api/message_predict_rank", methods=["POST","GET"])
 def message_predict_rank_load():
-    user_name = request.args.get("user_name", None)
+    member_id = request.args.get("id", None)
+
     stock_id = request.args.get("stock_id", None)
     data_number = request.args.get("data_number", 0)
     data_status = request.args.get("data_status", None)
 
-    message_predict_rank_load_data=DB_Use_load_rank_data.message_predict_rank_load(user_name,stock_id,data_number,data_status)
+    message_predict_rank_load_data=DB_Use_load_rank_data.message_predict_rank_load(member_id,stock_id,data_number,data_status)
     return Response(json.dumps({"ok": True,"data": message_predict_rank_load_data}, sort_keys=False), mimetype='application/json')
     
 #私人訊息api
@@ -368,6 +386,7 @@ def private_message_sent():
     member_email = session.get('member_email')
     member_name = session.get('member_name')  
     member_src=session.get('member_src')
+    id = session.get('id')
 
     if member_email and member_name:
         # print("登入中")  
@@ -378,10 +397,10 @@ def private_message_sent():
             elif len(private_message_data["message_sent_text"])>100:
                 return {"error": True, "message": "字數超過 100"}
             else:
-                private_message_add_return=DB_Use_message.private_message_add(member_name,member_src,private_message_data['message_sent_text'],private_message_data['message_sent'])
+                private_message_add_return=DB_Use_message.private_message_add(id,private_message_data['message_sent_text'],private_message_data['message_sent'])
                 return private_message_add_return
         if request.method == "GET":
-            private_message_load_return=DB_Use_message.private_message_load(member_name)
+            private_message_load_return=DB_Use_message.private_message_load(id)
             return Response(json.dumps({"ok": True,"data": private_message_load_return}, sort_keys=False), mimetype='application/json')
 
     else:
@@ -393,6 +412,7 @@ def contact_message_sent():
     member_email = session.get('member_email')
     member_name = session.get('member_name')  
     member_src=session.get('member_src')
+    id = session.get('id')
 
     if member_email and member_name:
         # print("登入中")  
@@ -403,7 +423,7 @@ def contact_message_sent():
             elif len(contact_message_data["message_sent_text"])>500:
                 return {"error": True, "message": "字數超過 500"}
             else:
-                contact_message_add_return=DB_Use_message.contact_message_add(member_name,member_src,contact_message_data["message_sent_text"])
+                contact_message_add_return=DB_Use_message.contact_message_add(id,contact_message_data["message_sent_text"])
                 return contact_message_add_return
         if request.method == "GET":
             contact_message_load_return=DB_Use_message.contact_message_load()
@@ -445,6 +465,6 @@ def page_500(error):
 
 
 
-app.run(host="0.0.0.0", port=5000)
-# app.run(port=5000, debug=True)
+# app.run(host="0.0.0.0", port=5000)
+app.run(port=5000, debug=True)
 

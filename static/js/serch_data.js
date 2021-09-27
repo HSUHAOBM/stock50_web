@@ -39,13 +39,13 @@ function search_stock_data_add(stock_id, stock_name) {
     div_search_data_stock_data_load_box.appendChild(a_search_data_stock_data_load_box)
 }
 
-function search_member_data_add(member_name, img_src) {
+function search_member_data_add(member_name, img_src, id) {
     let search_data_stock_data_load_box = document.querySelector('.search_data_member_data_load>tr>td')
 
     let div_search_data_stock_data_load_box = document.createElement("div");
     div_search_data_stock_data_load_box.className = "serch_stock_result_name";
     div_search_data_stock_data_load_box.addEventListener('click', function() {
-        location.href = 'member?name=' + member_name
+        location.href = 'member?id=' + id
     });
     search_data_stock_data_load_box.appendChild(div_search_data_stock_data_load_box)
         //                                                         <img src="img/unknown.png ">
@@ -121,7 +121,7 @@ function search_data_load(keyword) {
 
                 // console.log(result.serch_return.member_data.length)
                 for (let i = 0; i < result.serch_return.member_data.length; i++) {
-                    search_member_data_add(result.serch_return.member_data[i][0], result.serch_return.member_data[i][1])
+                    search_member_data_add(result.serch_return.member_data[i][0], result.serch_return.member_data[i][1], result.serch_return.member_data[i][2])
                 }
                 document.querySelector('#base_load_gif').style.display = "none";
 

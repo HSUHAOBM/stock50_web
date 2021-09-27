@@ -1,4 +1,4 @@
-function member_private_message_load_add(private_member_name, private_member_img, private_member_text, private_member_time, private_member_about_time, level) {
+function member_private_message_load_add(private_member_id, private_member_name, private_member_img, private_member_text, private_member_time, private_member_about_time, level) {
     let member_private_message = document.querySelector('.member_private_message' + level)
         // class="member_private_message_load privateh01.contact"
 
@@ -32,7 +32,7 @@ function member_private_message_load_add(private_member_name, private_member_img
     div_private_message_name.className = "private_message_name";
     div_private_message_name.textContent = private_member_name
     div_private_message_name.addEventListener('click', function() {
-        location.href = 'member?name=' + private_member_name
+        location.href = 'member?id=' + private_member_id
     });
     div_member_private_message_box.appendChild(div_private_message_name)
 
@@ -52,7 +52,7 @@ function member_private_message_load_add(private_member_name, private_member_img
 
 }
 // class="member_private_message_box message_boxh01.contact"
-function member_private_message_load_add_(private_member_name, private_member_text, private_member_time, private_member_about_time, level) {
+function member_private_message_load_add_(private_member_id, private_member_name, private_member_text, private_member_time, private_member_about_time, level) {
     let div_member_private_message_box;
     if (level == "") {
         div_member_private_message_box = document.querySelector('.member_private_message_box.message_box' + private_member_name)
@@ -84,31 +84,28 @@ function member_private_message_load() {
 
         } else {
             for (let i = 0; i < result.data.length; i++) {
+                private_member_id = result.data[i].member_id;
                 private_member_name = result.data[i].member_name;
                 private_member_img = result.data[i].member_img;
                 private_member_text = result.data[i].message_text;
                 private_member_time = result.data[i].time;
                 private_member_about_time = result.data[i].time_about;
                 if (document.querySelector('.member_private_message_load.private' + private_member_name)) {
-                    member_private_message_load_add_(private_member_name, private_member_text, private_member_time, private_member_about_time, "")
+                    member_private_message_load_add_(private_member_id, private_member_name, private_member_text, private_member_time, private_member_about_time, "")
                 } else {
-                    member_private_message_load_add(private_member_name, private_member_img, private_member_text, private_member_time, private_member_about_time, "")
+                    member_private_message_load_add(private_member_id, private_member_name, private_member_img, private_member_text, private_member_time, private_member_about_time, "")
                 }
-
             }
             document.querySelector('.base_load_gif_member_message').style.display = "none";
-
         }
     })
 }
-
-
 
 function member_contact_message_load() {
     fetch("api/contact_message_sent").then(function(response) {
         return response.json();
     }).then(function(result) {
-        console.log(result)
+        // console.log(result)
 
         if (result.data.contact_message_not) {
             document.querySelector('.data_not_message.contact').style.display = "flex";
@@ -116,6 +113,7 @@ function member_contact_message_load() {
 
         } else {
             for (let i = 0; i < result.data.length; i++) {
+                private_member_id = result.data[i].member_id;
                 private_member_name = result.data[i].member_name;
                 private_member_img = result.data[i].member_img;
                 private_member_text = result.data[i].message_text;
@@ -123,9 +121,9 @@ function member_contact_message_load() {
                 private_member_about_time = result.data[i].time_about;
                 // class="member_private_message_load privateh01.contact"
                 if (document.querySelector('.member_private_message_load.private_' + private_member_name)) {
-                    member_private_message_load_add_(private_member_name, private_member_text, private_member_time, private_member_about_time, ".contact")
+                    member_private_message_load_add_(private_member_id, private_member_name, private_member_text, private_member_time, private_member_about_time, ".contact")
                 } else {
-                    member_private_message_load_add(private_member_name, private_member_img, private_member_text, private_member_time, private_member_about_time, ".contact")
+                    member_private_message_load_add(private_member_id, private_member_name, private_member_img, private_member_text, private_member_time, private_member_about_time, ".contact")
                 }
 
             }
