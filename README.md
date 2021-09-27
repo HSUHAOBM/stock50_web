@@ -14,7 +14,7 @@
     <li>Frontend: HTML, CSS, JavaScript, RWD, AJAX</li>
     <li>Backend: Python Flask</li>
     <li>AWS: EC2, S3, Cloudfront </li>
-    <li>Database: MySQL, Connection Pool</li>
+    <li>Database: MySQL, Connection Pool, Redis</li>
     <li>Version Control: Git, GitHub</li>
     <li>Reverse Proxy: Nginx</li>
     <li>Web Crawler: Python Requests, BeautifulSoup</li>  
@@ -41,6 +41,12 @@
 <hr/>
 
 <br>
+
+## 資料庫結構
+![1632720625256](https://user-images.githubusercontent.com/73993570/134850649-b2e44f73-8488-4eba-ad0b-55dd1d5d84fe.jpg)
+
+<br>
+<hr/>
 
 ## 網站功能導覽
 
