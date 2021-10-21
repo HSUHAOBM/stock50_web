@@ -33,15 +33,14 @@ def get_news_money(stock_name):
     headers = {"user-agent":random.choice(user_agents)}
     resp =requests.get(url, headers = headers)
     soup = BeautifulSoup(resp.text,"lxml")
-    elem = soup.select("#search_content dl dt")
+    elem = soup.select(".story__content")
     for e in elem[0:5]:
-        for date in e.select(".cat"):
-            date=date.text.split("經濟日報：")[-1]
+        for date in e.select("time"):
+            date=date.text
         for title in e.select("h3"):
-            title=title.text
+            title=title.text.split()[0]
         for src in e.select("a"):
             src=src.get('href')
         # print(date,title,src)
         get_news_money_list.append({"date":date,"title":title,"src":src})
     return get_news_money_list
-        
