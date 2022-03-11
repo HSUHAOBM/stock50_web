@@ -8,5 +8,5 @@ services:
     - .:/app
     depends_on:
     - myredis
-myredis:
-  image: redis:6.0.5-alpine
+  myredis:
+    image: redis:6.0.5-alpine
