@@ -6,7 +6,8 @@ import time
 from custom_models import connection_pool
 
 import redis
-r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+# r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+r = redis.Redis(host='myredis', port=6379, decode_responses=True)
 
 # def load_stock_data(stock_id):
 #     try:
