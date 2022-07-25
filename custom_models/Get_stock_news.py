@@ -26,12 +26,12 @@ user_agents = [
 
 
 def get_news_money(stock_name):
-    get_news_money_list=[]
+    get_news_money_list = []
 
-    key_word=urllib.parse.quote(stock_name)
-    url="https://money.udn.com/search/result/1001/"+key_word
+    key_word = urllib.parse.quote(stock_name)
+    url = "https://money.udn.com/search/result/1001/"+key_word
     headers = {"user-agent":random.choice(user_agents)}
-    resp =requests.get(url, headers = headers)
+    resp = requests.get(url, headers = headers)
     soup = BeautifulSoup(resp.text,"lxml")
     elem = soup.select(".story__content")
     for e in elem[0:5]:
