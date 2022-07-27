@@ -7,17 +7,14 @@ config.read('config.ini')
 parent_dir = os.path.dirname(os.path.abspath(__file__))
 config.read(parent_dir + "/config.ini")
 
-DBhost=config.get('aws_rd', 'DBhost')   
-DBdatabase=config.get('aws_rd', 'DBdatabase')
-DBuser=config.get('aws_rd', 'DBuser')
-DBpassword=config.get('aws_rd', 'DBpassword')
+DBhost=config.get('use_db', 'DBhost')
+DBdatabase=config.get('use_db', 'DBdatabase')
+DBuser=config.get('use_db', 'DBuser')
+DBpassword=config.get('use_db', 'DBpassword')
 
-# DBhost="localhost"
-# DBdatabase="stock50_web_v2"
-# DBuser="root"
-# DBpassword="root"
 
-from DBUtils.PooledDB import PooledDB,SharedDBConnection
+
+from dbutils.pooled_db import PooledDB
 import pymysql
 def getConnection():
     connection = PooledDB(

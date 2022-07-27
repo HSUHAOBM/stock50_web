@@ -10,62 +10,67 @@
                         <a class="main_left_top_title"> 預測分享</a>
 
                         <select class="stock_select_list" onchange="stock_select_change()" name="member_predict_stock">
-                    <optgroup label=" 科技 ">
-                <option value="2303－聯電 ">2303－聯電</option>
-                <option value="2308－台達電 ">2308－台達電</option>
-                <option value="2317－鴻海 ">2317－鴻海</option>
-                <option value="2327－國巨 ">2327－國巨</option>
-                <option value="2330－台積電 ">2330－台積電</option>
-                <option value="2357－華碩 ">2357－華碩</option>
-                <option value="2379－瑞昱 ">2379－瑞昱</option>
-                <option value="2382－廣達 ">2382－廣達</option>
-                <option value="2395－研華 ">2395－研華</option>
-                <option value="2408－南亞科 ">2408－南亞科</option>
-                <option value="2409－友達 ">2409－友達</option>
-                <option value="2412－中華電 ">2412－中華電</option>
-                <option value="2454－聯發科 ">2454－聯發科</option>
-                <option value="3008－大立光 ">3008－大立光</option>
-                <option value="3034－聯詠 ">3034－聯詠</option>
-                <option value="3045－台灣大 ">3045－台灣大</option>
-                <option value="3711－日月光投控 ">3711－日月光投控</option>
-                <option value="4904－遠傳 ">4904－遠傳</option>
-                <option value="4938－和碩 ">4938－和碩</option>
-                <option value="6415－矽力 ">6415－矽力-KY</option>
-                <option value="8046－南電 ">8046－南電</option>
-                    </optgroup>           
-                    <optgroup label="傳產 ">
-                <option value="1101－台泥 ">1101－台泥</option>
-                <option value="1102－亞泥 ">1102－亞泥</option>
-                <option value="1216－統一 ">1216－統一</option>
-                <option value="1301－台塑 ">1301－台塑</option>
-                <option value="1303－南亞 ">1303－南亞</option>
-                <option value="1326－台化 ">1326－台化</option>
-                <option value="1402－遠東新 ">1402－遠東新</option>
-                <option value="1590－亞德客 ">1590－亞德客-KY</option>
-                <option value="2002－中鋼 ">2002－中鋼</option>
-                <option value="2207－和泰車 ">2207－和泰車</option>
-                <option value="2603－長榮 ">2603－長榮</option>
-                <option value="2609－陽明 ">2609－陽明</option>
-                <option value="2615－萬海 ">2615－萬海</option>
-                <option value="2912－統一超 ">2912－統一超</option>
-                <option value="6505－台塑化 ">6505－台塑化</option>
-                <option value="9910－豐泰 ">9910－豐泰</option>
-                    </optgroup>            
-                    <optgroup label="金融 ">             
-                <option value="2801－彰銀 ">2801－彰銀</option>
-                <option value="2880－華南金 ">2880－華南金</option>
-                <option value="2881－富邦金 ">2881－富邦金</option>
-                <option value="2882－國泰金 ">2882－國泰金</option>
-                <option value="2884－玉山金 ">2884－玉山金</option>
-                <option value="2885－元大金 ">2885－元大金</option>
-                <option value="2886－兆豐金 ">2886－兆豐金</option>
-                <option value="2887－台新金 ">2887－台新金</option>
-                <option value="2891－中信金 ">2891－中信金</option>
-                <option value="2892－第一金 ">2892－第一金</option>
-                <option value="5871－中租 ">5871－中租-KY</option>
-                <option value="5876－上海商銀 ">5876－上海商銀</option>
-                <option value="5880－合庫金 ">5880－合庫金</option>
-                        </optgroup></select>
+                            <option value="123">11111111</option>
+                            {% for stock in stock_data %}
+                                <option value="{{stock}}">{{stock}}</option>
+                            {% endfor %}
+                            <!-- <optgroup label=" 科技 ">
+                                <option value="2303－聯電 ">2303－聯電</option>
+                                <option value="2308－台達電 ">2308－台達電</option>
+                                <option value="2317－鴻海 ">2317－鴻海</option>
+                                <option value="2327－國巨 ">2327－國巨</option>
+                                <option value="2330－台積電 ">2330－台積電</option>
+                                <option value="2357－華碩 ">2357－華碩</option>
+                                <option value="2379－瑞昱 ">2379－瑞昱</option>
+                                <option value="2382－廣達 ">2382－廣達</option>
+                                <option value="2395－研華 ">2395－研華</option>
+                                <option value="2408－南亞科 ">2408－南亞科</option>
+                                <option value="2409－友達 ">2409－友達</option>
+                                <option value="2412－中華電 ">2412－中華電</option>
+                                <option value="2454－聯發科 ">2454－聯發科</option>
+                                <option value="3008－大立光 ">3008－大立光</option>
+                                <option value="3034－聯詠 ">3034－聯詠</option>
+                                <option value="3045－台灣大 ">3045－台灣大</option>
+                                <option value="3711－日月光投控 ">3711－日月光投控</option>
+                                <option value="4904－遠傳 ">4904－遠傳</option>
+                                <option value="4938－和碩 ">4938－和碩</option>
+                                <option value="6415－矽力 ">6415－矽力-KY</option>
+                                <option value="8046－南電 ">8046－南電</option>
+                            </optgroup>
+                            <optgroup label="傳產 ">
+                                <option value="1101－台泥 ">1101－台泥</option>
+                                <option value="1102－亞泥 ">1102－亞泥</option>
+                                <option value="1216－統一 ">1216－統一</option>
+                                <option value="1301－台塑 ">1301－台塑</option>
+                                <option value="1303－南亞 ">1303－南亞</option>
+                                <option value="1326－台化 ">1326－台化</option>
+                                <option value="1402－遠東新 ">1402－遠東新</option>
+                                <option value="1590－亞德客 ">1590－亞德客-KY</option>
+                                <option value="2002－中鋼 ">2002－中鋼</option>
+                                <option value="2207－和泰車 ">2207－和泰車</option>
+                                <option value="2603－長榮 ">2603－長榮</option>
+                                <option value="2609－陽明 ">2609－陽明</option>
+                                <option value="2615－萬海 ">2615－萬海</option>
+                                <option value="2912－統一超 ">2912－統一超</option>
+                                <option value="6505－台塑化 ">6505－台塑化</option>
+                                <option value="9910－豐泰 ">9910－豐泰</option>
+                            </optgroup>
+                            <optgroup label="金融 ">
+                                <option value="2801－彰銀 ">2801－彰銀</option>
+                                <option value="2880－華南金 ">2880－華南金</option>
+                                <option value="2881－富邦金 ">2881－富邦金</option>
+                                <option value="2882－國泰金 ">2882－國泰金</option>
+                                <option value="2884－玉山金 ">2884－玉山金</option>
+                                <option value="2885－元大金 ">2885－元大金</option>
+                                <option value="2886－兆豐金 ">2886－兆豐金</option>
+                                <option value="2887－台新金 ">2887－台新金</option>
+                                <option value="2891－中信金 ">2891－中信金</option>
+                                <option value="2892－第一金 ">2892－第一金</option>
+                                <option value="5871－中租 ">5871－中租-KY</option>
+                                <option value="5876－上海商銀 ">5876－上海商銀</option>
+                                <option value="5880－合庫金 ">5880－合庫金</option>
+                            </optgroup> -->
+                        </select>
                         <div class="div_message_btnbox ">
                             <div class="div_message_btn bt1 ">
                                 <div class="div_message_btnbox_left"><input type="radio" name="member_predict_trend" alt="1" value="漲" class="" required onclick="trend_radio_change(this.alt) "></div>
