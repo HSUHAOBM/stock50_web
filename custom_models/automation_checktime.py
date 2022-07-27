@@ -10,7 +10,7 @@ import connection_pool
 modelPath = os.path.dirname(os.path.realpath(__file__))
 
 import logging
-logger = logging.getLogger("simple_example")
+logger = logging.getLogger("log")
 logger.setLevel(logging.DEBUG)
 
 fh = logging.FileHandler(modelPath+"/spam.log", encoding='utf-8')
