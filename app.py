@@ -1,16 +1,22 @@
 from flask import *
 from requests.api import get
 from flask_cors import CORS
-from custom_models import DB_Use_memberdata,up_data_to_s3,DB_Use_message,DB_Use_load_rank_data,DB_Use_load_stock_data,Get_stock_news,DB_search_data,google_account_verify,DB_Get_stock50_everydaydata
+from custom_models import DB_Use_memberdata,DB_Use_message,DB_Use_load_rank_data,DB_Use_load_stock_data,Get_stock_news,DB_search_data,google_account_verify,DB_Get_stock50_everydaydata
+from werkzeug.utils import secure_filename
+import os
+import uuid
+
 app = Flask(
     __name__,
     static_folder = "static",
     static_url_path = "/")
+
 CORS(app)
 app.config["JSON_AS_ASCII"] = False
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config['SECRET_KEY'] = 'laowangaigebi'
-
+ALLOW_EXTENSIONS = ['png', 'jpg', 'jpeg']
+app.config['UPLOAD_FOLDER'] = './static/image/member/'
 # page
 # 首頁
 @app.route("/")
@@ -229,6 +235,10 @@ def member_get_data():
     else:
         return {"data": None}
 
+# 判斷格式
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[-1] in ALLOW_EXTENSIONS
+
 #會員圖像修改api
 @app.route("/api/member_modify_imgsrc", methods=["POST","GET"])
 def member_modify_imgsrc():
@@ -238,15 +248,28 @@ def member_modify_imgsrc():
 
     if member_email and member_name:
         if request.method == "POST":
-            # print("request",request.files)
             file = request.files['member_img_modify'] #檔案
-            # 取得圖片網址位置
-            s3_img_src = up_data_to_s3.upload_file_to_s3_main(file,member_name)
-            # print("file",file)
-            # print("上傳的檔案名稱",file.filename)
-            # print("圖片連結網址",s3_img_src)
-            session['member_src'] = s3_img_src
-            member_modify_imgsrc_retrun=DB_Use_memberdata.modify_member_picturesrc(id,s3_img_src)
+            if file and allowed_file(file.filename):
+                # secure_filename方法清除中文，取後綴
+                file_name_hz = secure_filename(file.filename).split('.')[-1]
+                # uuid 生成唯一名稱
+                first_name = str(uuid.uuid4())
+                # 文件名
+                file_name = first_name + '.' + file_name_hz
+                # 保存路徑
+                file_path = app.config['UPLOAD_FOLDER']
+                # 檢查路徑
+                if not os.path.exists(file_path):
+                    os.makedirs(file_path)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], file_name))
+
+                member_modify_imgsrc_retrun = DB_Use_memberdata.modify_member_picturesrc(id , './image/member/' + file_name)
+                # 移除 舊的圖
+
+                if os.path.exists('./static' + session['member_src'][1:]):
+                    os.remove('./static' + session['member_src'][1:])
+                session['member_src'] = './image/member/' + file_name
+
             return member_modify_imgsrc_retrun
     else:
         return {"data": None}
@@ -460,9 +483,6 @@ def page_400(error):
 @app.errorhandler(500)
 def page_500(error):
     return Response(json.dumps({"error": True, "message": "伺服器內部錯誤"}, sort_keys=False), mimetype='application/json'), 500
-
-
-
 
 
 app.run(host="0.0.0.0", port=5000)
