@@ -1,12 +1,31 @@
-version: '3.8'
+version: "3"
 services:
-  myweb:
-    build: .
-    ports:
-    - "5000:5000"
-    volumes:
-    - .:/app
-    depends_on:
-    - myredis
-  myredis:
-    image: redis:6.0.5-alpine
+        db:
+                build: ./mysql/
+                container_name: flask_stock50_db
+                ports:
+                        - "3306:3306"
+                volumes:
+                        - ./mysql/initdb:/docker-entrypoint-initdb.d
+                        - mysql_data:/var/lib/mysql
+                image: mysql_db
+                environment:
+                - MYSQL_ROOT_PASSWORD=12345678
+        web:
+                build: ./stock50_web/
+                container_name: flask_stock50_web
+                restart: always
+                ports:
+                        - "3000:3000"
+                depends_on:
+                        - db
+                        - myredis
+                volumes:
+                        - ./stock50_web:/app
+                image: flask_web
+                environment:
+                - TZ=Asia/Taipei
+        myredis:
+                image: redis:6.0.5-alpine
+volumes:
+    mysql_data:

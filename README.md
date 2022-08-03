@@ -1,11 +1,18 @@
 # 股Day- 台灣50 Stock-Prediction、discussion
 ## 「臺灣50指數成分股」為討論及預測的社群網站
 
-## 網站連結：https://haogooday.me/
+## 前置作業 ##
+
+1.
+git clone
+2.
+docker-compose up
+3.
+docker exec -it flask_stock50_web /bin/bash -c 'cd /app/custom_models && python DB_Creat.py'
+docker exec -it flask_stock50_web /bin/bash -c 'cd /app/custom_models && python localhost_test.py'
 
 
-#### 測試帳號/密碼：test01@test.com /123456
-#### 測試帳號/密碼：test02@test.com /123456
+
 <hr>
 
 ## Technologies
@@ -13,30 +20,28 @@
 <ul>
     <li>Frontend: HTML, CSS, JavaScript, RWD, AJAX</li>
     <li>Backend: Python Flask</li>
-    <li>AWS: EC2, S3, Cloudfront </li>
     <li>Database: MySQL, Connection Pool, Redis</li>
     <li>Version Control: Git, GitHub</li>
     <li>Reverse Proxy: Nginx</li>
-    <li>Web Crawler: Python Requests, BeautifulSoup</li>  
-
-</ul>  
+    <li>Web Crawler: Python Requests, BeautifulSoup</li>
+</ul>
 
 #### Others:
 
 <ul>
     <li>Third-Party: Google login API, CloudFlare, GoDaddy</li>
     <li>Linux crontab</li>
-    <li>hashlib</li>  
+    <li>hashlib</li>
 </ul>
- 
+
 <br>
 
 <hr/>
 
 ## AWS 架構
 
-### Client > EC2 (Nginx + Flask)　>　┌ S3 > CloudFront
-### 　　　　　　　　　　　　　　　 └ RDS (MySQL)
+### Client > EC2 (Nginx + Flask)　>　MySQL
+### 　　　　　　　　　　　　　　　
 
 <hr/>
 
