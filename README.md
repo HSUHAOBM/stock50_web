@@ -5,10 +5,13 @@
 
 1.
 git clone
+
 2.
 docker-compose up
+
 3.
 docker exec -it flask_stock50_web /bin/bash -c 'cd /app/custom_models && python DB_Creat.py'
+
 docker exec -it flask_stock50_web /bin/bash -c 'cd /app/custom_models && python localhost_test.py'
 
 
