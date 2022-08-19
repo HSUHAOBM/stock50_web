@@ -2,4 +2,8 @@ FROM python:3.6.8
 ADD . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
-CMD ["python","-u","app.py"]
+ENV FLASK_APP=app.py
+ENV FLASK_RUN_HOST=0.0.0.0
+EXPOSE 5000
+CMD ["flask", "run"]
+

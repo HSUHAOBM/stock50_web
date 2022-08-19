@@ -15,8 +15,8 @@ services:
                 build: ./stock50_web/
                 container_name: flask_stock50_web
                 restart: always
-                ports:
-                        - "3000:3000"
+                expose:
+                - 5000
                 depends_on:
                         - db
                         - myredis
@@ -27,5 +27,15 @@ services:
                 - TZ=Asia/Taipei
         myredis:
                 image: redis:6.0.5-alpine
+        nginx:
+                build: ./nginx/
+                volumes:
+                - "./nginx-logs:/var/log/nginx"
+                container_name: template_nginx
+                # restart: always
+                ports:
+                - "80:80"       
+                depends_on:
+                - web         
 volumes:
     mysql_data:
