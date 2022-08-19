@@ -485,6 +485,6 @@ def page_500(error):
     return Response(json.dumps({"error": True, "message": "伺服器內部錯誤"}, sort_keys=False), mimetype='application/json'), 500
 
 
-app.run(host="0.0.0.0", port=5000)
+app.run(host="0.0.0.0", port=3000)
 # app.run(port=5000, debug=True)
 
