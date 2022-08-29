@@ -1,6 +1,11 @@
 # 股Day- 台灣50 Stock-Prediction、discussion
 ## 「臺灣50指數成分股」為討論及預測的社群網站
 
+## 網站連結：https://haogooday.fun/
+#### 測試帳號/密碼：test01@test.com /123456
+
+<hr>
+
 ## 前置作業 ##
 
 1.
@@ -14,13 +19,12 @@ docker exec -it flask_stock50_web /bin/bash -c 'cd /app/custom_models && python 
 
 docker exec -it flask_stock50_web /bin/bash -c 'cd /app/custom_models && python localhost_test.py'
 
-
-
 <hr>
 
 ## Technologies
 
 <ul>
+    <li>Linode VPS ( Ubuntu )</li>
     <li>Frontend: HTML, CSS, JavaScript, RWD, AJAX</li>
     <li>Backend: Python Flask</li>
     <li>Database: MySQL, Connection Pool, Redis</li>
@@ -41,9 +45,9 @@ docker exec -it flask_stock50_web /bin/bash -c 'cd /app/custom_models && python 
 
 <hr/>
 
-## AWS 架構
+## 架構
 
-### Client > EC2 (Nginx + Flask)　>　MySQL
+### Client > Linode > Docker (Nginx > Flask > MySQL & Redis)
 ### 　　　　　　　　　　　　　　　
 
 <hr/>
