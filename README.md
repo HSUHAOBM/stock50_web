@@ -31,6 +31,7 @@ docker exec -it flask_stock50_web /bin/bash -c 'cd /app/custom_models && python 
     <li>Version Control: Git, GitHub</li>
     <li>Reverse Proxy: Nginx</li>
     <li>Web Crawler: Python Requests, BeautifulSoup</li>
+    <li>GitHub Action</li>
 </ul>
 
 #### Others:
