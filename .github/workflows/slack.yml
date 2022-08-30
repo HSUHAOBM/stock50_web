@@ -1,59 +1,39 @@
-name: ReleaseNotice
+# This is a basic workflow to help you get started with Actions
+
+name: slack
+
+# Controls when the action will run.
 on:
-  release:
-    types: [published]
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+  #   # branches: [ master ]
+  #   branches: [ '**' ]
+  #   # - '**'        # matches every branch
+  pull_request:
+  #   branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build:
+  slackNotification:
+    name: Slack Notification
     runs-on: ubuntu-latest
     steps:
-      # To check the github context
-      - name: Dump Github context
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: Slack Notification on SUCCESS
-        if: success()
-        uses: tokorom/action-slack-incoming-webhook@main
-        env:
-          INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        with:
-          text: A release is published.
-          blocks: |
-            [
-              {
-                "type": "header",
-                "text": {
-                  "type": "plain_text",
-                  "text": "${{ github.event.release.tag_name}} is published!"
-                }
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "*Author:*\n${{ github.actor }}"
-                }
-              },
-               {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "*Information:*"
-                }
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": ${{ toJSON(github.event.release.body) }}
-                }
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "${{ github.event.release.html_url }}"
-                }
-              }
-            ]
+    - uses: actions/checkout@v2
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_USERNAME: stock50_bot
+        # SLACK_ICON: 'https://emoji.slack-edge.com/T11STCBJS/sl/197d9457aa47b5d0.png'
+        # SLACK_ICON_EMOJI: ":bell:"
+        # SLACK_COLOR: '#3278BD'
+        # SLACK_ICON: false
+        # SLACK_TITLE: Post Title
+        # SLACK_CHANNEL:
+        # SLACK_COLOR: '#3278BD'
+        # SLACK_ICON: https://github.com/rtCamp.png?size=48
+        # SLACK_MESSAGE: 'Post Content :rocket:'
+        # SLACK_TITLE: Post Title
