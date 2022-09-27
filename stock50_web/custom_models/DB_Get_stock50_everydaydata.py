@@ -9,9 +9,9 @@ sys.path.append(parent_dir)
 from custom_models import connection_pool
 
 #取得台灣50
-stock_id=[]
-stock_name=[]
 def loadstock50dataname():
+    stock_id=[]
+    stock_name=[]
     url_tese='https://www.yuantaetfs.com/api/Composition?fundid=1066'
     res = requests.get(url_tese)
     stock50_namedata = json.loads(res.text)
