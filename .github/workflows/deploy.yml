@@ -17,5 +17,5 @@ jobs:
           key: ${{ secrets.LINODE_SSHKEY }}
           script: |
             cd ${{ secrets.LINODE_PATH }}
-            git pull
+            git pull 
             docker compose restart

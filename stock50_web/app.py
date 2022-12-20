@@ -5,6 +5,7 @@ from custom_models import DB_Use_memberdata,DB_Use_message,DB_Use_load_rank_data
 from werkzeug.utils import secure_filename
 import os
 import uuid
+from werkzeug.exceptions import HTTPException
 
 app = Flask(
     __name__,
@@ -14,7 +15,7 @@ app = Flask(
 CORS(app)
 app.config["JSON_AS_ASCII"] = False
 app.config["TEMPLATES_AUTO_RELOAD"] = True
-app.config['SECRET_KEY'] = 'laowangaigebi'
+app.config['SECRET_KEY'] = app.config["SECRET_KEY"] = os.urandom(24)
 ALLOW_EXTENSIONS = ['png', 'jpg', 'jpeg']
 app.config['UPLOAD_FOLDER'] = './static/image/member/'
 # page
@@ -474,16 +475,13 @@ def search_data():
     else:
         return {"loging_error": True, "message": "未登入"}
 
-
-
-
-@app.errorhandler(400)
-def page_400(error):
-    return Response(json.dumps({"error": True, "message": "建立錯誤"}, sort_keys=False), mimetype='application/json'), 400
-@app.errorhandler(500)
-def page_500(error):
-    return Response(json.dumps({"error": True, "message": "伺服器內部錯誤"}, sort_keys=False), mimetype='application/json'), 500
-
+@app.errorhandler(Exception)
+def handle_exception(e):
+    code = 500
+    if isinstance(e, HTTPException):
+        code = e.code
+    return Response(json.dumps(
+        {"error": True, "code": code, "error_message": str(e)}, sort_keys=False), mimetype='application/json'), code
 
 # app.run(host="0.0.0.0", port=3000)
 # app.run(port=5000, debug=True)
