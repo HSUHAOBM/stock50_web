@@ -34,10 +34,10 @@ services:
                 container_name: template_nginx
                 # restart: always
                 ports:
-                - "80:80"       
+                - "80:80"
                 depends_on:
-                - web         
+                - web
                 extra_hosts:
-                - "host.docker.internal:host-gateway" 
+                - "host.docker.internal:host-gateway"
 volumes:
     mysql_data:

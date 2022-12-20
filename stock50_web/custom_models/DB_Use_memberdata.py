@@ -6,34 +6,26 @@ from custom_models import connection_pool
 
 member_password_key = "w50stock"
 
-
-
-
 #一般會員註冊
 def member_registered (email,password,name):
     try:
         connection = connection_pool.getConnection()
         connection = connection.connection()
-
+        print('連')
         with connection.cursor() as cursor:
-            #檢查是否註冊過
+            print("#檢查是否註冊過")
             cursor.execute("SELECT name FROM member_basedata WHERE name= '%s' or email='%s' limit 1;" % (name,email))
             records = cursor.fetchone()
-
-
             if (records):
                 # print("註冊過了")
                 return {"error": True, "message": "暱稱或信箱重複註冊!"}
-
             else:
                 # print("開始新增")
                 #指令
                 password= password + member_password_key
                 # print("password字串",password)
-
                 password = hashlib.sha256(password.encode('utf-8')).hexdigest()
                 # print("password加密",password)
-
                 sql = "INSERT INTO member_basedata (email,password,name) VALUES (%s,%s,%s);"
                 member_data = (email, password, name)
                 cursor.execute(sql, member_data)
@@ -42,7 +34,6 @@ def member_registered (email,password,name):
     except Exception as ex:
         print(ex)
 
-
 #一般會員登入
 def member_signin(email,password,logip):
     try:
@@ -50,19 +41,15 @@ def member_signin(email,password,logip):
         connection = connection.connection()
 
         with connection.cursor() as cursor:
-
             password=password+member_password_key
             # print("password字串",password)
-
             password = hashlib.sha256(password.encode('utf-8')).hexdigest()
             # print("password加密",password)
-
             #檢查是否註冊過
             cursor.execute("SELECT id,name,password,picturesrc,level FROM member_basedata WHERE email= '%s' limit 1;" % (email))
             records = cursor.fetchone()
             if (records):
                 # print("帳號正確。。。開始檢查密碼")
-
                 if (password==records[2]):
                     # print("密碼驗證成功")
                     cursor.execute("UPDATE member_basedata SET logingtime = CURRENT_TIMESTAMP , ip='%s' where email='%s';"%(logip,email))
