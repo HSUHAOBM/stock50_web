@@ -67,9 +67,6 @@ def stock50_stopdeal_date():
     except Exception as ex:
         print(ex)
 
-
-
-
 #取休市資料
 #取的休市的日期
 def getstock50_stopdeal():
@@ -90,16 +87,23 @@ def getstock50_stopdeal():
         datestr = datestr+","
 
     datestr = datestr.split(",")[:-2]
+    # print('datestr',datestr)
 
     for iten in datestr:
-        if '<br>' in iten:
-            iten_ = iten.replace('</br>',"").split("<br>")
-            # print(iten_)
-            for i in iten_ :
-                stock_stopdeal(datetime.strptime(str(datetime.now().year)+"/"+i, "%Y/%m/%d").strftime('%Y-%m-%d'))
-        else:
-            # print(datetime.strptime(str(datetime.now().year)+"/"+iten, "%Y/%m/%d").strftime('%Y-%m-%d'))
-            stock_stopdeal(datetime.strptime(str(datetime.now().year)+"/"+iten, "%Y/%m/%d").strftime('%Y-%m-%d'))
+        if iten:
+            if '</br>' in iten:
+                iten_ = iten.split("</br>")
+                stock_stopdeal(datetime.strptime(str(datetime.now().year)+"/"+ iten_[0], "%Y/%m/%d").strftime('%Y-%m-%d'))
+                # print(datetime.strptime(str(datetime.now().year)+"/"+ iten_[0], "%Y/%m/%d").strftime('%Y-%m-%d'))
+
+            elif '<br>' in iten:
+                iten_ = iten.split("<br>")
+                for i in iten_ :
+                    stock_stopdeal(datetime.strptime(str(datetime.now().year)+"/"+i, "%Y/%m/%d").strftime('%Y-%m-%d'))
+                    # print(datetime.strptime(str(datetime.now().year)+"/"+i, "%Y/%m/%d").strftime('%Y-%m-%d'))
+            else:
+                stock_stopdeal(datetime.strptime(str(datetime.now().year)+"/"+iten, "%Y/%m/%d").strftime('%Y-%m-%d'))
+                # print(datetime.strptime(str(datetime.now().year)+"/"+iten, "%Y/%m/%d").strftime('%Y-%m-%d'))
 
 # #將休市日期存入資料庫
 def stock_stopdeal(date):
