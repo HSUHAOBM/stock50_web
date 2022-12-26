@@ -22,6 +22,7 @@ app.config['SECRET_KEY'] = app.config["SECRET_KEY"] = os.urandom(24)
 app.register_blueprint(member_blueprint)
 app.register_blueprint(forum_blueprint)
 app.register_blueprint(rank_blueprint)
+app.register_blueprint(stock_info_blueprint)
 
 # page
 # 首頁
