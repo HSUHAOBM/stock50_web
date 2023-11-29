@@ -1,3 +1,18 @@
+# 2023/11/29 使用 Django 重構  
+https://github.com/HSUHAOBM/stock50_Django  
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<hr>  
+
 # 股Day- 台灣50 Stock-Prediction、discussion
 ## 「臺灣50指數成分股」為討論及預測的社群網站
 
